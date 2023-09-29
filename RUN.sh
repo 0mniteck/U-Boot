@@ -2,7 +2,7 @@
 
 ##
 ##	Pinebook Pro SPI-Uboot Assembler
-##		Requirements: Debian based OS already running on an ARM64 CPU, any size unformatted microSD in the MMCBLK1 slot w/ no MBR/GUID
+##		Requirements: Debian based OS already running on an ARM64 CPU & 2 any size (x1 Fat formatted + x1 unformatted) microSD in the MMCBLK1 slot w/ no MBR/GUID
 ##		  By: Shant Tchatalbachian
 ##
 
@@ -33,6 +33,7 @@ image_size=$(wc -c < "${image_name}")
 [ $image_size -le $padsize ] || exit 1
 dd if=/dev/zero of="${image_name}" conv=notrunc bs=1 count=1 seek=${padsize}
 cat ${image_name} u-boot.itb > "${combined_name}"
+read -p "Insert FAT formatted SD Card & Press Enter to Continue"
 mount /dev/mmcblk1 /mnt
 sha512sum spi_combined.img
 sha512sum spi_combined.img > /mnt/spi_combined.img.sum
@@ -41,10 +42,15 @@ cp spi_combined.img /mnt/spi_combined.img
 cp spi_combined.img /tmp/spi_combined.img
 sync
 umount /mnt
+read -p "Insert Unformatted SD Card & Press Enter to Continue"
+sha512sum u-boot-rockchip.bin
+dd if=u-boot-rockchip.bin of=/dev/mmcblk1 bs=8k seek=1
+sha512sum u-boot-rockchip.bin > /tmp/u-boot-rockchip.bin.sum
+cp u-boot-rockchip.bin /tmp/u-boot-rockchip.bin
 popd
-rm -f -r spi_combined.zip && zip -0 spi_combined.zip /tmp/spi_combined.img /tmp/spi_combined.img.sum
+rm -f -r spi_combined.zip && zip -0 spi_combined.zip /tmp/spi_combined.img /tmp/spi_combined.img.sum /tmp/u-boot-rockchip.bin /tmp/u-boot-rockchip.bin.sum
 git status
 git add -A && git status && git commit -a -S -m "Successful Build of U-Boot with TF-A"
 git push
 apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-dev -y && apt autoremove -y
-rm -f -r /tmp/u-boot-202* && rm -f /tmp/lts-* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f -r /tmp/spi_*
+rm -f -r /tmp/u-boot* && rm -f /tmp/lts-* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f /tmp/spi_*
