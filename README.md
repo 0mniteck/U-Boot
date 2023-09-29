@@ -17,9 +17,9 @@ Requirements:
 
 Reboot into U-Boot Via SD Card with u-boot-rockchip.bin, Then Hotswap:
 
-`Stop Autoboot by hitting any key.`
+`Stop Autoboot by hitting any key`
 
-`Switch SD Card with spi_combined.img`
+`Switch to SD Card with spi_combined.img`
 
 `mmc rescan`
 
