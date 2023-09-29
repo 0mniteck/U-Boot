@@ -3,7 +3,7 @@
 
 Prebuilt spi_combined.img is included for convenience.
 
-## RockPro64 SPI U-Boot Assembler
+## Pinebook Pro SPI U-Boot Assembler
 
 Requirements:
 
@@ -22,9 +22,9 @@ Reboot into U-Boot, Then:
 
 `ls mmc 1:0 /`
 
-`load mmc 1:0 0x02080000 spi_combined.img`
+`load mmc 1:0 $kernel_addr_r spi_combined.img`
 
-`sf write 0x02080000 0 163800`
+`sf write $kernel_addr_r 0 $filesize`
 
 `reset`
 
