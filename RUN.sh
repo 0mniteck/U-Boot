@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 ##
-##	Pinebook Pro SPI-Uboot Assembler
+##	Pinebook Pro SPI-U-Boot Assembler
 ##		Requirements: Debian based OS already running on an ARM64 CPU & 2 any size (x1 Fat formatted + x1 unformatted) microSD in the MMCBLK1 slot w/ no MBR/GUID
 ##		  By: Shant Tchatalbachian
 ##
