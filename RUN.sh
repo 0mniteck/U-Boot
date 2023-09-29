@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
 ##
-##	RockPro64 SPI-Uboot Assembler
-##		Requirements: debian based OS already running on the RockPro64, any size Fat formatted microsd in the MMCBLK1 slot w/ no MBR/GUID
+##	Pinebook Pro SPI-Uboot Assembler
+##		Requirements: Debian based OS already running on an ARM64 CPU, any size unformatted microSD in the MMCBLK1 slot w/ no MBR/GUID
 ##		  By: Shant Tchatalbachian
 ##
 
@@ -23,8 +23,8 @@ make PLAT=rk3399 bl31
 export BL31=/tmp/arm-trusted-firmware-2.9/build/rk3399/release/bl31/bl31.elf
 cd ..
 cd u-boot-202*
-sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/rockpro64-rk3399_defconfig
-make rockpro64-rk3399_defconfig && make -j$(nproc) all
+sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/pinebook-pro-rk3399_defconfig
+make pinebook-pro-rk3399_defconfig && make -j$(nproc) all
 image_name="spi_idbloader.img"
 combined_name="spi_combined.img"
 tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl.bin:spl/u-boot-spl.bin "${image_name}"
