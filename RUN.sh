@@ -6,6 +6,7 @@
 ##		  By: Shant Tchatalbachian
 ##
 
+rm -f -r spi_combined.zip
 pushd /tmp/
 apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-dev -y
 wget https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/v2.9.zip
@@ -44,9 +45,10 @@ sha512sum u-boot-rockchip.bin
 sha512sum u-boot-rockchip.bin > /tmp/u-boot-rockchip.bin.sum
 dd if=u-boot-rockchip.bin of=/dev/sda conv=notrunc seek=64
 cp u-boot-rockchip.bin /tmp/u-boot-rockchip.bin
+cd ..
+zip -0 spi_combined.zip spi_combined.img spi_combined.img.sum u-boot-rockchip.bin u-boot-rockchip.bin.sum
 sync
 popd
-rm -f -r spi_combined.zip && zip -0 /tmp/spi_combined.zip /tmp/spi_combined.img /tmp/spi_combined.img.sum && cp /tmp/spi_combined.zip spi_combined.zip
 git status
 git add -A && git status && git commit -a -S -m "Successful Build of U-Boot with TF-A"
 git push
