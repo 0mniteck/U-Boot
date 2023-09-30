@@ -49,4 +49,4 @@ git status
 git add -A && git status && git commit -a -S -m "Successful Build of U-Boot with TF-A & SCP"
 git push
 apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-linux-gnueabi gcc-or1k-elf binutils-or1k-elf device-tree-compiler swig python3-pyelftools python3-dev -y && apt autoremove -y
-rm -f -r /tmp/u-boot-202* && rm -f /tmp/lts-* && rm -f /tmp/v0* && rm -f -r /tmp/crust-0.* && rm -f -r /tmp/arm-trusted-firmware* && rm -f -r /tmp/u-boot*
+rm -f -r /tmp/u-boot-202* && rm -f /tmp/lts-* && rm -f /tmp/v0* && rm -f -r /tmp/crust-0.* && rm -f -r /tmp/arm-trusted-firmware* && rm -f -r /tmp/u-boot* && rm -f /tmp/build*
