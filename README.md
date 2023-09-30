@@ -1,4 +1,4 @@
-# U-Boot RockChip rk3399
+# U-Boot RockChip rk3399 (W.I.P.)
 ## U-Boot Prebuilt Release v2023.07.02 W/ ATF v2.9
 
 Prebuilt spi_combined.img & u-boot-rockchip.bin are included for convenience.
