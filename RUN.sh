@@ -23,14 +23,16 @@ export BL31=/tmp/arm-trusted-firmware-2.9/build/rk3399/release/bl31/bl31.elf
 cd ..
 cd u-boot-202*
 make pinebook-pro-rk3399_defconfig && make -j$(nproc) all
-image_name="spi_idbloader.img"
+spi_image_name="spi_idb_loader.img"
+image_name="idb_loader.img"
 combined_name="spi_combined.img"
-tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl.bin:spl/u-boot-spl.bin "${image_name}"
+tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl.bin:spl/u-boot-spl.bin "${spi_image_name}"
+tools/mkimage -n rk3399 -T rkimage -d tpl/u-boot-tpl.bin:spl/u-boot-spl.bin "${image_name}"
 padsize=$((0x60000 - 1))
-image_size=$(wc -c < "${image_name}")
+image_size=$(wc -c < "${spi_image_name}")
 [ $image_size -le $padsize ] || exit 1
-dd if=/dev/zero of="${image_name}" conv=notrunc bs=1 count=1 seek=${padsize}
-cat ${image_name} u-boot.itb > "${combined_name}"
+dd if=/dev/zero of="${spi_image_name}" conv=notrunc bs=1 count=1 seek=${padsize}
+cat ${spi_image_name} u-boot.itb > "${combined_name}"
 read -p "Insert FAT formatted SD Card & Press Enter to Continue"
 mount /dev/mmcblk1 /mnt
 sha512sum spi_combined.img
@@ -41,7 +43,7 @@ cp spi_combined.img /tmp/spi_combined.img
 sync
 umount /mnt
 read -p "Insert Unformatted SD Card & Press Enter to Continue"
-dd if=spi_idbloader.img of=/dev/mmcblk1 conv=notrunc seek=64
+dd if="${image_name}" of=/dev/mmcblk1 conv=notrunc seek=64
 dd if=u-boot.itb of=/dev/mmcblk1 conv=notrunc seek=16384
 popd
 rm -f -r spi_combined.zip && zip -0 spi_combined.zip /tmp/spi_combined.img /tmp/spi_combined.img.sum
