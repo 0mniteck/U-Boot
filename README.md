@@ -1,4 +1,4 @@
-# U-Boot RockChip rk3399 (W.I.P.)
+# U-Boot RockChip rk3399
 ## U-Boot Prebuilt Release v2023.07.02 W/ ATF v2.9
 
 Prebuilt spi_combined.img & u-boot-rockchip.bin are included for convenience.
@@ -10,16 +10,16 @@ Requirements:
 
 * [ ] Debian based OS already running on an ARM64 CPU
 
-* [ ] x2 Any size (x1 Fat formatted + x1 Unformatted) microSD in the /dev/mmcblk1 slot w/ no MBR/GUID
+* [ ] Any size Fat formatted microSD in the /dev/mmcblk1 slot w/ no MBR/GUID
 
 
 ## Post-Build
 
-Reboot into U-Boot Via SD Card with u-boot-rockchip.bin, Then Hotswap:
+Boot into U-Boot Via eMMC with u-boot-rockchip.bin, Then Flash SPI:
 
 `Stop Autoboot by hitting any key`
 
-`Switch to SD Card with spi_combined.img`
+`Insert SD Card with spi_combined.img`
 
 `mmc rescan`
 
