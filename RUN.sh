@@ -32,7 +32,7 @@ image_size=$(wc -c < "${image_name}")
 [ $image_size -le $padsize ] || exit 1
 dd if=/dev/zero of="${image_name}" conv=notrunc bs=1 count=1 seek=${padsize}
 cat ${image_name} u-boot.itb > "${combined_name}"
-read -p "Insert FAT formatted SD Card & Press Enter to Continue"
+read -p "Insert FAT formatted SD Card & Unformatted eMMC, Then Press Enter to Continue"
 mount /dev/mmcblk1 /mnt
 sha512sum spi_combined.img
 sha512sum spi_combined.img > /mnt/spi_combined.img.sum
@@ -41,7 +41,6 @@ cp spi_combined.img /mnt/spi_combined.img
 cp spi_combined.img /tmp/spi_combined.img
 sync
 umount /mnt
-read -p "Insert Unformatted eMMC & Press Enter to Continue"
 sha512sum u-boot-rockchip.bin
 sha512sum u-boot-rockchip.bin > /tmp/u-boot-rockchip.bin.sum
 dd if=u-boot-rockchip.bin of=/dev/sda conv=notrunc seek=64
