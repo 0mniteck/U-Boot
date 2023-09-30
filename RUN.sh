@@ -39,7 +39,6 @@ sha512sum spi_combined.img > /mnt/spi_combined.img.sum
 sha512sum spi_combined.img > /tmp/spi_combined.img.sum
 cp spi_combined.img /mnt/spi_combined.img
 cp spi_combined.img /tmp/spi_combined.img
-sync
 umount /mnt
 sha512sum u-boot-rockchip.bin
 sha512sum u-boot-rockchip.bin > /tmp/u-boot-rockchip.bin.sum
