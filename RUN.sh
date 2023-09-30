@@ -18,12 +18,10 @@ unzip v202*.zip
 unzip v2.*.zip
 cd arm-trusted-firmware-*
 make realclean
-sed -i '/--fatal-warnings -O1/ s/$/ --no-warn-rwx-segments/' Makefile
 make PLAT=rk3399 bl31
 export BL31=/tmp/arm-trusted-firmware-2.9/build/rk3399/release/bl31/bl31.elf
 cd ..
 cd u-boot-202*
-sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/pinebook-pro-rk3399_defconfig
 make pinebook-pro-rk3399_defconfig && make -j$(nproc) all
 image_name="spi_idbloader.img"
 combined_name="spi_combined.img"
