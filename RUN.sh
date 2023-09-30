@@ -41,12 +41,10 @@ cp spi_combined.img /tmp/spi_combined.img
 sync
 umount /mnt
 read -p "Insert Unformatted SD Card & Press Enter to Continue"
-sha512sum u-boot-rockchip.bin
-dd if=u-boot-rockchip.bin of=/dev/mmcblk1 bs=8k seek=1
-sha512sum u-boot-rockchip.bin > /tmp/u-boot-rockchip.bin.sum
-cp u-boot-rockchip.bin /tmp/u-boot-rockchip.bin
+dd if=spi_idbloader.img of=/dev/mmcblk1 conv=notrunc seek=64
+dd if=u-boot.itb of=/dev/mmcblk1 conv=notrunc seek=16384
 popd
-rm -f -r spi_combined.zip && zip -0 spi_combined.zip /tmp/spi_combined.img /tmp/spi_combined.img.sum /tmp/u-boot-rockchip.bin /tmp/u-boot-rockchip.bin.sum
+rm -f -r spi_combined.zip && zip -0 spi_combined.zip /tmp/spi_combined.img /tmp/spi_combined.img.sum
 git status
 git add -A && git status && git commit -a -S -m "Successful Build of U-Boot with TF-A"
 git push
