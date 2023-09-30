@@ -2,7 +2,7 @@
 
 ##
 ##	Pinebook Pro SPI U-Boot Assembler
-##		Requirements: Debian based OS already running on an ARM64 CPU & 2 any size (x1 Fat formatted + x1 unformatted) microSD in the MMCBLK1 slot w/ no MBR/GUID
+##		Requirements: Debian based OS already running on an ARM64 CPU & any size Fat formatted microSD in the MMCBLK1 slot w/ no MBR/GUID
 ##		  By: Shant Tchatalbachian
 ##
 
@@ -22,17 +22,16 @@ make PLAT=rk3399 bl31
 export BL31=/tmp/arm-trusted-firmware-2.9/build/rk3399/release/bl31/bl31.elf
 cd ..
 cd u-boot-202*
+sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/pinebook-pro-rk3399_defconfig
 make pinebook-pro-rk3399_defconfig && make -j$(nproc) all
-spi_image_name="spi_idb_loader.img"
 image_name="idb_loader.img"
 combined_name="spi_combined.img"
-tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl.bin:spl/u-boot-spl.bin "${spi_image_name}"
-tools/mkimage -n rk3399 -T rkimage -d tpl/u-boot-tpl.bin:spl/u-boot-spl.bin "${image_name}"
+tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl.bin:spl/u-boot-spl.bin "${image_name}"
 padsize=$((0x60000 - 1))
-image_size=$(wc -c < "${spi_image_name}")
+image_size=$(wc -c < "${image_name}")
 [ $image_size -le $padsize ] || exit 1
-dd if=/dev/zero of="${spi_image_name}" conv=notrunc bs=1 count=1 seek=${padsize}
-cat ${spi_image_name} u-boot.itb > "${combined_name}"
+dd if=/dev/zero of="${image_name}" conv=notrunc bs=1 count=1 seek=${padsize}
+cat ${image_name} u-boot.itb > "${combined_name}"
 read -p "Insert FAT formatted SD Card & Press Enter to Continue"
 mount /dev/mmcblk1 /mnt
 sha512sum spi_combined.img
@@ -42,11 +41,14 @@ cp spi_combined.img /mnt/spi_combined.img
 cp spi_combined.img /tmp/spi_combined.img
 sync
 umount /mnt
-read -p "Insert Unformatted SD Card & Press Enter to Continue"
-dd if="${image_name}" of=/dev/mmcblk1 conv=notrunc seek=64
-dd if=u-boot.itb of=/dev/mmcblk1 conv=notrunc seek=16384
+read -p "Insert Unformatted eMMC & Press Enter to Continue"
+sha512sum u-boot-rockchip.bin
+sha512sum u-boot-rockchip.bin > /tmp/u-boot-rockchip.bin.sum
+dd if=u-boot-rockchip.bin of=/dev/sda conv=notrunc seek=64
+cp u-boot-rockchip.bin /tmp/u-boot-rockchip.bin
+sync
 popd
-rm -f -r spi_combined.zip && zip -0 spi_combined.zip /tmp/spi_combined.img /tmp/spi_combined.img.sum
+rm -f -r spi_combined.zip && zip -0 /tmp/spi_combined.zip /tmp/spi_combined.img /tmp/spi_combined.img.sum && cp /tmp/spi_combined.zip spi_combined.zip
 git status
 git add -A && git status && git commit -a -S -m "Successful Build of U-Boot with TF-A"
 git push
