@@ -46,9 +46,10 @@ sha512sum u-boot-rockchip.bin > /tmp/u-boot-rockchip.bin.sum
 dd if=u-boot-rockchip.bin of=/dev/sda conv=notrunc seek=64
 cp u-boot-rockchip.bin /tmp/u-boot-rockchip.bin
 cd ..
-zip -0 spi_combined.zip spi_combined.img spi_combined.img.sum u-boot-rockchip.bin u-boot-rockchip.bin.sum && cp /tmp/spi_combined.zip spi_combined.zip
+zip -0 spi_combined.zip spi_combined.img spi_combined.img.sum u-boot-rockchip.bin u-boot-rockchip.bin.sum
 sync
 popd
+cp /tmp/spi_combined.zip spi_combined.zip
 git status
 git add -A && git status && git commit -a -S -m "Successful Build of U-Boot with TF-A"
 git push
