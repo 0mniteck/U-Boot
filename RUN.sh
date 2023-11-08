@@ -26,7 +26,7 @@ export BL31=/tmp/arm-trusted-firmware-lts-v2.8.10/build/rk3399/release/bl31/bl31
 cd ..
 cd u-boot-202*
 echo "Entering U-Boot ------"
-sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/rockpro64-rk3399_defconfig
+sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/pinebook-pro-rk3399_defconfig
 make pinebook-pro-rk3399_defconfig && make -j$(nproc) all
 image_name="spi_idbloader.img"
 combined_name="spi_combined.img"
