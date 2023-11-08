@@ -9,7 +9,7 @@
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 rm -f spi_combined.zip
 pushd /tmp/
-apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-dev -y
+apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev -y
 wget https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/lts-v2.8.10.zip
 echo 'd951aa52d5bd75615a382c54c5122a711a6313da38c7bdcad356f6ec443827ca1134bee79028957118e4de66a25cc98ad848c1ba746c80f65bd3c9983b24999e  lts-v2.8.10.zip' > v2.zip.sum
 if [[ $(sha512sum -c v2.zip.sum) == 'lts-v2.8.10.zip: OK' ]]; then sleep 0; else exit 1; fi;
@@ -55,5 +55,5 @@ cp /tmp/spi_combined.zip spi_combined.zip
 git status
 git add -A && git status && git commit -a -S -m "Successful Build of U-Boot W/ TF-A For The Pinebook Pro"
 git push --set-upstream origin PB-rk3399-A
-apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-dev -y && apt autoremove -y
+apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev -y && apt autoremove -y
 rm -f -r /tmp/u-boot-202* && rm -f /tmp/lts-* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f /tmp/spi_*
