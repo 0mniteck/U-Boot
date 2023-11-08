@@ -6,6 +6,7 @@
 ##		  By: Shant Tchatalbachian
 ##
 
+git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 rm -f -r spi_combined.zip
 pushd /tmp/
 apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-dev -y
