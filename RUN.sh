@@ -10,20 +10,22 @@ git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 rm -f -r spi_combined.zip
 pushd /tmp/
 apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-dev -y
-wget https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/v2.9.zip
-echo '07e2500d5a64d4ebce5e5d7a934bdb4e911457402a84a8ca0070e42a65fe424596bb0995d03122867e08d459933f45eb7dd5478a5fcccd03afd16625e0dc2d3d  v2.9.zip' > v2.zip.sum
-if [[ $(sha512sum -c v2.zip.sum) == 'v2.9.zip: OK' ]]; then sleep 0; else exit 1; fi;
+wget https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/lts-v2.8.10.zip
+echo 'd951aa52d5bd75615a382c54c5122a711a6313da38c7bdcad356f6ec443827ca1134bee79028957118e4de66a25cc98ad848c1ba746c80f65bd3c9983b24999e  lts-v2.8.10.zip' > v2.zip.sum
+if [[ $(sha512sum -c v2.zip.sum) == 'lts-v2.8.10.zip: OK' ]]; then sleep 0; else exit 1; fi;
 wget https://github.com/u-boot/u-boot/archive/refs/tags/v2023.07.02.zip
 echo '3293f165ea9b381d4c1e86a40585a9e5b242da2a37f19b592e23983c9a92ba76a3e4c9b8c56dfd4faa324c4c66bda681cc7510e0ba42202486baa8d0ed4b6182  v2023.07.02.zip' > v2023.zip.sum
 if [[ $(sha512sum -c v2023.zip.sum) == 'v2023.07.02.zip: OK' ]]; then sleep 0; else exit 1; fi;
 unzip v202*.zip
-unzip v2.*.zip
+unzip lts-v2.*.zip
 cd arm-trusted-firmware-*
+echo "Entering TF-A ------"
 make realclean
 make PLAT=rk3399 bl31
-export BL31=/tmp/arm-trusted-firmware-2.9/build/rk3399/release/bl31/bl31.elf
+export BL31=/tmp/arm-trusted-firmware-lts-v2.8.10/build/rk3399/release/bl31/bl31.elf
 cd ..
 cd u-boot-202*
+echo "Entering U-Boot ------"
 sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/pinebook-pro-rk3399_defconfig
 make pinebook-pro-rk3399_defconfig && make -j$(nproc) all
 image_name="idb_loader.img"
