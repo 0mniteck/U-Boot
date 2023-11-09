@@ -52,8 +52,9 @@ zip -0 spi_combined.zip spi_combined.img spi_combined.img.sum u-boot-rockchip.bi
 sync
 popd
 cp /tmp/spi_combined.zip spi_combined.zip
-git status
-git add -A && git status && git commit -a -S -m "Successful Build of U-Boot W/ TF-A For The Pinebook Pro"
+git status && git add -A && git status
+read -p "Continue -->"
+git commit -a -S -m "Successful Build of U-Boot W/ TF-A For The Pinebook Pro"
 git push --set-upstream origin PB-rk3399-A
 cd ..
 apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev -y && apt autoremove -y
