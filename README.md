@@ -1,10 +1,9 @@
 # U-Boot RockChip rk3399
 ## U-Boot Prebuilt Release v2023.07.02 W/ ATF lts-v2.8.10
 
-Prebuilt spi_combined.img & u-boot-rockchip.bin are included for convenience.
+Prebuilt spi_combined.img & u-boot-rockchip.bin are included for convenience
 
-
-## Pinebook Pro SPI U-Boot Assembler
+# Pinebook Pro SPI U-Boot Assembler
 
 Requirements:
 
@@ -13,20 +12,19 @@ Requirements:
 * [ ] Any size Fat formatted microSD in the /dev/mmcblk1 slot w/ no MBR/GUID
 
 
-## Post-Build
-# Initial-Flash From Blank or Bypassed SPI (Recommended)
+# Post-Build
+## Initial-Flash From Blank or Bypassed SPI (Recommended)
 
-Boot into U-Boot Via SD/eMMC with u-boot-rockchip.bin:
+1. Bypass current SPI, then boot into U-Boot Via SD/eMMC with u-boot-rockchip.bin
+2. Swap SD then flash the SPI with spi_combined.img
 
-`dd if=u-boot-rockchip.bin of=/dev/xxx conv=notrunc seek=64`
+`dd if=u-boot-rockchip.bin of=/dev/mmcblkX conv=notrunc seek=64`
 
 `Insert SD/eMMC Card with u-boot-rockchip.bin`
 
-`Insert SD Card with spi_combined.img`
-
 `Stop Autoboot by hitting any key`
 
-Then Flash the SPI with spi_combined.img:
+`Insert SD Card with spi_combined.img`
 
 `mmc rescan`
 
@@ -46,7 +44,7 @@ Then Flash the SPI with spi_combined.img:
 
 `reset`
 
-# Update-Flash From Existing U-Boot
+## Update-Flash From Existing U-Boot
 
 `Insert SD Card with spi_combined.img`
 
