@@ -55,5 +55,6 @@ cp /tmp/spi_combined.zip spi_combined.zip
 git status
 git add -A && git status && git commit -a -S -m "Successful Build of U-Boot W/ TF-A For The Pinebook Pro"
 git push --set-upstream origin PB-rk3399-A
+cd ..
 apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev -y && apt autoremove -y
 rm -f -r /tmp/u-boot-202* && rm -f /tmp/lts-* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f /tmp/spi_*
