@@ -16,7 +16,7 @@ Requirements:
 ## Initial-Flash From Blank or Bypassed SPI (Recommended)
 
 1. Bypass current SPI, then boot into U-Boot Via SD/eMMC with u-boot-rockchip.bin
-2. Swap SD then flash the SPI with spi_combined.img
+2. Hot-swap SD then flash the SPI with spi_combined.img
 
 `dd if=u-boot-rockchip.bin of=/dev/mmcblkX conv=notrunc seek=64`
 
