@@ -2,14 +2,14 @@
 
 ##
 ##	Pinebook Pro SPI U-Boot Assembler
-##		Requirements: Debian based OS running on an ARM64 CPU & any size Fat formatted microSD in the MMCBLK1 slot w/ no MBR/GUID
+##		Requirements: Debian based OS running on an ARM64 CPU & any size microSD in the MMCBLK1 slot
 ##		  By: Shant Tchatalbachian
 ##
 
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 rm -f spi_combined.zip
 pushd /tmp/
-apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev -y
+apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools -y
 wget https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/lts-v2.8.11.zip
 echo '285b3796cdb94326824373b6d06a95952d88f023b21013c4620c0b53e12b71857861096c6af3c0b9ff49bb211c332456d4187e723e29afdadd531510323a5632  lts-v2.8.11.zip' > v2.zip.sum
 if [[ $(sha512sum -c v2.zip.sum) == 'lts-v2.8.11.zip: OK' ]]; then sleep 0; else exit 1; fi;
@@ -35,18 +35,23 @@ padsize=$((0x60000 - 1))
 image_size=$(wc -c < "${image_name}")
 dd if=/dev/zero of="${image_name}" conv=notrunc bs=1 count=1 seek=${padsize}
 cat ${image_name} u-boot.itb > "${combined_name}"
-read -p "Insert FAT formatted SD Card, Then Press Enter to Continue"
-mount /dev/mmcblk1 /mnt
+read -p "Insert any SD Card, Then Press Enter to Continue"
+dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=2000 status=progress
+parted /dev/mmcblk1 mktable gpt mkpart P1 fat32 16MB 1G -s
+mkfs.fat /dev/mmcblk1p1
+mount /dev/mmcblk1p1 /mnt
 sha512sum spi_combined.img
 sha512sum spi_combined.img > /mnt/spi_combined.img.sum
 sha512sum spi_combined.img > /tmp/spi_combined.img.sum
 cp spi_combined.img /mnt/spi_combined.img
 cp spi_combined.img /tmp/spi_combined.img
-sync
-umount /mnt
 sha512sum u-boot-rockchip.bin
+sha512sum u-boot-rockchip.bin > /mnt/u-boot-rockchip.bin.sum
 sha512sum u-boot-rockchip.bin > /tmp/u-boot-rockchip.bin.sum
 cp u-boot-rockchip.bin /tmp/u-boot-rockchip.bin
+sync
+umount /mnt
+dd if=u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
 cd ..
 zip -0 spi_combined.zip spi_combined.img spi_combined.img.sum u-boot-rockchip.bin u-boot-rockchip.bin.sum
 sync
@@ -57,5 +62,5 @@ read -p "Continue -->"
 git commit -a -S -m "Successful Build of U-Boot W/ TF-A For The Pinebook Pro"
 git push --set-upstream origin PB-rk3399-A
 cd ..
-apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev -y && apt autoremove -y
-rm -f -r /tmp/u-boot-202* && rm -f /tmp/lts-* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f /tmp/spi_*
+apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools -y && apt autoremove -y
+rm -f -r /tmp/u-boot* && rm -f /tmp/lts-* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f /tmp/spi_*
