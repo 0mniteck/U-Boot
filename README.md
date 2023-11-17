@@ -16,7 +16,7 @@ Requirements:
 ## Initial-Flash From Erased or Bypassed SPI (Recommended)
 ## or Update-Flash From Existing U-Boot
 
-### Bypass current SPI, then boot into U-Boot Via SD/eMMC with Combined SD
+### Erase current SPI, then boot into U-Boot Via SD/eMMC with Combined SD
 
 `Stop Autoboot by hitting any key`
 
