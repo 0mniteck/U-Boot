@@ -9,7 +9,7 @@
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 rm -f spi_combined.zip
 pushd /tmp/
-apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools -y
+apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools libncurses-dev -y
 wget https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/lts-v2.8.11.zip
 echo '285b3796cdb94326824373b6d06a95952d88f023b21013c4620c0b53e12b71857861096c6af3c0b9ff49bb211c332456d4187e723e29afdadd531510323a5632  lts-v2.8.11.zip' > v2.zip.sum
 if [[ $(sha512sum -c v2.zip.sum) == 'lts-v2.8.11.zip: OK' ]]; then sleep 0; else exit 1; fi;
@@ -27,7 +27,9 @@ cd ..
 cd u-boot-202*
 echo "Entering U-Boot ------"
 sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/pinebook-pro-rk3399_defconfig
-make pinebook-pro-rk3399_defconfig && make -j$(nproc) all
+make pinebook-pro-rk3399_defconfig
+make menuconfig
+make -j$(nproc) all
 image_name="spi_idbloader.img"
 combined_name="spi_combined.img"
 tools/mkimage -n rk3399 -T rkspi -d tpl/u-boot-tpl.bin:spl/u-boot-spl.bin "${image_name}"
@@ -62,5 +64,5 @@ read -p "Continue -->"
 git commit -a -S -m "Successful Build of U-Boot W/ TF-A For The Pinebook Pro"
 git push --set-upstream origin PB-rk3399-A
 cd ..
-apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools -y && apt autoremove -y
+apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools libncurses-dev -y && apt autoremove -y
 rm -f -r /tmp/u-boot* && rm -f /tmp/lts-* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f /tmp/spi_*
