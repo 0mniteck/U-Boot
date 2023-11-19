@@ -44,6 +44,7 @@ cat ${image_name} u-boot.itb > "${combined_name}"
 read -p "Insert any SD Card, Then Press Enter to Continue"
 dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=2000 status=progress
 parted /dev/mmcblk1 mktable gpt mkpart P1 fat32 16MB 1G -s
+sleep 3
 mkfs.fat /dev/mmcblk1p1
 mount /dev/mmcblk1p1 /mnt
 sha512sum spi_combined.img
