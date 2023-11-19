@@ -31,8 +31,6 @@ echo 'CONFIG_VIDEO_LOGO=y' >> configs/pinebook-pro-rk3399_defconfig
 echo 'CONFIG_SPLASH_SCREEN=y' >> configs/pinebook-pro-rk3399_defconfig
 echo 'CONFIG_SPLASH_SCREEN_ALIGN=y' >> configs/pinebook-pro-rk3399_defconfig
 echo 'CONFIG_VIDEO_BMP_RLE8=y' >> configs/pinebook-pro-rk3399_defconfig
-echo 'CONFIG_VIDEO_FONT_16X32=y' >> configs/pinebook-pro-rk3399_defconfig
-echo 'CONFIG_VIDEO_FONT_8X16=n' >> configs/pinebook-pro-rk3399_defconfig
 echo 'SPLASH_FILE=logo.bmp'>> configs/pinebook-pro-rk3399_defconfig
 make pinebook-pro-rk3399_defconfig
 make -j$(nproc) all
