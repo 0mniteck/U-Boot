@@ -27,7 +27,7 @@ cd ..
 cd u-boot-202*
 echo "Entering U-Boot ------"
 sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/pinebook-pro-rk3399_defconfig
-echo 'CONFIG_SPLASH_SCREEN=y' >> configs/pinebook-pro-rk3399_defconfig
+echo 'CONFIG_VIDEO_TIDSS=y' >> configs/pinebook-pro-rk3399_defconfig
 make pinebook-pro-rk3399_defconfig
 make menuconfig
 make -j$(nproc) all
