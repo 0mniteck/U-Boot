@@ -8,7 +8,7 @@
 
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 rm -f spi_combined.zip
-cp logo.bmp /tmp/logo.bmp
+## cp logo.bmp /tmp/logo.bmp
 pushd /tmp/
 apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools libncurses-dev -y
 wget https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/lts-v2.8.11.zip
@@ -27,10 +27,10 @@ export BL31=/tmp/arm-trusted-firmware-lts-v2.8.11/build/rk3399/release/bl31/bl31
 cd ..
 cd u-boot-202*
 echo "Entering U-Boot ------"
-cp /tmp/logo.bmp tools/logos/denx.bmp && cp /tmp/logo.bmp tools/logos/u-boot_logo.bmp
+## cp /tmp/logo.bmp tools/logos/denx.bmp && cp /tmp/logo.bmp tools/logos/u-boot_logo.bmp
 sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/pinebook-pro-rk3399_defconfig
 make pinebook-pro-rk3399_defconfig
-make menuconfig
+## make menuconfig
 make -j$(nproc) all
 image_name="spi_idbloader.img"
 combined_name="spi_combined.img"
