@@ -48,7 +48,7 @@ dd if=/dev/zero of="${image_name}" conv=notrunc bs=1 count=1 seek=${padsize}
 cat ${image_name} u-boot.itb > "${combined_name}"
 read -p "Insert any SD Card, Then Press Enter to Continue"
 dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=2000 status=progress
-parted /dev/mmcblk1 mktable gpt mkpart P1 fat32 16MB 1G -s
+parted /dev/mmcblk1 mktable gpt mkpart P1 fat32 16MB 1G -s && sleep 3
 mkfs.fat /dev/mmcblk1p1
 mount /dev/mmcblk1p1 /mnt
 sha512sum spi_combined.img
@@ -74,4 +74,4 @@ git commit -a -S -m "Successful Build of U-Boot W/ TF-A & OP-TEE For The RockPro
 git push --set-upstream origin RP64-rk3399-B
 cd ..
 apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi gcc-arm-linux-gnueabihf device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools libncurses-dev -y && apt autoremove -y
-rm -f -r /tmp/u-boot* && rm -f /tmp/lts-* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f /tmp/spi_*
+rm -f -r /tmp/u-boot* && rm -f /tmp/4.* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f -r /tmp/optee_os-* && rm -f /tmp/spi_*
