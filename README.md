@@ -1,4 +1,4 @@
-# U-Boot RockChip rk3399
+# U-Boot RockChip rk3399 (WIP)
 # W/ TPM Support (Infineon SLB9670)
 
 
