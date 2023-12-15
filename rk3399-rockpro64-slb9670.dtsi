@@ -11,26 +11,26 @@
 		__overlay__ {
 			compatible = "spi-gpio";
 			pinctrl-names = "default";
-			pinctrl-0 = <&spi0_gpio7>;
-			gpio-sck = <&gpio 11 0>;
-			gpio-mosi = <&gpio 10 0>;
-			gpio-miso = <&gpio 9 0>;
-			cs-gpios = <&gpio 7 1>;
+			pinctrl-0 = <&spi1>;
+			gpio-sck = <&gpio0 11 0>;
+			gpio-mosi = <&gpio0 10 0>;
+			gpio-miso = <&gpio0 9 0>;
+			cs-gpios = <&gpio0 7 1>;
 			spi-delay-us = <0>;
 			#address-cells = <1>;
 			#size-cells = <0>;
 			status = "okay";
 
 			/* for kernel driver */
-			sck-gpios = <&gpio 11 0>;
-			mosi-gpios = <&gpio 10 0>;
-			miso-gpios = <&gpio 9 0>;
+			sck-gpios = <&gpio0 11 0>;
+			mosi-gpios = <&gpio0 10 0>;
+			miso-gpios = <&gpio0 9 0>;
 			num-chipselects = <1>;
 
 			slb9670: slb9670@0 {
 				compatible = "infineon,slb9670", "tis,tpm2-spi", "tcg,tpm_tis-spi";
 				reg = <0>;
-				gpio-reset = <&gpio 24 1>;
+				gpio-reset = <&gpio0 24 1>;
 				#address-cells = <1>;
 				#size-cells = <0>;
 				status = "okay";
@@ -40,24 +40,10 @@
 	};
 
 	fragment@1 {
-		target = <&spi0_gpio7>;
+		target = <&spi1>;
 		__overlay__ {
 			rockchip,pins = <7 8 9 10 11 24>;
 			rockchip,function = <0>;
-		};
-	};
-
-	fragment@2 {
-		target = <&spidev0>;
-		__overlay__ {
-			status = "disabled";
-		};
-	};
-
-	fragment@3 {
-		target = <&spidev1>;
-		__overlay__ {
-			status = "disabled";
 		};
 	};
 };
