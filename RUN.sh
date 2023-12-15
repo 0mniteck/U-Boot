@@ -40,7 +40,7 @@ cd ..
 cd u-boot-202*
 echo "Entering U-Boot ------"
 cp /tmp/rk3399-rockpro64-slb9670.dts arch/arm/dts/rk3399-rockpro64-slb9670.dts
-sed -i '/#include "rk3399-rockpro64.dtsi"/a #include "rk3399-rockpro64-slb9670.dts"'
+sed -i '/#include "rk3399-rockpro64.dtsi"/a #include "rk3399-rockpro64-slb9670.dts"' arch/arm/dts/rk3399-rockpro64.dts
 sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/rockpro64-rk3399_defconfig
 make rockpro64-rk3399_defconfig
 make menuconfig
