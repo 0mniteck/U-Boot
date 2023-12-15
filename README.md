@@ -29,7 +29,7 @@ Requirements:
 
 `reset`
 
-### Wait till you see the environment fail to load from SPI
+### Wait untill you see the environment fail to load from SPI
 
 `Reconnect SPI`
 
