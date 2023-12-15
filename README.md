@@ -12,18 +12,26 @@ Requirements:
 
 
 # Post-Build
-## Initial-Flash From Erased or Bypassed SPI (Recommended)
+## Initial-Flash From Bypassed and Erased SPI (Recommended)
 ## or Update-Flash From Existing U-Boot
 
 ### Erase current SPI, then boot into U-Boot Via SD/eMMC with Combined SD
+
+`Insert SD Card`
+
+`Bypass SPI`
+
+`reset`
+
+### Wait till you see the environment fail to load from SPI
+
+`Reconnect SPI`
 
 `Stop Autoboot by hitting any key`
 
 `sf probe`
 
 `sf erase 0x0 0x1000000`
-
-`Insert SD Card`
 
 `reset`
 
