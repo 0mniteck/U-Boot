@@ -47,6 +47,8 @@ Requirements:
 
 `load mmc 1:1 $kernel_addr_r spi_combined.img`
 
+`sf probe`
+
 `sf write $kernel_addr_r 0 $filesize`
 
 `reset`
