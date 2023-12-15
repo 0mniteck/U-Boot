@@ -8,6 +8,7 @@
 
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 rm -f spi_combined.zip
+cp rk3399-rockpro64-slb9670.dts /tmp/rk3399-rockpro64-slb9670.dts
 pushd /tmp/
 apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi gcc-arm-linux-gnueabihf device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools libncurses-dev -y
 wget https://github.com/OP-TEE/optee_os/archive/refs/tags/4.0.0.zip
@@ -38,6 +39,8 @@ export BL31=/tmp/arm-trusted-firmware-2.10/build/rk3399/release/bl31/bl31.elf
 cd ..
 cd u-boot-202*
 echo "Entering U-Boot ------"
+cp /tmp/rk3399-rockpro64-slb9670.dts arch/arm/dts/rk3399-rockpro64-slb9670.dts
+sed -i '/#include "rk3399-rockpro64.dtsi"/a #include "rk3399-rockpro64-slb9670.dts"'
 sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/rockpro64-rk3399_defconfig
 make rockpro64-rk3399_defconfig
 make menuconfig
