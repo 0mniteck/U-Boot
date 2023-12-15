@@ -8,15 +8,15 @@
 
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 rm -f spi_combined.zip
-## cp logo.bmp /tmp/logo.bmp
+cp logo.bmp /tmp/logo.bmp
 pushd /tmp/
 apt update && apt install build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools libncurses-dev -y
 wget https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/v2.10.zip
 echo 'f5188111df54d7f9a2f178e2d57fda765a874d2f7a24710c569abaf30dca7b44e48bf1180df52c690f569929993bbd8e732824a0afaa73377ff963535c2fc2a8  v2.10.zip' > v2.zip.sum
-if [[ $(sha512sum -c v2.zip.sum) == 'v2.10.zip: OK' ]]; then sleep 0; else exit 1; fi;
+if [[ $(sha512sum -c v2.zip.sum) == 'v2.10.zip: OK' ]]; then echo 'ATF Checksum Matched!'; else exit 1; fi;
 wget https://github.com/u-boot/u-boot/archive/refs/tags/v2023.07.02.zip
 echo '3293f165ea9b381d4c1e86a40585a9e5b242da2a37f19b592e23983c9a92ba76a3e4c9b8c56dfd4faa324c4c66bda681cc7510e0ba42202486baa8d0ed4b6182  v2023.07.02.zip' > v2023.zip.sum
-if [[ $(sha512sum -c v2023.zip.sum) == 'v2023.07.02.zip: OK' ]]; then sleep 0; else exit 1; fi;
+if [[ $(sha512sum -c v2023.zip.sum) == 'v2023.07.02.zip: OK' ]]; then echo 'U-Boot Checksum Matched!'; else exit 1; fi;
 unzip v202*.zip
 unzip v2.*.zip
 cd arm-trusted-firmware-*
@@ -27,7 +27,8 @@ export BL31=/tmp/arm-trusted-firmware-2.10/build/rk3399/release/bl31/bl31.elf
 cd ..
 cd u-boot-202*
 echo "Entering U-Boot ------"
-## cp /tmp/logo.bmp tools/logos/denx.bmp && cp /tmp/logo.bmp tools/logos/u-boot_logo.bmp
+rm tools/logos/denx.bmp && rm drivers/video/u_boot_logo.bmp
+cp /tmp/logo.bmp tools/logos/denx.bmp && cp /tmp/logo.bmp drivers/video/u_boot_logo.bmp
 sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/pinebook-pro-rk3399_defconfig
 make pinebook-pro-rk3399_defconfig
 ## make menuconfig
@@ -68,4 +69,4 @@ git commit -a -S -m "Successful Build of U-Boot W/ TF-A For The Pinebook Pro"
 git push --set-upstream origin PB-rk3399-A
 cd ..
 apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools libncurses-dev -y && apt autoremove -y
-rm -f -r /tmp/u-boot* && rm -f /tmp/lts-* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f /tmp/spi_*
+rm -f -r /tmp/u-boot* && rm -f /tmp/lts-* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f /tmp/spi_* && rm -f /tmp/logo.bmp
