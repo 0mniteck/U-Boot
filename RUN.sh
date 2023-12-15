@@ -80,4 +80,4 @@ git commit -a -S -m "Successful Build of U-Boot W/ TF-A & OP-TEE For The RockPro
 git push --set-upstream origin RP64-rk3399-B
 cd ..
 apt remove --purge build-essential bc zip unzip bison flex libssl-dev gcc-arm-none-eabi gcc-arm-linux-gnueabihf device-tree-compiler swig python3-pyelftools python3-setuptools python3-dev parted dosfstools libncurses-dev -y && apt autoremove -y
-rm -f -r /tmp/u-boot* && rm -f /tmp/4.* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f -r /tmp/optee_os-* && rm -f /tmp/spi_*
+rm -f -r /tmp/u-boot* && rm -f /tmp/4.* && rm -f /tmp/v2* && rm -f -r /tmp/arm-trusted-firmware-* && rm -f -r /tmp/optee_os-* && rm -f /tmp/spi_* && rm -f /tmp/rk*
