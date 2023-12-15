@@ -1,6 +1,7 @@
 # U-Boot RockChip rk3399
 # W/ TPM Support (Infineon SLB9670)
 
+
 ## U-Boot Prebuilt Release v2023.07.02 W/ ATF v2.10 & OP-TEE v4
 Prebuilt spi_combined.img & u-boot-rockchip.bin are included together for convenience
 
