@@ -17,12 +17,9 @@ if [[ $(sha512sum -c 4.zip.sum) == '4.0.0.zip: OK' ]]; then echo 'OP-TEE Checksu
 wget https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/v2.10.zip
 echo 'f5188111df54d7f9a2f178e2d57fda765a874d2f7a24710c569abaf30dca7b44e48bf1180df52c690f569929993bbd8e732824a0afaa73377ff963535c2fc2a8  v2.10.zip' > v2.zip.sum
 if [[ $(sha512sum -c v2.zip.sum) == 'v2.10.zip: OK' ]]; then echo 'ATF Checksum Matched!'; else exit 1; fi;
-## wget https://github.com/u-boot/u-boot/archive/refs/tags/v2023.10.zip
-## echo '256e83b931005b3d596ec10c0be74daa3ad433e0e0fc851dae2c209e70d910ad3767c9ce5ba95d1feee362bb4365f056b67ccca1a88fc324471681f99bc4f403  v2023.10.zip' > v2023.zip.sum
-## if [[ $(sha512sum -c v2023.zip.sum) == 'v2023.10.zip: OK' ]]; then echo 'U-Boot Checksum Matched!'; else exit 1; fi;
-wget https://github.com/u-boot/u-boot/archive/refs/tags/v2023.07.02.zip
-echo '3293f165ea9b381d4c1e86a40585a9e5b242da2a37f19b592e23983c9a92ba76a3e4c9b8c56dfd4faa324c4c66bda681cc7510e0ba42202486baa8d0ed4b6182  v2023.07.02.zip' > v2023.zip.sum
-if [[ $(sha512sum -c v2023.zip.sum) == 'v2023.07.02.zip: OK' ]]; then echo 'U-Boot Checksum Matched!'; else exit 1; fi;
+wget https://github.com/u-boot/u-boot/archive/refs/tags/v2024.01.zip
+echo '309afe5cc234a70c4f7addacd6e10df2945587a87d1f0844261f4ca973ec2970e6e50f210cdbf8179f5b029869ee92132683a26764ec8d44f6f0f17e6a300084  v2024.01.zip' > v2024.zip.sum
+if [[ $(sha512sum -c v2024.zip.sum) == 'v2024.01.zip: OK' ]]; then echo 'U-Boot Checksum Matched!'; else exit 1; fi;
 unzip 4.*.*.zip
 unzip v202*.zip
 unzip v2.*.zip
