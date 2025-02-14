@@ -77,3 +77,7 @@ setparams 'Try or Install Ubuntu'
     initrd       /casper/initrd
     $dtb
 ```
+
+`Reconnect ethernet`
+
+Hit `CTRL + x` to boot
