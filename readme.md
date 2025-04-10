@@ -2,7 +2,7 @@
 
 ### Project Goals
 * [ ] Enable TPM Support
-  * [ ] Check if new patches fixed problem
+  * [ ] Check if [new patches](https://github.com/radxa-pkg/radxa-overlays/pull/385) fixed problem
 * [x] Remove rkbin dependency from rk3568 & rk3588
   * [x] TF-A upstreamed initial patches from rockchip
   * [x] U-boot modifications to use u-boot-tpl vs rockchip-tpl
