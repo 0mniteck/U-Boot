@@ -11,9 +11,9 @@ export ATF_SUM="60cce90bb1b61bad92e1bb5a78f2063835dbcc47e8e7ca78fff90427836f5680
 export UB_VER="2025.04"
 export UB_SUM="2c3d2345d4f9e2e3925102e1cdc7284d682c90a8021a7ced9443a7558736a88617b764c9c6cc72578040ac29a98ffd23286dbd46a1127e30ed6363d5271aa804"
 
-export BUILD_LIST="PT2-rk3566:pinetab2-rk3566_defconfig RP64-rk3399:rockpro64-rk3399_defconfig PBP-rk3399:pinebook-pro-rk3399_defconfig R5B-rk3588:rock5b-rk3588_defconfig"
-export LIST="PT2-rk3566 RP64-rk3399 PBP-rk3399 R5B-rk3588"
-export ARCHS="rk3568 rk3399 rk3588"
+export BUILD_LIST="RP64-rk3399:rockpro64-rk3399_defconfig PBP-rk3399:pinebook-pro-rk3399_defconfig R5B-rk3588:rock5b-rk3588_defconfig"
+export LIST="RP64-rk3399 PBP-rk3399 R5B-rk3588"
+export ARCHS="rk3399 rk3588"
 
 while getopts ":c:d:r:t:" opt; do
     case $opt in
