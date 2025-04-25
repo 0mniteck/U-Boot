@@ -21,6 +21,10 @@ for dev in $BUILD_LIST
       cp /Includes/efi.var efi.var
       sha512sum --status -c /Includes/efi.var.sum && echo "Deployed efi.var" || exit 1
       cp /Includes/logo.bmp tools/logos/denx.bmp && cp /Includes/logo.bmp drivers/video/u_boot_logo.bmp && echo "Deployed Logo"
+      if [ "$(echo $dev | cut -d':' -f2)" = "rockpro64-rk3399_defconfig" ]; then
+        cp /Includes/rk3399-rockpro64-u-boot.dtsi arch/arm/dts/rk3399-rockpro64-u-boot.dtsi
+        cp /Includes/rk3399-spi1-cs-gpio-slb9670.dts arch/arm/dts/rk3399-spi1-cs-gpio-slb9670.dts && echo "Installed TPM Overlay"
+      fi
       if [ "$(echo $dev | cut -d':' -f2)" = "pinebook-pro-rk3399_defconfig" ]; then
         cp /Includes/rk3399-pinebook-pro-u-boot.dtsi arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi && echo "Patched Device Tree Bug"
       fi
