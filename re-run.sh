@@ -133,8 +133,8 @@ do
 done
 docker cp u-boot:/sys.info sys.info
 
-docker stop u-boot > /dev/null && echo "u-boot stopped"
-docker rm --volumes u-boot > /dev/null && echo "u-boot removed"
+docker stop u-boot
+docker rm --volumes u-boot
 snap disable docker
 rm -f -r /var/snap/docker*
 sleep 5
