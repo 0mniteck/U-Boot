@@ -84,5 +84,6 @@ sleep 5
 sudo apt install -y bc dosfstools parted screen snapd
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 ./clean.sh $CLEAN && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$TEST
+echo "" && cat builder.log | grep -n Checksum && echo "" && cat Results/release.sha512sum
 mv builder.log Results/builder.log && status="$(cat status.build)" && ./clean.sh cleanup && ls -la Builds/*
 read -p "$status: --> sign/commit/push" && ./git.sh "$status" "$TAG"
