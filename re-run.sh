@@ -172,4 +172,4 @@ echo "# Source Date Epoch: $source_date_epoch" >> Results/release.sha512sum
 echo "# Build Complete: $(date -u '+on %D at %R UTC')" >> Results/release.sha512sum && echo "Build Complete: $(date -u '+on %D at %R UTC')"
 echo "# Base Build System: $(uname -o) $(uname -r) $(uname -p) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> Results/release.sha512sum
 echo $(cat sys.info) >> Results/release.sha512sum
-echo "Successful Build of U-Boot v$UB_VER at $BUILD_MESSAGE_TIMESTAMP W/ TF-A commit $ATF_VER & OP-TEE v$OPT_VER" > status.build
+echo "Successful Build of U-Boot v$UB_VER at $build_message_timestamp W/ TF-A commit $ATF_VER & OP-TEE v$OPT_VER" > status.build
