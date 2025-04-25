@@ -166,7 +166,7 @@ if [ "$3" = "no" ]; then
   dd if=Builds/RP64-rk3399-SB/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
 fi
 
-cat builder.log | grep -n Checksum && echo "" && echo "" >> Results/release.sha512sum
+echo "" && echo "" >> Results/release.sha512sum
 echo "# 0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> Results/release.sha512sum && echo "" >> Results/release.sha512sum
 echo "# Source Date Epoch: $source_date_epoch" >> Results/release.sha512sum
 echo "# Build Complete: $(date -u '+on %D at %R UTC')" >> Results/release.sha512sum && echo "Build Complete: $(date -u '+on %D at %R UTC')"
