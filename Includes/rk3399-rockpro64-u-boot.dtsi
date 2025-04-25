@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2019 Jagan Teki <jagan@amarulasolutions.com>
+ * Copyright (C) 2024 Shant Tchatalbachian <shant at omniteck.com>
  */
 
 #include "rk3399-u-boot.dtsi"
 #include "rk3399-sdram-lpddr4-100.dtsi"
+#include "rk3399-spi1-cs-gpio-slb9670.dts"
 
 / {
 	config {
