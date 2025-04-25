@@ -7,7 +7,7 @@ snap install grype --classic
 rm -f -r /var/snap/docker*
 snap remove docker --purge
 mkdir /var/snap/docker && chown root:root /var/snap/docker
-snap install docker --revision=2964
+snap install docker --revision=3065
 
 source_date_epoch=1;
 if [ "$1" != 0 ]; then
