@@ -65,6 +65,6 @@ cd U-Boot && \
 
 ### [Docs:](https://github.com/0mniteck/U-Boot/tree/Docs/docs)
 
---> [FLASHING](https://github.com/0mniteck/U-Boot/blob/Docs/docs/FLASH.md)
+--> [FLASHING AND INSTALLING](https://github.com/0mniteck/U-Boot/blob/Docs/docs/FLASH.md)
 
 --> [SIGNING YOUR OWN](https://github.com/0mniteck/U-Boot/blob/Docs/docs/SIGN.md)
