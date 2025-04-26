@@ -49,7 +49,7 @@ if [ "$2" = "yes" ]; then
     --build-arg ENTRYPOINT=optee \
     -f Dockerfile .
 
-  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:optee -o spdx-json=Results/optee-os.manifest.spdx.json && rm -f -r "$HOME/syft"
+  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:optee -o spdx-json=Results/optee-os.syft.spdx.json && rm -f -r "$HOME/syft"
   grype sbom:Results/optee-os.manifest.spdx.json -o json > Results/optee-os.grype.json
 
   docker run -it --cpus=$(nproc) \
@@ -75,7 +75,7 @@ if [ "$2" = "yes" ]; then
     --build-arg ENTRYPOINT=arm-trusted \
     -f Dockerfile .
 
-  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:arm-trusted -o spdx-json=Results/arm-trusted-firmware.manifest.spdx.json && rm -f -r "$HOME/syft"
+  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:arm-trusted -o spdx-json=Results/arm-trusted-firmware.syft.spdx.json && rm -f -r "$HOME/syft"
   grype sbom:Results/arm-trusted-firmware.manifest.spdx.json -o json > Results/arm-trusted-firmware.grype.json
 
   docker run -it --cpus=$(nproc) \
@@ -106,7 +106,7 @@ docker buildx build --load --target u-boot --tag u-boot \
   --build-arg ENTRYPOINT=u-boot \
   -f Dockerfile .
 
-mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:u-boot -o spdx-json=Results/u-boot.manifest.spdx.json && rm -f -r "$HOME/syft"
+mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:u-boot -o spdx-json=Results/u-boot.syft.spdx.json && rm -f -r "$HOME/syft"
 grype sbom:Results/u-boot.manifest.spdx.json -o json > Results/u-boot.grype.json
 snap remove syft --purge && rm -f -r $HOME/.cache/syft
 snap remove grype --purge
