@@ -131,10 +131,10 @@ do
     docker cp u-boot:/$loc/u-boot-rockchip-spi.bin Builds/$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
   done
 done
-docker cp u-boot:/sys.info sys.info
 
-docker stop u-boot
-docker rm --volumes u-boot
+docker cp u-boot:/sys.info sys.info
+docker stop u-boot > /dev/null && echo "u-boot stopped"
+docker rm --volumes u-boot > /dev/null && echo "u-boot removed"
 snap disable docker
 rm -f -r /var/snap/docker*
 sleep 5
