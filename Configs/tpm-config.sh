@@ -13,4 +13,3 @@ echo "CONFIG_CMD_TPM_TEST=y" >> defconfig
 # echo "CONFIG_TPM_TIS_INFINEON=y" >> defconfig
 # echo "CONFIG_TPL_TPM=y" >> defconfig
 # echo "CONFIG_SPL_TPM=y" >> defconfig
-# echo 'CONFIG_DEVICE_TREE_INCLUDES="rk3399-spi1-cs-gpio-slb9670.dtso"' >> defconfig
