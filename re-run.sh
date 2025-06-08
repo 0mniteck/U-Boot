@@ -106,8 +106,8 @@ docker buildx build --load --target u-boot --tag u-boot \
   --build-arg ENTRYPOINT=u-boot \
   -f Dockerfile .
 
-mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:u-boot -o spdx-json=Results/u-boot.syft.spdx.json && rm -f -r "$HOME/syft"
-grype sbom:Results/u-boot.manifest.spdx.json -o json > Results/u-boot.grype.json
+mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan / --select-catalogers debian -o spdx-json=Results/debian.syft.spdx.json && TMPDIR="$HOME/syft" syft scan docker:u-boot -o spdx-json=Results/u-boot.syft.spdx.json && rm -f -r "$HOME/syft"
+grype sbom:Results/debian.manifest.spdx.json -o json > Results/debian.grype.json && grype sbom:Results/u-boot.manifest.spdx.json -o json > Results/u-boot.grype.json
 snap remove syft --purge && rm -f -r $HOME/.cache/syft
 snap remove grype --purge
 rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/5 -f -r && rm -f -r $HOME/.cache/grype && rm -f -r /tmp/grype-scratch*
