@@ -1,0 +1,579 @@
+Script started on 2025-07-06 05:15:46+00:00 [COMMAND="grype sbom:Results/u-boot.spdx.json -o json > Results/u-boot.grype.json" TERM="screen.xterm-256color" TTY="/dev/pts/3" COLUMNS="142" LINES="54"]
+[?25l[?2004h [K[142D ⠙ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [0 vulnerability matches]  [K
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 0 negligible[K
+   └── by status:   0 fixed, 0 not-fixed, 0 ignored [K
+[K[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 1 negligible[K
+   └── by status:   0 fixed, 1 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 2 negligible[K
+   └── by status:   0 fixed, 2 not-fixed, 0 ignored [K
+[142D[3A ⠹ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [0 vulnerability matches]  [K
+
+
+[142D[3A ⠹ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [2 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 6 negligible[K
+   └── by status:   0 fixed, 27 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 21 negligible[K
+
+[142D[3A ⠸ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [2 vulnerability matches]  [K
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 27 negligible[K
+
+[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 37 negligible[K
+   └── by status:   0 fixed, 52 not-fixed, 0 ignored [K
+[142D[3A ⠼ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [2 vulnerability matches]  [K
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 52 negligible[K
+
+[142D[3A ⠼ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [52 vulnerability matches]  [K
+
+
+[142D[3A ⠴ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [52 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 56 negligible[K
+   └── by status:   0 fixed, 77 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 74 negligible[K
+
+[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 77 negligible[K
+
+[142D[3A ⠴ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [77 vulnerability matches]  [K
+
+
+[142D[3A ⠦ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [77 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 81 negligible[K
+   └── by status:   0 fixed, 102 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 102 negligible[K
+
+[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 0 low, 103 negligible[K
+   └── by status:   0 fixed, 103 not-fixed, 0 ignored [K
+[142D[3A ⠧ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [77 vulnerability matches]  [K
+   ├── by severity: 0 critical, 0 high, 0 medium, 1 low, 105 negligible[K
+   └── by status:   0 fixed, 106 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 0 high, 0 medium, 1 low, 106 negligible[K
+   └── by status:   0 fixed, 107 not-fixed, 0 ignored [K
+[142D[3A
+
+   └── by status:   0 fixed, 109 not-fixed, 0 ignored [K
+[142D[3A ⠧ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [109 vulnerability matches]  [K
+   ├── by severity: 0 critical, 0 high, 0 medium, 1 low, 108 negligible[K
+
+[142D[3A
+   ├── by severity: 0 critical, 1 high, 0 medium, 1 low, 108 negligible[K
+   └── by status:   0 fixed, 110 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 1 low, 108 negligible[K
+   └── by status:   0 fixed, 111 not-fixed, 0 ignored [K
+[142D[3A ⠇ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [109 vulnerability matches]  [K
+   ├── by severity: 0 critical, 2 high, 0 medium, 1 low, 109 negligible[K
+   └── by status:   0 fixed, 112 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 1 low, 110 negligible[K
+   └── by status:   0 fixed, 113 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 1 low, 111 negligible[K
+   └── by status:   0 fixed, 114 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 1 low, 112 negligible[K
+   └── by status:   0 fixed, 115 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 1 low, 115 negligible[K
+   └── by status:   0 fixed, 118 not-fixed, 0 ignored [K
+[142D[3A ⠏ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [109 vulnerability matches]  [K
+   ├── by severity: 0 critical, 2 high, 0 medium, 1 low, 117 negligible[K
+   └── by status:   0 fixed, 121 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 1 low, 118 negligible[K
+
+[142D[3A ⠏ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [123 vulnerability matches]  [K
+   ├── by severity: 0 critical, 2 high, 0 medium, 2 low, 119 negligible[K
+   └── by status:   0 fixed, 123 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 2 low, 121 negligible[K
+   └── by status:   0 fixed, 125 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 2 low, 122 negligible[K
+   └── by status:   0 fixed, 126 not-fixed, 0 ignored [K
+[142D[3A ⠋ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [123 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 2 low, 123 negligible[K
+   └── by status:   0 fixed, 151 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 2 low, 147 negligible[K
+
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 2 low, 148 negligible[K
+   └── by status:   0 fixed, 152 not-fixed, 0 ignored [K
+[142D[3A ⠙ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [152 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 2 high, 0 medium, 2 low, 149 negligible[K
+   └── by status:   0 fixed, 160 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 3 high, 0 medium, 2 low, 155 negligible[K
+
+[142D[3A
+   ├── by severity: 0 critical, 3 high, 0 medium, 2 low, 160 negligible[K
+   └── by status:   0 fixed, 168 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 4 high, 0 medium, 2 low, 162 negligible[K
+
+[142D[3A ⠹ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [152 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 4 high, 0 medium, 2 low, 168 negligible[K
+   └── by status:   0 fixed, 176 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 5 high, 0 medium, 2 low, 169 negligible[K
+
+[142D[3A ⠹ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [176 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 6 high, 0 medium, 2 low, 176 negligible[K
+   └── by status:   0 fixed, 184 not-fixed, 0 ignored [K
+[142D[3A ⠸ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [176 vulnerability matches]  [K
+   ├── by severity: 0 critical, 6 high, 0 medium, 2 low, 177 negligible[K
+   └── by status:   0 fixed, 185 not-fixed, 0 ignored [K
+[142D[3A ⠼ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [176 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 6 high, 0 medium, 2 low, 191 negligible[K
+   └── by status:   0 fixed, 210 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 6 high, 0 medium, 2 low, 202 negligible[K
+
+[142D[3A ⠼ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [210 vulnerability matches]  [K
+
+
+[142D[3A ⠴ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [210 vulnerability matches]  [K
+   ├── by severity: 0 critical, 6 high, 0 medium, 2 low, 227 negligible[K
+   └── by status:   0 fixed, 235 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 6 high, 0 medium, 2 low, 229 negligible[K
+   └── by status:   0 fixed, 237 not-fixed, 0 ignored [K
+[142D[3A
+
+   └── by status:   0 fixed, 239 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 6 high, 0 medium, 2 low, 231 negligible[K
+
+[142D[3A ⠦ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [239 vulnerability matches]  [K
+   ├── by severity: 0 critical, 7 high, 0 medium, 2 low, 231 negligible[K
+   └── by status:   0 fixed, 240 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 9 high, 1 medium, 2 low, 233 negligible[K
+   └── by status:   0 fixed, 245 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 2 medium, 2 low, 235 negligible[K
+   └── by status:   0 fixed, 250 not-fixed, 0 ignored [K
+[142D[3A
+
+   └── by status:   0 fixed, 251 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 2 medium, 2 low, 236 negligible[K
+   └── by status:   0 fixed, 252 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 2 medium, 2 low, 237 negligible[K
+
+[142D[3A ⠧ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [239 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 2 medium, 2 low, 239 negligible[K
+   └── by status:   0 fixed, 254 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 2 medium, 2 low, 240 negligible[K
+   └── by status:   0 fixed, 255 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 2 medium, 2 low, 241 negligible[K
+   └── by status:   0 fixed, 256 not-fixed, 0 ignored [K
+[142D[3A ⠧ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [257 vulnerability matches]  [K
+   ├── by severity: 0 critical, 11 high, 2 medium, 2 low, 242 negligible[K
+   └── by status:   0 fixed, 258 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 2 medium, 2 low, 243 negligible[K
+
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 2 medium, 2 low, 245 negligible[K
+   └── by status:   0 fixed, 260 not-fixed, 0 ignored [K
+[142D[3A ⠇ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [257 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 2 medium, 2 low, 261 negligible[K
+   └── by status:   0 fixed, 285 not-fixed, 0 ignored [K
+[142D[3A ⠏ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [257 vulnerability matches]  [K
+   ├── by severity: 0 critical, 11 high, 2 medium, 2 low, 270 negligible[K
+
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 3 medium, 2 low, 273 negligible[K
+   └── by status:   0 fixed, 289 not-fixed, 0 ignored [K
+[142D[3A ⠏ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [289 vulnerability matches]  [K
+   ├── by severity: 0 critical, 11 high, 3 medium, 2 low, 274 negligible[K
+   └── by status:   0 fixed, 290 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 3 medium, 2 low, 276 negligible[K
+   └── by status:   0 fixed, 292 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 3 medium, 2 low, 278 negligible[K
+   └── by status:   0 fixed, 296 not-fixed, 0 ignored [K
+[142D[3A ⠋ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [289 vulnerability matches]  [K
+   ├── by severity: 0 critical, 11 high, 4 medium, 2 low, 279 negligible[K
+
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 5 medium, 2 low, 282 negligible[K
+   └── by status:   0 fixed, 300 not-fixed, 0 ignored [K
+[142D[3A
+
+   └── by status:   0 fixed, 304 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 11 high, 6 medium, 2 low, 285 negligible[K
+
+[142D[3A ⠙ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [304 vulnerability matches]  [K
+
+   └── by status:   0 fixed, 309 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 12 high, 6 medium, 2 low, 290 negligible[K
+   └── by status:   0 fixed, 310 not-fixed, 0 ignored [K
+[142D[3A
+
+   └── by status:   0 fixed, 311 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 12 high, 6 medium, 2 low, 291 negligible[K
+
+[142D[3A
+   ├── by severity: 0 critical, 12 high, 7 medium, 3 low, 291 negligible[K
+   └── by status:   0 fixed, 313 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 12 high, 8 medium, 4 low, 291 negligible[K
+   └── by status:   0 fixed, 315 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 12 high, 9 medium, 5 low, 291 negligible[K
+   └── by status:   0 fixed, 317 not-fixed, 0 ignored [K
+[142D[3A ⠹ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [304 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 13 high, 11 medium, 5 low, 291 negligible[K
+   └── by status:   0 fixed, 320 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 14 high, 13 medium, 5 low, 291 negligible[K
+   └── by status:   0 fixed, 323 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 15 high, 15 medium, 5 low, 291 negligible[K
+   └── by status:   0 fixed, 326 not-fixed, 0 ignored [K
+[142D[3A ⠹ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [326 vulnerability matches]  [K
+   ├── by severity: 0 critical, 16 high, 17 medium, 5 low, 291 negligible[K
+   └── by status:   0 fixed, 329 not-fixed, 0 ignored [K
+[142D[3A ⠸ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [326 vulnerability matches]  [K
+   ├── by severity: 0 critical, 17 high, 18 medium, 5 low, 293 negligible[K
+   └── by status:   0 fixed, 333 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 17 high, 22 medium, 5 low, 293 negligible[K
+   └── by status:   0 fixed, 337 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 17 high, 24 medium, 5 low, 293 negligible[K
+   └── by status:   0 fixed, 339 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 17 high, 26 medium, 5 low, 293 negligible[K
+   └── by status:   0 fixed, 341 not-fixed, 0 ignored [K
+[142D[3A ⠼ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [326 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 17 high, 26 medium, 5 low, 294 negligible[K
+   └── by status:   0 fixed, 342 not-fixed, 0 ignored [K
+[142D[3A ⠼ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [342 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 17 high, 27 medium, 5 low, 295 negligible[K
+   └── by status:   0 fixed, 344 not-fixed, 0 ignored [K
+[142D[3A ⠴ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [342 vulnerability matches]  [K
+   ├── by severity: 0 critical, 17 high, 27 medium, 5 low, 296 negligible[K
+   └── by status:   0 fixed, 345 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 17 high, 27 medium, 5 low, 297 negligible[K
+   └── by status:   0 fixed, 346 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 17 high, 27 medium, 5 low, 299 negligible[K
+   └── by status:   0 fixed, 348 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 17 high, 27 medium, 5 low, 303 negligible[K
+   └── by status:   0 fixed, 352 not-fixed, 0 ignored [K
+[142D[3A ⠦ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [352 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 17 high, 28 medium, 6 low, 303 negligible[K
+   └── by status:   0 fixed, 354 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 17 high, 28 medium, 6 low, 305 negligible[K
+   └── by status:   0 fixed, 356 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 17 high, 28 medium, 6 low, 309 negligible[K
+   └── by status:   0 fixed, 360 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 18 high, 29 medium, 6 low, 311 negligible[K
+   └── by status:   0 fixed, 364 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 18 high, 29 medium, 6 low, 312 negligible[K
+   └── by status:   0 fixed, 365 not-fixed, 0 ignored [K
+[142D[3A ⠧ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [352 vulnerability matches]  [K
+
+
+[142D[3A ⠧ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠇ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠏ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠋ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠙ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠹ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠸ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠼ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠴ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠦ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠧ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠇ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠏ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠋ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠙ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠹ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠸ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A ⠼ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [365 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 18 high, 29 medium, 6 low, 313 negligible[K
+   └── by status:   0 fixed, 997 not-fixed, 0 ignored [K
+[142D[3A ⠼ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [997 vulnerability matches]  [K
+   ├── by severity: 0 critical, 19 high, 30 medium, 7 low, 341 negligible[K
+
+[142D[3A
+   ├── by severity: 0 critical, 23 high, 34 medium, 7 low, 360 negligible (1 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 25 high, 44 medium, 7 low, 372 negligible (1 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 28 high, 47 medium, 7 low, 372 negligible (3 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 29 high, 52 medium, 7 low, 372 negligible (8 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 34 high, 72 medium, 7 low, 373 negligible (10 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 40 high, 86 medium, 7 low, 373 negligible (19 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 45 high, 94 medium, 7 low, 374 negligible (36 unknown)[K
+
+[142D[3A ⠴ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [997 vulnerability matches]  [K
+   ├── by severity: 0 critical, 46 high, 107 medium, 8 low, 374 negligible (49 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 49 high, 128 medium, 8 low, 374 negligible (53 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 53 high, 154 medium, 8 low, 374 negligible (56 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 53 high, 155 medium, 8 low, 374 negligible (56 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 53 high, 161 medium, 8 low, 374 negligible (56 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 54 high, 171 medium, 8 low, 374 negligible (56 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 60 high, 191 medium, 10 low, 374 negligible (58 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 68 high, 200 medium, 10 low, 374 negligible (71 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 74 high, 213 medium, 10 low, 374 negligible (84 unknown)[K
+
+[142D[3A ⠦ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [997 vulnerability matches]  [K
+   ├── by severity: 0 critical, 81 high, 224 medium, 10 low, 374 negligible (98 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 85 high, 228 medium, 10 low, 374 negligible (119 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 85 high, 229 medium, 10 low, 374 negligible (153 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 85 high, 234 medium, 10 low, 374 negligible (181 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 85 high, 234 medium, 10 low, 374 negligible (213 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 85 high, 234 medium, 10 low, 374 negligible (246 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 85 high, 234 medium, 10 low, 374 negligible (278 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 86 high, 234 medium, 10 low, 374 negligible (293 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 86 high, 234 medium, 11 low, 375 negligible (293 unknown)[K
+   └── by status:   0 fixed, 999 not-fixed, 0 ignored [K
+[142D[3A ⠧ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [997 vulnerability matches]  [K
+
+   └── by status:   0 fixed, 1001 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 86 high, 234 medium, 11 low, 377 negligible (293 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 86 high, 234 medium, 11 low, 378 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1002 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 86 high, 235 medium, 12 low, 378 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1004 not-fixed, 0 ignored [K
+[142D[3A ⠧ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [1004 vulnerability matches]  [K
+   ├── by severity: 0 critical, 86 high, 236 medium, 13 low, 378 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1006 not-fixed, 0 ignored [K
+[142D[3A ⠇ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [1004 vulnerability matches]  [K
+   ├── by severity: 0 critical, 86 high, 236 medium, 13 low, 379 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1007 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 86 high, 236 medium, 14 low, 380 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1009 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 86 high, 236 medium, 14 low, 381 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1013 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 86 high, 236 medium, 14 low, 384 negligible (293 unknown)[K
+
+[142D[3A
+   ├── by severity: 0 critical, 87 high, 237 medium, 14 low, 386 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1017 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 88 high, 238 medium, 14 low, 388 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1021 not-fixed, 0 ignored [K
+[142D[3A ⠏ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [1004 vulnerability matches]  [K
+
+
+[142D[3A ⠏ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [1021 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 0 critical, 89 high, 239 medium, 14 low, 390 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1025 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 90 high, 239 medium, 14 low, 390 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1026 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 91 high, 239 medium, 14 low, 390 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1027 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 91 high, 241 medium, 14 low, 390 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1029 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 0 critical, 91 high, 245 medium, 14 low, 390 negligible (293 unknown)[K
+   └── by status:   0 fixed, 1033 not-fixed, 0 ignored [K
+[142D[3A ⠋ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [1021 vulnerability matches]  [K
+
+
+[142D[3A ⠋ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [1033 vulnerability matches]  [K
+
+
+[142D[3A ⠙ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [1033 vulnerability matches]  [K
+
+
+[142D[3A
+   ├── by severity: 5 critical, 96 high, 250 medium, 14 low, 390 negligible (293 unknown)[K
+   └── by status:   15 fixed, 1053 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 7 critical, 103 high, 261 medium, 14 low, 390 negligible (293 unknown)[K
+   └── by status:   35 fixed, 1033 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 7 critical, 103 high, 261 medium, 14 low, 391 negligible (293 unknown)[K
+   └── by status:   35 fixed, 1035 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 7 critical, 103 high, 261 medium, 14 low, 392 negligible (293 unknown)[K
+   └── by status:   35 fixed, 1036 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 7 critical, 103 high, 261 medium, 14 low, 394 negligible (293 unknown)[K
+   └── by status:   35 fixed, 1037 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 7 critical, 103 high, 261 medium, 14 low, 395 negligible (293 unknown)[K
+   └── by status:   35 fixed, 1038 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 7 critical, 103 high, 263 medium, 14 low, 395 negligible (293 unknown)[K
+   └── by status:   35 fixed, 1040 not-fixed, 0 ignored [K
+[142D[3A ⠹ Scanning for vulnerabilities    ━━━━━━━━━━━━━━━━━━━━  [1033 vulnerability matches]  [K
+   ├── by severity: 7 critical, 103 high, 263 medium, 14 low, 396 negligible (293 unknown)[K
+   └── by status:   35 fixed, 1041 not-fixed, 0 ignored [K
+[142D[3A
+   ├── by severity: 8 critical, 103 high, 263 medium, 14 low, 396 negligible (293 unknown)[K
+   └── by status:   35 fixed, 1042 not-fixed, 0 ignored (1 dropped)[K
+[142D[3A ✔ Scanned for vulnerabilities     [1077 vulnerability matches]  [K
+
+
+[142D[3A
+
+   └── by status:   35 fixed, 1042 not-fixed, 632 ignored (1 dropped)[K
+[142D[3A ✔ Scanned for vulnerabilities     [445 vulnerability matches]  [K
+
+
+[142D[2K[?2004l[?25h[?1002l[?1003l[?1006l
+Script done on 2025-07-06 05:16:02+00:00 [COMMAND_EXIT_CODE="0"]
