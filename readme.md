@@ -31,10 +31,10 @@
 
 ```
 buildscript.sh
- -c {Clean: yes/no}
+ -c {Clean: Yes/no}
  -d {Date: source_date_epoch}
  -r {Release-tag: tagname}
- -t {Test-mode: yes/no}
+ -t {Test-mode: yes/No}
 ```
 
 To build current release run:
