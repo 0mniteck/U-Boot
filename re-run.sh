@@ -7,7 +7,8 @@ snap install grype --classic
 rm -f -r /var/snap/docker*
 snap remove docker --purge
 mkdir /var/snap/docker && chown root:root /var/snap/docker
-snap install docker --revision=3065
+snap install docker --revision=3267 && systemctl stop snap.docker.nvidia-container-toolkit
+systemctl disable snap.docker.nvidia-container-toolkit
 
 source_date_epoch=1;
 if [ "$1" != 0 ]; then
@@ -49,9 +50,12 @@ if [ "$2" = "yes" ]; then
     --build-arg ENTRYPOINT=optee \
     -f Dockerfile .
 
-  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:optee -o spdx-json=Results/optee-os.syft.spdx.json && rm -f -r "$HOME/syft"
-  grype sbom:Results/optee-os.manifest.spdx.json -o json > Results/optee-os.grype.json
-
+  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:optee -o spdx-json=Results/optee-os.spdx.json && rm -f -r "$HOME/syft"
+  script -q -c "grype sbom:Results/optee-os.spdx.json -o json > Results/optee-os.grype.json" Results/optee-os.grype.tmp
+  ansifilter < Results/optee-os.grype.tmp > Results/optee-os.grype.tmp2
+  grep "✔ Scanned for vulnerabilities" Results/optee-os.grype.tmp2 | tail -n 1 > Results/optee-os.grype.status; grep "├── by severity:" Results/optee-os.grype.tmp2 | tail -n 1 >> Results/optee-os.grype.status; grep "└── by status:" Results/optee-os.grype.tmp2 | tail -n 1 >> Results/optee-os.grype.status
+  rm -f Results/optee-os.grype.tmp*
+  
   docker run -it --cpus=$(nproc) \
     --name optee \
     --user "$(id -u):$(id -g)" \
@@ -75,9 +79,12 @@ if [ "$2" = "yes" ]; then
     --build-arg ENTRYPOINT=arm-trusted \
     -f Dockerfile .
 
-  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:arm-trusted -o spdx-json=Results/arm-trusted-firmware.syft.spdx.json && rm -f -r "$HOME/syft"
-  grype sbom:Results/arm-trusted-firmware.manifest.spdx.json -o json > Results/arm-trusted-firmware.grype.json
-
+  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:arm-trusted -o spdx-json=Results/arm-trusted-firmware.spdx.json && rm -f -r "$HOME/syft"
+  script -q -c "grype sbom:Results/arm-trusted-firmware.spdx.json -o json > Results/arm-trusted-firmware.grype.json" Results/arm-trusted-firmware.grype.tmp
+  ansifilter < Results/arm-trusted-firmware.grype.tmp > Results/arm-trusted-firmware.grype.tmp2
+  grep "✔ Scanned for vulnerabilities" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 > Results/arm-trusted-firmware.grype.status; grep "├── by severity:" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 >> Results/arm-trusted-firmware.grype.status; grep "└── by status:" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 >> Results/arm-trusted-firmware.grype.status
+  rm -f Results/arm-trusted-firmware.grype.tmp*
+  
   docker run -it --cpus=$(nproc) \
     --name arm-trusted \
     --user "$(id -u):$(id -g)" \
@@ -106,8 +113,16 @@ docker buildx build --load --target u-boot --tag u-boot \
   --build-arg ENTRYPOINT=u-boot \
   -f Dockerfile .
 
-mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan / --select-catalogers debian -o spdx-json=Results/debian.syft.spdx.json && TMPDIR="$HOME/syft" syft scan docker:u-boot -o spdx-json=Results/u-boot.syft.spdx.json && rm -f -r "$HOME/syft"
-grype sbom:Results/debian.manifest.spdx.json -o json > Results/debian.grype.json && grype sbom:Results/u-boot.manifest.spdx.json -o json > Results/u-boot.grype.json
+mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan / --select-catalogers debian -o spdx-json=Results/ubuntu.25.04.spdx.json
+TMPDIR="$HOME/syft" syft scan docker:u-boot -o spdx-json=Results/u-boot.spdx.json && rm -f -r "$HOME/syft"
+script -q -c "grype sbom:Results/ubuntu.25.04.spdx.json -o json > Results/ubuntu.25.04.grype.json" Results/ubuntu.25.04.grype.tmp
+ansifilter < Results/ubuntu.25.04.grype.tmp > Results/ubuntu.25.04.grype.tmp2
+grep "✔ Scanned for vulnerabilities" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 > Results/ubuntu.25.04.grype.status; grep "├── by severity:" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 >> Results/ubuntu.25.04.grype.status; grep "└── by status:" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 >> Results/ubuntu.25.04.grype.status
+rm -f Results/ubuntu.25.04.grype.tmp*
+script -q -c "grype sbom:Results/u-boot.spdx.json -o json > Results/u-boot.grype.json" u-boot.grype.tmp
+ansifilter < Results/u-boot.grype.tmp > Results/u-boot.grype.tmp2
+grep "✔ Scanned for vulnerabilities" Results/u-boot.grype.tmp2 | tail -n 1 > Results/u-boot.grype.status; grep "├── by severity:" Results/u-boot.grype.tmp2 | tail -n 1 >> Results/u-boot.grype.status; grep "└── by status:" Results/u-boot.grype.tmp2 | tail -n 1 >> Results/u-boot.grype.status
+rm -f Results/u-boot.grype.tmp*
 snap remove syft --purge && rm -f -r $HOME/.cache/syft
 snap remove grype --purge
 rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/5 -f -r && rm -f -r $HOME/.cache/grype && rm -f -r /tmp/grype-scratch*
@@ -166,6 +181,7 @@ if [ "$3" = "no" ]; then
   dd if=Builds/RP64-rk3399-SB/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
 fi
 
+sed -i 's/Builds/..\/Builds/g' Results/release.sha512sum
 echo "" && echo "" >> Results/release.sha512sum
 echo "# 0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> Results/release.sha512sum && echo "" >> Results/release.sha512sum
 echo "# Source Date Epoch: $source_date_epoch" >> Results/release.sha512sum
