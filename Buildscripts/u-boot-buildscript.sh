@@ -24,7 +24,7 @@ for dev in $BUILD_LIST
       if [ "$(echo $dev | cut -d':' -f2)" = "rockpro64-rk3399_defconfig" ]; then
         ../.././Configs/tpm-config.sh
         sed -i '77idtb-$(CONFIG_ROCKCHIP_RK3399) += \\' arch/arm/dts/Makefile
-        sed -i '78i        rk3399-spi1-cs-gpio-slb9670.dtso' arch/arm/dts/Makefile
+        sed -i '78i        rk3399-spi1-cs-gpio-slb9670.dtbo' arch/arm/dts/Makefile
         sed -i '79i\ ' arch/arm/dts/Makefile
         cp /Includes/rk3399-spi1-cs-gpio-slb9670.dtso dts/upstream/src/arm64/rockchip/rk3399-spi1-cs-gpio-slb9670.dtso && echo "Installed TPM Overlay"
       fi
