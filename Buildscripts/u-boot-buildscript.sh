@@ -38,6 +38,9 @@ for dev in $BUILD_LIST
       sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/$(echo $dev | cut -d':' -f2)
       cat defconfig >> configs/$(echo $dev | cut -d':' -f2) && echo "Appended Defconfig"
       cat configs/$(echo $dev | cut -d':' -f2)
+      if [ "$DEV_BUILD" = "yes" ]; then
+        make menuconfig
+      fi
       make $(echo $dev | cut -d':' -f2)
       platt=$(echo $(echo $dev | cut -d':' -f1) | cut -d'-' -f2)
       if [ "$platt" = "rk3566" ]; then
