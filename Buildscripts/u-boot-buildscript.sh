@@ -36,7 +36,6 @@ for dev in $BUILD_LIST
         if [ "$(echo $dev | cut -d':' -f2)" = "pinetab2-rk3566_defconfig" ]; then
           echo "CONFIG_SPL_MAX_SIZE=0x25800" >> defconfig
         fi
-        # sed -i '112,117d' arch/arm/mach-rockchip/sdram.c && echo "Deployed Rockchip TPL Bypass"
       fi
       sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/$(echo $dev | cut -d':' -f2)
       sed -i '/BOOTZ/d' configs/$(echo $dev | cut -d':' -f2)
@@ -51,7 +50,7 @@ for dev in $BUILD_LIST
       if [ "$platt" = "rk3566" ]; then
         platt=rk3568
       fi
-      BL31=/Builds/$platt/bl31.elf FORCE_SOURCE_DATE=1 SOURCE_DATE=$SOURCE_DATE SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH make -j $(nproc) all
+      TEE=/Builds/$platt/tee.bin BL31=/Builds/$platt/bl31.elf FORCE_SOURCE_DATE=1 SOURCE_DATE=$SOURCE_DATE SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH make -j $(nproc) all
       ls -la
       cat simple-bin.map
     popd
