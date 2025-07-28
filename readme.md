@@ -25,6 +25,7 @@
   * [x] Scan with Grype
 * [x] Fine tune for reproducibility and ephemerality
   * [ ] Use-once model for next secure boot signing (Reset Yubikey after initial signing)
+  * [ ] Always erase & flash from ring-0
   * [x] Convert to docker build
     * [x] Build variants in one branch
     * [x] Make reproducible debian docker images
