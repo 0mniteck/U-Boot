@@ -2,6 +2,7 @@
 
 echo "CONFIG_SPL_TINY_MEMSET=y" >> defconfig
 echo "CONFIG_ROCKCHIP_EXTERNAL_TPL=n" >> defconfig
+echo "CONFIG_SPL_LIBGENERIC_SUPPORT=n" >> defconfig
 echo "CONFIG_XPL_BUILD=y" >> defconfig
 ##echo "CONFIG_TPL=y" >> defconfig
 ##echo "CONFIG_TPL_BUILD=y" >> defconfig
