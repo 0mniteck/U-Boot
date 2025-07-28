@@ -23,7 +23,8 @@
     * [ ] Block dropping down to shell
 * [x] Generate SBOM at buildtime
   * [x] Scan with Grype
-* [x] Fine tune for reproducibility
+* [x] Fine tune for reproducibility and ephemerality
+  * [ ] Use-once model for next secure boot signing (Reset Yubikey after initial signing)
   * [x] Convert to docker build
     * [x] Build variants in one branch
     * [x] Make reproducible debian docker images
