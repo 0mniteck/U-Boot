@@ -42,7 +42,7 @@ buildscript.sh
  -t {Test-mode: yes/No}
 ```
 
-To build current release run:
+#### To build current release run:
 
 ```
 sudo su && \
@@ -51,7 +51,7 @@ cd U-Boot && \
 ./buildscript.sh -r "tagname"
 ```
 
-To build for reproducibility run:
+#### To build for reproducibility run:
 
 ```
 sudo su && \
