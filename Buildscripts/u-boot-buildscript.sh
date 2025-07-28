@@ -39,6 +39,7 @@ for dev in $BUILD_LIST
         sed -i '112,117d' arch/arm/mach-rockchip/sdram.c && echo "Deployed Rockchip TPL Bypass"
       fi
       sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/$(echo $dev | cut -d':' -f2)
+      sed -i '/BOOTZ/d' configs/$(echo $dev | cut -d':' -f2)
       cat defconfig >> configs/$(echo $dev | cut -d':' -f2) && echo "Appended Defconfig"
       cat configs/$(echo $dev | cut -d':' -f2)
       if [ "$DEV_BUILD" = "yes" ]; then
