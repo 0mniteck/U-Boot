@@ -113,19 +113,11 @@ docker buildx build --load --target u-boot --tag u-boot \
   --build-arg ENTRYPOINT=u-boot \
   -f Dockerfile .
 
-mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan / --select-catalogers debian -o spdx-json=Results/ubuntu.25.04.spdx.json
-TMPDIR="$HOME/syft" syft scan docker:u-boot -o spdx-json=Results/u-boot.spdx.json && rm -f -r "$HOME/syft"
-script -q -c "grype sbom:Results/ubuntu.25.04.spdx.json -o json > Results/ubuntu.25.04.grype.json" Results/ubuntu.25.04.grype.tmp
-ansifilter < Results/ubuntu.25.04.grype.tmp > Results/ubuntu.25.04.grype.tmp2
-grep "✔ Scanned for vulnerabilities" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 > Results/ubuntu.25.04.grype.status; grep "├── by severity:" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 >> Results/ubuntu.25.04.grype.status; grep "└── by status:" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 >> Results/ubuntu.25.04.grype.status
-rm -f Results/ubuntu.25.04.grype.tmp*
-script -q -c "grype sbom:Results/u-boot.spdx.json -o json > Results/u-boot.grype.json" u-boot.grype.tmp
+mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:u-boot -o spdx-json=Results/u-boot.spdx.json && rm -f -r "$HOME/syft"
+script -q -c "grype sbom:Results/u-boot.spdx.json -o json > Results/u-boot.grype.json" Results/u-boot.grype.tmp
 ansifilter < Results/u-boot.grype.tmp > Results/u-boot.grype.tmp2
 grep "✔ Scanned for vulnerabilities" Results/u-boot.grype.tmp2 | tail -n 1 > Results/u-boot.grype.status; grep "├── by severity:" Results/u-boot.grype.tmp2 | tail -n 1 >> Results/u-boot.grype.status; grep "└── by status:" Results/u-boot.grype.tmp2 | tail -n 1 >> Results/u-boot.grype.status
 rm -f Results/u-boot.grype.tmp*
-snap remove syft --purge && rm -f -r $HOME/.cache/syft
-snap remove grype --purge
-rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/5 -f -r && rm -f -r $HOME/.cache/grype && rm -f -r /tmp/grype-scratch*
 
 docker run -it --cpus=$(nproc) \
   --name u-boot \
@@ -149,13 +141,25 @@ done
 
 docker cp u-boot:/sys.info sys.info
 docker stop u-boot > /dev/null && echo "u-boot stopped"
-docker rm --volumes u-boot > /dev/null && echo "u-boot removed"
+
 snap disable docker
-rm -f -r /var/snap/docker*
+rm -f -r /var/snap/docker/*
+rm -f -r /var/snap/docker
 sleep 5
 snap remove docker --purge
 snap remove docker --purge
 networkctl delete docker0
+rm -f -r /var/lib/snapd/cache/*
+
+mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan / --select-catalogers debian -o spdx-json=Results/ubuntu.25.04.spdx.json && rm -f -r "$HOME/syft"
+script -q -c "grype sbom:Results/ubuntu.25.04.spdx.json -o json > Results/ubuntu.25.04.grype.json" Results/ubuntu.25.04.grype.tmp
+ansifilter < Results/ubuntu.25.04.grype.tmp > Results/ubuntu.25.04.grype.tmp2
+grep "✔ Scanned for vulnerabilities" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 > Results/ubuntu.25.04.grype.status; grep "├── by severity:" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 >> Results/ubuntu.25.04.grype.status; grep "└── by status:" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 >> Results/ubuntu.25.04.grype.status
+rm -f Results/ubuntu.25.04.grype.tmp*
+
+snap remove syft --purge && rm -f -r $HOME/.cache/syft
+snap remove grype --purge
+rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/5 -f -r && rm -f -r $HOME/.cache/grype && rm -f -r /tmp/grype-scratch*
 
 if [ "$3" = "no" ]; then
   for dev in $LIST
