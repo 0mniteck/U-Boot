@@ -1,4 +1,4 @@
-# U-Boot RockChip <sup><sub>- rk3399, rk3568, & rk3588</sub></sup>
+# U-Boot RockChip <sup><sub>- rk3399, & rk3588</sub></sup>
 
 ### Project Goals
 * [ ] Enable TPM Support
@@ -13,11 +13,13 @@
     * [ ] Test 3072 bit RSA
     * [ ] Test ECDSA keys
       * [ ] Create hybrid scheme fallback and use dbx revocations
-* [ ] Setup Secure Bootflow
+* [ ] Sign FIT images and enable COT (Chain of Trust) in ATF
+* [ ] [Setup Secure Bootflow](https://labs.withsecure.com/content/dam/labs/docs/2020-05-u-booting-securely-wp-final.pdf)
   * [ ] U-Boot Secure boot with verified FIT -> TF-A -> Default: run bootcmd -> UEFI Secure Boot
     * [x] Protect against untrusted environment variables
-    * [ ] Change default run to efiload
-    * [ ] Enable stack protection
+    * [x] Restrict to BOOTM
+    * [ ] Change bootcmd to `efiload; reset;`
+    * [ ] Enable branch protection for rk3588
     * [ ] Block dropping down to shell
 * [x] Generate SBOM at buildtime
   * [x] Scan with Grype
