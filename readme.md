@@ -25,6 +25,7 @@
   * [x] Scan with Grype
 * [x] Fine tune for reproducibility and ephemerality
   * [ ] Use-once model for next secure boot signing (Reset Yubikey after initial signing)
+  * [ ] Always erase & flash from ring-0
   * [x] Convert to docker build
     * [x] Build variants in one branch
     * [x] Make reproducible debian docker images
@@ -69,6 +70,6 @@ cd U-Boot && \
 
 ### [Docs:](https://github.com/0mniteck/U-Boot/tree/Docs/docs)
 
---> [FLASHING AND INSTALLING](https://github.com/0mniteck/U-Boot/blob/Docs/docs/FLASH.md)
+--> [FLASHING AND INSTALLING](https://github.com/0mniteck/U-Boot/blob/Docs/docs/FLASH.md)  --> [FLASHING DEMO](https://u-boot.omniteck.com/#content)
 
 --> [SIGNING YOUR OWN](https://github.com/0mniteck/U-Boot/blob/Docs/docs/SIGN.md)
