@@ -62,10 +62,14 @@ if [ "$2" = "yes" ]; then
     --entrypoint /optee-buildscript.sh \
     -e SOURCE_DATE_EPOCH=$source_date_epoch \
     -e OPT_VER=$OPT_VER \
+    -e ARCHS="$ARCHS" \
     optee
 
-  docker cp optee:/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/rk3399/
-  sha512sum Builds/rk3399/tee.bin && sha512sum Builds/rk3399/tee.bin > Results/release.sha512sum
+  for arch in $ARCHS
+  do
+    docker cp optee:/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/
+    sha512sum Builds/$arch/tee.bin && sha512sum Builds/$arch/tee.bin > Results/release.sha512sum
+  done
   docker stop optee > /dev/null && echo "optee stopped" && docker rm --volumes optee > /dev/null && echo "optee removed"
 
   docker buildx build --load --target arm-trusted --tag arm-trusted \
