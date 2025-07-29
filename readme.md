@@ -43,7 +43,7 @@ buildscript.sh
  -t {Test-mode: yes/No}
 ```
 
-#### To build current release on linux/arm64 run:
+#### To compile current release run:
 
 ```
 sudo su && \
@@ -52,16 +52,16 @@ cd U-Boot && \
 ./buildscript.sh -r "tagname"
 ```
 
-#### To build current release on linux/amd64 run:
+#### To cross-compile current release run:
 
 ```
 sudo su && \
 git clone git@github.com:0mniteck/U-Boot.git && \
 cd U-Boot && \
-./buildscript.sh -r "tagname"
+./buildscript.sh -r "tagname" -a yes
 ```
 
-#### To build for reproducibility run:
+#### To compile for reproducibility run:
 
 ```
 sudo su && \
