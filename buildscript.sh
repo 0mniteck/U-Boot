@@ -15,8 +15,11 @@ export BUILD_LIST="RP64-rk3399:rockpro64-rk3399_defconfig PBP-rk3399:pinebook-pr
 export LIST="RP64-rk3399 PBP-rk3399 R5B-rk3588"
 export ARCHS="rk3399 rk3588"
 
-while getopts ":c:d:r:t:" opt; do
+while getopts ":a:c:d:r:t:" opt; do
     case $opt in
+        a)
+            AARCH="$OPTARG"
+            ;;
         c)
             CLEAN="$OPTARG"
             ;;
@@ -38,6 +41,9 @@ while getopts ":c:d:r:t:" opt; do
     esac
 done
 
+if [ "$AARCH" = "" ]; then
+    AARCH="no"
+fi
 if [ "$CLEAN" = "" ]; then
     CLEAN="yes"
 fi
@@ -75,6 +81,7 @@ done
 echo "$lis1 \"" >> vars.env
 sed -i '10d' vars.env
 
+echo "Cross-Compile: $AARCH"
 echo "Clean Build: $CLEAN"
 echo "Override Source Epoch: $EPOCH"
 echo "Tag Release: $TAG"
@@ -83,7 +90,7 @@ sleep 5
 
 sudo apt install -y ansifilter bc dosfstools parted screen snapd
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
-./clean.sh $CLEAN && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$TEST
+./clean.sh $CLEAN && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$TEST' '$AARCH
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo "" && cat Results/release.sha512sum && echo ""
 mv builder.log Results/builder.log && status="$(cat status.build)" && ./clean.sh cleanup && ls -la Builds/*
 read -p "$status: --> sign/commit/push" && ./git.sh "$status" "$TAG"
