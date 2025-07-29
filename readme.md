@@ -36,13 +36,23 @@
 
 ```
 buildscript.sh
+ -a {Cross-Compile: yes/No}
  -c {Clean: Yes/no}
  -d {Date: source_date_epoch}
  -r {Release-tag: tagname}
  -t {Test-mode: yes/No}
 ```
 
-#### To build current release run:
+#### To build current release on linux/arm64 run:
+
+```
+sudo su && \
+git clone git@github.com:0mniteck/U-Boot.git && \
+cd U-Boot && \
+./buildscript.sh -r "tagname"
+```
+
+#### To build current release on linux/amd64 run:
 
 ```
 sudo su && \
