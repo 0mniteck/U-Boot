@@ -7,8 +7,13 @@ snap install grype --classic
 rm -f -r /var/snap/docker*
 snap remove docker --purge
 mkdir /var/snap/docker && chown root:root /var/snap/docker
-snap install docker --revision=3267 && systemctl stop snap.docker.nvidia-container-toolkit
-systemctl disable snap.docker.nvidia-container-toolkit
+
+if [ "$4" = "yes" ]; then
+  snap install docker --revision=3265
+else
+  snap install docker --revision=3267 && systemctl stop snap.docker.nvidia-container-toolkit
+  systemctl disable snap.docker.nvidia-container-toolkit
+fi
 
 source_date_epoch=1;
 if [ "$1" != 0 ]; then
@@ -33,14 +38,19 @@ fi
 if [ "$3" = "yes" ]; then
   echo "DEV_BUILD: $3"
 fi
+if [ "$4" = "yes" ]; then
+  echo "CROSS_COMPILE: $4"
+fi
 echo "SOURCE_DATE: $source_date"
 echo "SOURCE_DATE_EPOCH: $source_date_epoch"
 echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
-docker buildx create --name U-Boot-Builder --driver-opt "network=host" --bootstrap --use
-
+docker buildx create --name U-Boot-Builder --platform linux/arm64 --driver-opt "network=host" --bootstrap --use
+if [ "$4" = "yes" ]; then
+  docker run --privileged --rm tonistiigi/binfmt --install all
+fi
 if [ "$2" = "yes" ]; then
-  docker buildx build --load --target optee --tag optee \
+  docker buildx build --load --platform linux/arm64 --target optee --tag optee \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg OPT_VER=$OPT_VER \
     --build-arg OPT_SUM=$OPT_SUM \
@@ -58,6 +68,7 @@ if [ "$2" = "yes" ]; then
   
   docker run -it --cpus=$(nproc) \
     --name optee \
+    --platform linux/arm64 \
     --user "$(id -u):$(id -g)" \
     --entrypoint /optee-buildscript.sh \
     -e SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -72,7 +83,7 @@ if [ "$2" = "yes" ]; then
   done
   docker stop optee > /dev/null && echo "optee stopped" && docker rm --volumes optee > /dev/null && echo "optee removed"
 
-  docker buildx build --load --target arm-trusted --tag arm-trusted \
+  docker buildx build --load --platform linux/arm64 --target arm-trusted --tag arm-trusted \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
     --build-arg ATF_VER=$ATF_VER \
@@ -91,6 +102,7 @@ if [ "$2" = "yes" ]; then
   
   docker run -it --cpus=$(nproc) \
     --name arm-trusted \
+    --platform linux/arm64 \
     --user "$(id -u):$(id -g)" \
     --entrypoint /arm-trusted-buildscript.sh \
     -e SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -107,7 +119,7 @@ if [ "$2" = "yes" ]; then
   docker stop arm-trusted > /dev/null && echo "arm-trusted stopped" && docker rm --volumes arm-trusted > /dev/null && echo "arm-trusted removed"
 fi
 
-docker buildx build --load --target u-boot --tag u-boot \
+docker buildx build --load --platform linux/arm64 --target u-boot --tag u-boot \
   --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
   --build-arg UB_VER=$UB_VER \
   --build-arg UB_SUM=$UB_SUM \
@@ -125,6 +137,7 @@ rm -f Results/u-boot.grype.tmp*
 
 docker run -it --cpus=$(nproc) \
   --name u-boot \
+  --platform linux/arm64 \
   --user "$(id -u):$(id -g)" \
   --entrypoint /u-boot-buildscript.sh \
   -e SOURCE_DATE_EPOCH=$source_date_epoch \
