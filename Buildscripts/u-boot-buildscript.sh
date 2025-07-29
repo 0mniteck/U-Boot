@@ -36,6 +36,7 @@ for dev in $BUILD_LIST
         if [ "$(echo $dev | cut -d':' -f2)" = "pinetab2-rk3566_defconfig" ]; then
           echo "CONFIG_SPL_MAX_SIZE=0x25800" >> defconfig
         fi
+        sed -i '117,119d' arch/arm/mach-rockchip/sdram.c && echo "Deployed Rockchip TPL Bypass"
       fi
       sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/$(echo $dev | cut -d':' -f2)
       sed -i '/BOOTZ/d' configs/$(echo $dev | cut -d':' -f2)
