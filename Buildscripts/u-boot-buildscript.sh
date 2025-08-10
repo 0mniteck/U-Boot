@@ -32,7 +32,7 @@ for dev in $BUILD_LIST
         cp /Includes/rk3399-pinebook-pro-u-boot.dtsi arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi && echo "Patched Device Tree Bug"
       fi
       if [ "$(echo $dev | cut -d':' -f2)" = "rock5b-rk3588_defconfig" ] || [ "$(echo $dev | cut -d':' -f2)" = "pinetab2-rk3566_defconfig" ]; then
-        ../.././Configs/xpl-config.sh
+        ../.././Configs/tpl-config.sh
         if [ "$(echo $dev | cut -d':' -f2)" = "pinetab2-rk3566_defconfig" ]; then
           echo "CONFIG_SPL_MAX_SIZE=0x25800" >> defconfig
         fi
@@ -43,10 +43,11 @@ for dev in $BUILD_LIST
       sed -i '/LEGACY/d' configs/$(echo $dev | cut -d':' -f2)
       cat defconfig >> configs/$(echo $dev | cut -d':' -f2) && echo "Appended Defconfig"
       cat configs/$(echo $dev | cut -d':' -f2)
+      make $(echo $dev | cut -d':' -f2)
       if [ "$DEV_BUILD" = "yes" ]; then
         make menuconfig
       fi
-      make $(echo $dev | cut -d':' -f2)
+      cat .config
       platt=$(echo $(echo $dev | cut -d':' -f1) | cut -d'-' -f2)
       if [ "$platt" = "rk3566" ]; then
         platt=rk3568
