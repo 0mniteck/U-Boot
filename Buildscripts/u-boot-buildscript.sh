@@ -34,9 +34,18 @@ for dev in $BUILD_LIST
       if [ "$(echo $dev | cut -d':' -f2)" = "rock5b-rk3588_defconfig" ] || [ "$(echo $dev | cut -d':' -f2)" = "pinetab2-rk3566_defconfig" ]; then
         ../.././Configs/tpl-config.sh
         if [ "$(echo $dev | cut -d':' -f2)" = "pinetab2-rk3566_defconfig" ]; then
-          echo "CONFIG_SPL_MAX_SIZE=0x25800" >> defconfig
+
         fi
-        # sed -i '117,119d' arch/arm/mach-rockchip/sdram.c && echo "Deployed Rockchip TPL Bypass"
+        sed -i '479d' arch/arm/mach-rockchip/Kconfig
+        sed -i "460i \\
+          select SUPPORT_TPL \n\
+          select TPL \n\
+          select TPL_SYSCON" arch/arm/mach-rockchip/Kconfig
+        sed -i "8i #include <version.h>" board/radxa/rock5b-rk3588/rock5b-rk3588.c
+echo 'void spl_board_init(void)
+{
+        puts("\nU-Boot TPL - OMNITECK \n");
+}' >> board/radxa/rock5b-rk3588/rock5b-rk3588.c
       fi
       sed -i 's/CONFIG_BAUDRATE=1500000/CONFIG_BAUDRATE=115200/' configs/$(echo $dev | cut -d':' -f2)
       sed -i '/BOOTZ/d' configs/$(echo $dev | cut -d':' -f2)
@@ -47,15 +56,16 @@ for dev in $BUILD_LIST
       if [ "$DEV_BUILD" = "yes" ]; then
         make menuconfig
       fi
-      cat .config
       platt=$(echo $(echo $dev | cut -d':' -f1) | cut -d'-' -f2)
       if [ "$platt" = "rk3566" ]; then
         platt=rk3568
       fi
       TEE=/Builds/$platt/tee.bin BL31=/Builds/$platt/bl31.elf FORCE_SOURCE_DATE=1 SOURCE_DATE=$SOURCE_DATE SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH make -j $(nproc) all
       ls -la
-      cat simple-bin.map
     popd
+    mv /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER/configs/$(echo $dev | cut -d':' -f2) /$(echo $loc | cut -d':' -f1)/$(echo $dev | cut -d':' -f2)
+    mv /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER/.config /$(echo $loc | cut -d':' -f1)/.config
+    mv /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER/simple-bin.map /$(echo $loc | cut -d':' -f1)/simple-bin.map
     mv /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER/u-boot-rockchip.bin /$(echo $loc | cut -d':' -f1)/u-boot-rockchip.bin
     mv /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER/u-boot-rockchip-spi.bin /$(echo $loc | cut -d':' -f1)/u-boot-rockchip-spi.bin
     rm -f -r /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER
