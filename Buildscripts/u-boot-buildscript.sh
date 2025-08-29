@@ -34,7 +34,7 @@ for dev in $BUILD_LIST
       if [ "$(echo $dev | cut -d':' -f2)" = "rock5b-rk3588_defconfig" ] || [ "$(echo $dev | cut -d':' -f2)" = "pinetab2-rk3566_defconfig" ]; then
         ../.././Configs/tpl-config.sh
         if [ "$(echo $dev | cut -d':' -f2)" = "pinetab2-rk3566_defconfig" ]; then
-
+          printf ''
         fi
         sed -i '479d' arch/arm/mach-rockchip/Kconfig
         sed -i "460i \\
