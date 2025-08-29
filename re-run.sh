@@ -65,7 +65,7 @@ if [ "$2" = "yes" ]; then
   ansifilter < Results/optee-os.grype.tmp > Results/optee-os.grype.tmp2
   grep "✔ Scanned for vulnerabilities" Results/optee-os.grype.tmp2 | tail -n 1 > Results/optee-os.grype.status; grep "├── by severity:" Results/optee-os.grype.tmp2 | tail -n 1 >> Results/optee-os.grype.status; grep "└── by status:" Results/optee-os.grype.tmp2 | tail -n 1 >> Results/optee-os.grype.status
   rm -f Results/optee-os.grype.tmp*
-  
+
   docker run -it --cpus=$(nproc) \
     --name optee \
     --platform linux/arm64 \
@@ -99,7 +99,7 @@ if [ "$2" = "yes" ]; then
   ansifilter < Results/arm-trusted-firmware.grype.tmp > Results/arm-trusted-firmware.grype.tmp2
   grep "✔ Scanned for vulnerabilities" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 > Results/arm-trusted-firmware.grype.status; grep "├── by severity:" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 >> Results/arm-trusted-firmware.grype.status; grep "└── by status:" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 >> Results/arm-trusted-firmware.grype.status
   rm -f Results/arm-trusted-firmware.grype.tmp*
-  
+
   docker run -it --cpus=$(nproc) \
     --name arm-trusted \
     --platform linux/arm64 \
@@ -151,8 +151,9 @@ for dev in $LIST
 do
   for loc in $dev $dev-SB $dev-MU-SB
   do
-    docker cp u-boot:/$loc/u-boot-rockchip.bin Builds/$loc/u-boot-rockchip.bin && sha512sum Builds/$loc/u-boot-rockchip.bin >> Results/release.sha512sum
-    docker cp u-boot:/$loc/u-boot-rockchip-spi.bin Builds/$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
+    docker cp u-boot:/$loc/ Builds
+    sha512sum Builds/$loc/u-boot-rockchip.bin >> Results/release.sha512sum
+    sha512sum Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
   done
 done
 
