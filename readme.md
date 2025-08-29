@@ -6,7 +6,7 @@
 * [x] Remove rkbin dependency from rk3568 & rk3588
   * [x] TF-A upstreamed initial patches from rockchip
   * [x] U-boot modifications to use u-boot-tpl vs rockchip-tpl
-  * [x] Resolve rk3568 issues - Enable TPL
+  * [x] Resolve rk3588 issues - Enable TPL
   * [ ] Resolve rk3568 issues - SPL_MAX
 * [x] Enable UEFI Secure Boot with Root CA only on a Yubikey
   * [ ] Try higher bit RSA/ECDSA keys to protect against [Quantum Attacks](https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqbENJQmx3b3pWV2F0YU9tMG8yRGxTb1c1cElQUXxBQ3Jtc0ttRTJtRFlmMGE4cnQxa2Q0WE54VTNnM05BSGlGdVExMkJicWszTlBHRE0tNk4xUDBhQU1EMVY4Zm8ySVNfa0pIbDVockhiUzBjLWs0YnZiRlJPRkFaV3BvUFc1T0t1VWR3RFV1VW1KNV9xdGdZOEYtYw&q=https%3A%2F%2Fwww.csoonline.com%2Farticle%2F3562701%2Fchinese-researchers-break-rsa-encryption-with-a-quantum-computer.html&v=_iSih4KI_qQ)
