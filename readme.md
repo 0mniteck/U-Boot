@@ -19,10 +19,10 @@
   * [ ] U-Boot Secure boot with verified FIT -> TF-A -> Default: run bootcmd -> UEFI Secure Boot
     * [x] Protect against untrusted environment variables
     * [x] Restrict to BOOTM
-      * [ ] Remove BOOTDEV's
-    * [ ] Change bootcmd to `efiload; reset;`
+      * [ ] Remove BOOTDEV_*
+    * [ ] Change BOOTCMD to `efiload; reset;`
     * [ ] Enable STACKPROTECTION
-    * [ ] Block dropping down to shell
+    * [ ] DISABLE_CONSOLE
 * [x] Generate SBOM at buildtime
   * [x] Scan with Grype
   * [x] Display Status
