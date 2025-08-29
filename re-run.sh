@@ -45,6 +45,7 @@ echo "SOURCE_DATE: $source_date"
 echo "SOURCE_DATE_EPOCH: $source_date_epoch"
 echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum
 docker buildx create --name U-Boot-Builder --platform linux/arm64 --driver-opt "network=host" --bootstrap --use
 if [ "$4" = "yes" ]; then
   docker run --privileged --rm tonistiigi/binfmt --install all
@@ -79,7 +80,8 @@ if [ "$2" = "yes" ]; then
   for arch in $ARCHS
   do
     docker cp optee:/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/
-    sha512sum Builds/$arch/tee.bin && sha512sum Builds/$arch/tee.bin > Results/release.sha512sum
+    sha512sum Builds/$arch/tee.bin && sha512sum Builds/$arch/tee.bin >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/$arch/tee.bin && openssl dgst -SHA3-256 Builds/$arch/tee.bin >> Results/release.sha3sum
   done
   docker stop optee > /dev/null && echo "optee stopped" && docker rm --volumes optee > /dev/null && echo "optee removed"
 
@@ -115,6 +117,7 @@ if [ "$2" = "yes" ]; then
   do
     docker cp arm-trusted:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
     sha512sum Builds/$arch/bl31.elf && sha512sum Builds/$arch/bl31.elf >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/$arch/bl31.elf && openssl dgst -SHA3-256 Builds/$arch/bl31.elf >> Results/release.sha3sum
   done
   docker stop arm-trusted > /dev/null && echo "arm-trusted stopped" && docker rm --volumes arm-trusted > /dev/null && echo "arm-trusted removed"
 fi
@@ -152,8 +155,10 @@ do
   for loc in $dev $dev-SB $dev-MU-SB
   do
     docker cp u-boot:/$loc/ Builds
-    sha512sum Builds/$loc/u-boot-rockchip.bin >> Results/release.sha512sum
-    sha512sum Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
+    sha512sum Builds/$loc/u-boot-rockchip.bin && sha512sum Builds/$loc/u-boot-rockchip.bin >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin >> Results/release.sha3sum
+    sha512sum Builds/$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
   done
 done
 
