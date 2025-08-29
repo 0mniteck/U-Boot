@@ -1,7 +1,7 @@
 # U-Boot RockChip <sup><sub>- rk3399 (HARDENING), & rk3588 (TESTING)</sub></sup>
 ## Rockchip SPI U-Boot Assembler
 
- - ### With UEFI Secure Boot enabled & [`Deploy/shimaa64.efi.signed`](https://github.com/0mniteck/U-Boot/tree/v2025.07%2Bv2.12.5%2Bv4.7.0/Deploy/shimaa64.efi.signed) included
+ - ### With UEFI Secure Boot enabled & [`Deploy/ubuntu/shimaa64.efi`](https://github.com/0mniteck/U-Boot/tree/v2025.07%2Bv2.12.5%2Bv4.7.0/Deploy/ubuntu/shimaa64.efi) included
 
 ### [v2025.07 W/ ATF lts-v2.12.5 & OP-TEE v4.7.0](https://github.com/0mniteck/U-Boot/releases/tag/v2025.07%2Bv2.12.5%2Bv4.7.0)
 Prebuilt u-boot-rockchip.bin & u-boot-rockchip-spi.bin are included in a bootable `sdcard.img` for convenience
