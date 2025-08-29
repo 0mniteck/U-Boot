@@ -23,6 +23,8 @@ Prebuilt u-boot-rockchip.bin & u-boot-rockchip-spi.bin are included in a bootabl
 
 ### [Docs:](https://github.com/0mniteck/U-Boot/tree/Docs/docs)
 
+--> [BUILD INSTRUCTIONS](https://github.com/0mniteck/U-Boot/blob/Docs/docs/BUILD.md)
+
 --> [FLASHING AND INSTALLING](https://github.com/0mniteck/U-Boot/blob/Docs/docs/FLASH.md)  --> [FLASHING DEMO](https://u-boot.omniteck.com/#content)
 
 --> [SIGNING YOUR OWN](https://github.com/0mniteck/U-Boot/blob/Docs/docs/SIGN.md)
