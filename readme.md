@@ -37,55 +37,12 @@
     * [x] Build variants in one branch
     * [x] Make reproducible debian docker images
 
-## Build Instructions/Usage:
-
-### Build:
-
-```
-buildscript.sh
- -a {Cross-Compile: yes/No}
- -c {Clean: Yes/no}
- -d {Date: source_date_epoch}
- -r {Release-tag: tagname}
- -t {Test-mode: yes/No}
-```
-
-#### To compile current release run:
-
-```
-sudo su && \
-git clone git@github.com:0mniteck/U-Boot.git && \
-cd U-Boot && \
-./buildscript.sh -r "tagname"
-```
-
-#### To cross-compile current release run:
-
-```
-sudo su && \
-git clone git@github.com:0mniteck/U-Boot.git && \
-cd U-Boot && \
-./buildscript.sh -r "tagname" -a yes
-```
-
-#### To compile for reproducibility run:
-
-```
-sudo su && \
-git clone git@github.com:0mniteck/U-Boot.git -b "tagname" && \
-cd U-Boot && \
-./buildscript.sh -d "$(cat Results/release.sha512sum | grep Epoch | cut -d ' ' -f5)"
-```
-
-### Requirements:
-
-* [ ] Debian based OS already running on an ARM64 CPU
-
-* [ ] Any microSD in the /dev/mmcblk1 slot
 
 ## 
 
 ### [Docs:](https://github.com/0mniteck/U-Boot/tree/Docs/docs)
+
+--> [BUILD INSTRUCTIONS](https://github.com/0mniteck/U-Boot/blob/Docs/docs/BUILD.md)
 
 --> [FLASHING AND INSTALLING](https://github.com/0mniteck/U-Boot/blob/Docs/docs/FLASH.md)  --> [FLASHING DEMO](https://u-boot.omniteck.com/#content)
 
