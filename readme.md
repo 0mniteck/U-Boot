@@ -1,6 +1,6 @@
 # U-Boot RockChip <sup><sub>- rk3399 (HARDENING), & rk3588 (TESTING)</sub></sup>
 
-### Project Goals
+### Project Goals:
 * [ ] Enable TPM Support
   * [ ] Check if [new patches](https://github.com/radxa-pkg/radxa-overlays/pull/385) fixed problem
 * [x] Remove rkbin dependency from rk3568 & rk3588
@@ -36,7 +36,6 @@
   * [x] Convert to docker build
     * [x] Build variants in one branch
     * [x] Make reproducible debian docker images
-
 
 ## 
 
