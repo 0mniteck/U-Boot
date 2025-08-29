@@ -21,7 +21,7 @@
     * [x] Restrict to BOOTM
       * [ ] Remove BOOTDEV_*
     * [ ] Change BOOTCMD to `efiload; reset;`
-    * [ ] Enable STACKPROTECTION
+    * [ ] Enable STACKPROTECTOR
     * [ ] DISABLE_CONSOLE
 * [x] Generate SBOM at buildtime
   * [x] Scan with Grype
