@@ -37,3 +37,9 @@ git clone git@github.com:0mniteck/U-Boot.git -b "tagname" && \
 cd U-Boot && \
 ./buildscript.sh -d "$(cat Results/release.sha512sum | grep Epoch | cut -d ' ' -f5)"
 ```
+
+### Requirements:
+
+* [ ] Debian based OS
+
+* [ ] Any microSD in the /dev/mmcblk1 slot
