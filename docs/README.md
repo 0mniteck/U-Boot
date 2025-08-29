@@ -9,6 +9,9 @@ Prebuilt u-boot-rockchip.bin & u-boot-rockchip-spi.bin are included in a bootabl
 #### RockPro64 - [`Builds/RP64-rk3399-SB/`](https://github.com/0mniteck/U-Boot/tree/v2025.07%2Bv2.12.5%2Bv4.7.0/Builds/RP64-rk3399-SB)
 #### PinebookPro - [`Builds/PBP-rk3399-SB/`](https://github.com/0mniteck/U-Boot/tree/v2025.07%2Bv2.12.5%2Bv4.7.0/Builds/PBP-rk3399-SB)
 
+#### -SB = Secure Boot
+#### -MU-SB = Mutable Secure Boot (For saving env vars)
+
 ## 
 
 ### [Docs:](https://github.com/0mniteck/U-Boot/tree/Docs/docs)
