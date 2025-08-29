@@ -5,9 +5,9 @@
 
 ### [v2025.07 W/ ATF lts-v2.12.5 & OP-TEE v4.7.0](https://github.com/0mniteck/U-Boot/releases/tag/v2025.07%2Bv2.12.5%2Bv4.7.0)
 Prebuilt u-boot-rockchip.bin & u-boot-rockchip-spi.bin are included in a bootable `sdcard.img` for convenience
-#### ROCK5B - [`Builds/RP64/`](https://github.com/0mniteck/U-Boot/tree/v2025.07%2Bv2.12.5%2Bv4.7.0/Builds/RP64-rk3399)
-#### RockPro64 - [`Builds/RP64/`](https://github.com/0mniteck/U-Boot/tree/v2025.07%2Bv2.12.5%2Bv4.7.0/Builds/RP64-rk3399)
-#### PinebookPro - [`Builds/PBP/`](https://github.com/0mniteck/U-Boot/tree/v2025.07%2Bv2.12.5%2Bv4.7.0/Builds/PBP-rk3399)
+#### ROCK5B - [`Builds/R5B-rk3588-SB/`](https://github.com/0mniteck/U-Boot/tree/v2025.07%2Bv2.12.5%2Bv4.7.0/Builds/R5B-rk3588-SB)
+#### RockPro64 - [`Builds/RP64-rk3399-SB/`](https://github.com/0mniteck/U-Boot/tree/v2025.07%2Bv2.12.5%2Bv4.7.0/Builds/RP64-rk3399-SB)
+#### PinebookPro - [`Builds/PBP-rk3399-SB/`](https://github.com/0mniteck/U-Boot/tree/v2025.07%2Bv2.12.5%2Bv4.7.0/Builds/PBP-rk3399-SB)
 
  - ### [Signing your own shimaa64.efi](https://github.com/0mniteck/U-Boot/blob/Docs/docs/SIGN.md)
 
