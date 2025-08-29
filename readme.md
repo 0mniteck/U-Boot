@@ -21,7 +21,7 @@
     * [x] Restrict to BOOTM
       * [ ] Remove BOOTDEV's
     * [ ] Change bootcmd to `efiload; reset;`
-    * [ ] Enable STACKPROTECTION for rk3588
+    * [ ] Enable STACKPROTECTION
     * [ ] Block dropping down to shell
 * [x] Generate SBOM at buildtime
   * [x] Scan with Grype
