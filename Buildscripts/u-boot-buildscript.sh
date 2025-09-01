@@ -8,6 +8,7 @@ for dev in $BUILD_LIST
     unzip -q /v$UB_VER.zip -d /$(echo $loc | cut -d':' -f1) > /dev/null
     echo "Entering /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER"
     pushd /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER
+      chmod +x /Configs/*
       make clean
       if [ "$DEV_BUILD" = "yes" ]; then
         ../.././Configs/dev-config.sh
@@ -23,10 +24,11 @@ for dev in $BUILD_LIST
       cp /Includes/logo.bmp tools/logos/denx.bmp && cp /Includes/logo.bmp drivers/video/u_boot_logo.bmp && echo "Deployed Logo"
       if [ "$(echo $dev | cut -d':' -f2)" = "rockpro64-rk3399_defconfig" ]; then
         ../.././Configs/tpm-config.sh
-        sed -i '77idtb-$(CONFIG_ROCKCHIP_RK3399) += \\' arch/arm/dts/Makefile
-        sed -i '78i        rk3399-spi1-cs-gpio-slb9670.dtbo' arch/arm/dts/Makefile
-        sed -i '79i\ ' arch/arm/dts/Makefile
-        cp /Includes/rk3399-spi1-cs-gpio-slb9670.dtso dts/upstream/src/arm64/rockchip/rk3399-spi1-cs-gpio-slb9670.dtso && echo "Installed TPM Overlay"
+        ../.././Configs/harden-config.sh
+        # sed -i '77idtb-$(CONFIG_ROCKCHIP_RK3399) += \\' arch/arm/dts/Makefile
+        # sed -i '78i        rk3399-spi1-cs-gpio-slb9670.dtbo' arch/arm/dts/Makefile
+        # sed -i '79i\ ' arch/arm/dts/Makefile
+        # cp /Includes/rk3399-spi1-cs-gpio-slb9670.dtso dts/upstream/src/arm64/rockchip/rk3399-spi1-cs-gpio-slb9670.dtso && echo "Installed TPM Overlay"
       fi
       if [ "$(echo $dev | cut -d':' -f2)" = "pinebook-pro-rk3399_defconfig" ]; then
         cp /Includes/rk3399-pinebook-pro-u-boot.dtsi arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi && echo "Patched Device Tree Bug"
