@@ -3,6 +3,8 @@
 echo "CONFIG_STACKPROTECTOR=y" >> defconfig
 echo "CONFIG_SPL_STACKPROTECTOR=y" >> defconfig
 echo "CONFIG_TPL_STACKPROTECTOR=y" >> defconfig
+echo "CONFIG_CMD_OPTEE=y" >> defconfig
+echo "CONFIG_SPL_OPTEE_IMAGE=y" >> defconfig
 
 echo "CONFIG_BOOTEFI_HELLO_COMPILE=n" >> defconfig
 echo "CONFIG_BOOTEFI_TESTAPP_COMPILE=n" >> defconfig
@@ -21,6 +23,7 @@ echo "CONFIG_MD5_LEGACY=n" >> defconfig
 echo "CONFIG_CRC32=n" >> defconfig
 echo "CONFIG_SPL_CRC32=n" >> defconfig
 echo "CONFIG_TOOLS_CRC32=n" >> defconfig
+echo "CONFIG_CMD_CRC32=n" >> defconfig
 echo "CONFIG_CRC8=n" >> defconfig
 echo "CONFIG_SPL_CRC8=n" >> defconfig
 echo "CONFIG_CRC16=n" >> defconfig
@@ -60,7 +63,7 @@ echo "CONFIG_CMD_BOOTFLOW=n" >> defconfig
 echo "CONFIG_CMD_BOOTFLOW_FULL=n" >> defconfig
 
 echo "CONFIG_BOOTM_ELF=n" >> defconfig
-echo "CONFIG_CMD_BOOTI=n" >> defconfig
+# echo "CONFIG_CMD_BOOTI=n" >> defconfig
 echo "CONFIG_BOOTM_LINUX=n" >> defconfig
 echo "CONFIG_BOOTM_NETBSD=n" >> defconfig
 echo "CONFIG_BOOTM_PLAN9=n" >> defconfig
@@ -69,6 +72,8 @@ echo "CONFIG_BOOTM_VXWORKS=n" >> defconfig
 echo "CONFIG_CMD_GO=n" >> defconfig
 echo "CONFIG_CMD_RUN=n" >> defconfig
 echo "CONFIG_CMD_EXT2=n" >> defconfig
+echo "CONFIG_CMD_ELF=n" >> defconfig
+echo "CONFIG_CMD_ELF_BOOTVX=n" >> defconfig
 
 echo "CONFIG_CMD_LOADB=n" >> defconfig
 echo "CONFIG_CMD_LOADS=n" >> defconfig
