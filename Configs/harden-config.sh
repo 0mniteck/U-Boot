@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 echo "CONFIG_STACKPROTECTOR=y" >> defconfig
+echo "CONFIG_SPL_STACKPROTECTOR=y" >> defconfig
+echo "CONFIG_TPL_STACKPROTECTOR=y" >> defconfig
+
 echo "CONFIG_BOOTEFI_HELLO_COMPILE=n" >> defconfig
 echo "CONFIG_BOOTEFI_TESTAPP_COMPILE=n" >> defconfig
 echo 'CONFIG_BOOTCOMMAND="efiload; reset;"' >> defconfig
