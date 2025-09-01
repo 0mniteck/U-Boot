@@ -3,6 +3,8 @@
 ### Project Goals:
 * [ ] Enable TPM Support
   * [ ] Test TPM2_FTPM_TEE
+    * [ ] TPM_PCR_ALLOCATE
+    * [ ] MEASURED_BOOT
   * [ ] Check if [new patches](https://github.com/radxa-pkg/radxa-overlays/pull/385) fixed problem
 * [x] Remove rkbin dependency from rk3568 & rk3588
   * [x] TF-A/Optee-OS upstreamed initial patches from rockchip
