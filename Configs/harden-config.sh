@@ -34,7 +34,9 @@ echo "CONFIG_CMD_SOURCE=n" >> defconfig
 echo "CONFIG_SAVEENV=n" >> defconfig
 echo "CONFIG_ENV_IS_IN_SPI_FLASH=n" >> defconfig
 
+echo "CONFIG_BOOTMETH_EXTLINUX=n" >> defconfig
 echo "CONFIG_BOOTMETH_EXTLINUX_PXE=n" >> defconfig
+echo "CONFIG_BOOTMETH_DISTRO=n" >> defconfig
 echo "CONFIG_CMD_NET=n" >> defconfig
 echo "CONFIG_CMD_BOOTP=n" >> defconfig
 echo "CONFIG_BOOTP_BOOTPATH=n" >> defconfig
@@ -48,6 +50,7 @@ echo "CONFIG_CMD_DHCP=n" >> defconfig
 echo "CONFIG_CMD_PING=n" >> defconfig
 echo "CONFIG_CMD_TFTPBOOT=n" >> defconfig
 echo "CONFIG_CMD_PXE=n" >> defconfig
+echo "CONFIG_PXE_UTILS=n" >> defconfig
 
 echo "CONFIG_LEGACY_IMAGE_FORMAT=n" >> defconfig
 echo "CONFIG_BOOTDEV_ETH=n" >> defconfig
