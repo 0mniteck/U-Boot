@@ -391,4 +391,3 @@ autoinstall:
     snap:
       commands:
         00: snap remove --purge firefox cups
-
