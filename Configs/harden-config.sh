@@ -10,6 +10,7 @@ echo "CONFIG_BOOTEFI_HELLO_COMPILE=n" >> defconfig
 echo "CONFIG_BOOTEFI_TESTAPP_COMPILE=n" >> defconfig
 echo 'CONFIG_BOOTCOMMAND="efiload; reset;"' >> defconfig
 
+echo "CONFIG_RSA=y" >> defconfig
 echo "CONFIG_ECDSA=y" >> defconfig
 echo "CONFIG_ECDSA_VERIFY=y" >> defconfig
 echo "CONFIG_SPL_ECDSA_VERIFY=y" >> defconfig
