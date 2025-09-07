@@ -55,6 +55,7 @@ if [ "$2" = "yes" ]; then
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg OPT_VER=$OPT_VER \
     --build-arg OPT_SUM=$OPT_SUM \
+    --build-arg OPT_SUM2=$OPT_SUM2 \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
     --build-arg BASE_EXTRA=$BASE_EXTRA \
