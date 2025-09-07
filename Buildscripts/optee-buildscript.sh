@@ -12,6 +12,7 @@ do
     export CFG_MS_TPM_20_REF="/$plat/TPM"
     export CFG_TA_MEASURED_BOOT=y
     export CFG_TA_EVENT_LOG_SIZE=65536
+    echo $CFG_MS_TPM_20_REF
     make -j $(nproc) CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- all
   popd
   unzip -q TPM.zip -d /$plat/TPM > /dev/null
