@@ -56,6 +56,7 @@ if [ "$2" = "yes" ]; then
     --build-arg OPT_VER=$OPT_VER \
     --build-arg OPT_SUM=$OPT_SUM \
     --build-arg OPT_SUM2=$OPT_SUM2 \
+    --build-arg TPM_SUM=$TPM_SUM \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
     --build-arg BASE_EXTRA=$BASE_EXTRA \
