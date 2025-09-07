@@ -9,12 +9,20 @@ ARG SOURCE_DATE_EPOCH
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
 ARG OPT_VER
 ARG OPT_SUM
+ARG OPT_SUM2
+ARG TPM_SUM
 ARG ARCHS
 ENV ARCHS=$ARCHS
 ENV OPT_VER=$OPT_VER
 ENV OPT_SUM=$OPT_SUM
-ADD https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /
+ENV OPT_SUM2=$OPT_SUM2
+ENV TPM_SUM=$TPM_SUM
+ADD https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /$OPT_VER.zip
+ADD https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_$OPT_VER.zip
+ADD https://github.com/microsoft/ms-tpm-20-ref/archive/refs/tags/v1.83r1.zip /TPM.zip
 RUN echo "$OPT_SUM  $OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE Checksum Matched!" || exit 1
+RUN echo "$OPT_SUM2  ftpm_$OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE fTPM Checksum Matched!" || exit 1
+RUN echo "$TPM_SUM  TPM.zip" | sha512sum --status -c - && echo "TPM Checksum Matched!" || exit 1
 ARG ENTRYPOINT
 COPY Buildscripts/$ENTRYPOINT-buildscript.sh /
 
