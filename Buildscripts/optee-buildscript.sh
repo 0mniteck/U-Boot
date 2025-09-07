@@ -8,7 +8,7 @@ do
   mv /$plat/optee_os-$OPT_VER/ta/optee_ftpm-$OPT_VER /$plat/optee_os-$OPT_VER/ta/optee_ftpm
   pushd /$plat/optee_os-$OPT_VER/ta/optee_ftpm
     ls -la
-    make -j $(nproc) CFG_MS_TPM_20_REF="/$plat/TPM" TA_DEV_KIT_DIR="/$plat/optee_os-$OPT_VER/ta" CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- all
+    CFG_MS_TPM_20_REF="/$plat/TPM" TA_DEV_KIT_DIR="/$plat/optee_os-$OPT_VER/ta" make -j $(nproc) CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- all
   popd
   unzip -q TPM.zip -d /$plat/TPM > /dev/null
   mv /$plat/TPM/ms-tpm-20-ref-1.83r1/.* /$plat/TPM
