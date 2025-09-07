@@ -14,7 +14,7 @@ export UB_VER="2025.07"
 export UB_SUM="2f649d22ba8da7677a4c25c3fb943e10f4bcaa9b58b5fc957632f5b84793e41aa94704792abaed7a3797a7cc335c19179d08f458c91a74e424b0798d18db2972"
 
 export BUILD_LIST="R5B-rk3588:rock5b-rk3588_defconfig RP64-rk3399:rockpro64-rk3399_defconfig PBP-rk3399:pinebook-pro-rk3399_defconfig"
-export LIST="R5B-rk3588 RP64-rk3399 PBP-rk3399 "
+export LIST="R5B-rk3588 RP64-rk3399 PBP-rk3399"
 export ARCHS="rk3588 rk3399"
 
 while getopts ":a:c:d:r:t:" opt; do
