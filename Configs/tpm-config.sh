@@ -18,3 +18,4 @@ echo "CONFIG_MEASURED_BOOT=y" >> defconfig
 echo "CONFIG_TPM_PCR_ALLOCATE=y" >> defconfig
 echo "CONFIG_EFI_TCG2_PROTOCOL=y" >> defconfig
 echo "CONFIG_EFI_TCG2_PROTOCOL_MEASURE_DTB=y" >> defconfig
+echo "CONFIG_MEASURE_DEVICETREE=y" >> defconfig
