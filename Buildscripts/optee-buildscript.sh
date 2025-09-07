@@ -8,8 +8,8 @@ do
   mv /$plat/optee_os-$OPT_VER/ta/optee_ftpm-$OPT_VER /$plat/optee_os-$OPT_VER/ta/optee_ftpm
   pushd /$plat/optee_os-$OPT_VER/ta/optee_ftpm
     ls -la
-    export CFG_MS_TPM_20_REF=/$plat/TPM
     export TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/ta
+    export CFG_MS_TPM_20_REF=/$plat/TPM
     export CFG_TA_MEASURED_BOOT=y
     export CFG_TA_EVENT_LOG_SIZE=65536
     make -j $(nproc) CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- all
