@@ -11,7 +11,7 @@ do
   echo "Entering /$plat/optee_os-$OPT_VER"
   pushd /$plat/optee_os-$OPT_VER
     make -j $(nproc) PLATFORM=rockchip-$plat CFG_ARM64_core=y CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_core=aarch64-linux-gnu- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- \
-    CFG_MS_TPM_20_REF="/TPM/" CFG_TA_MEASURED_BOOT=y
+    CFG_MS_TPM_20_REF="/TPM/" CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=65536
     ls -la /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/core/
   popd
 done
