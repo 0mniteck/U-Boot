@@ -81,7 +81,6 @@ do
   printf "$lis2 " >> vars.env
 done
 echo "$lis1 \"" >> vars.env
-sed -i '10d' vars.env
 
 echo "Cross-Compile: $AARCH"
 echo "Clean Build: $CLEAN"
