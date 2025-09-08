@@ -8,6 +8,9 @@ do
   mv /$plat/optee_os-$OPT_VER/ta/optee_ftpm-$OPT_VER /$plat/optee_os-$OPT_VER/ta/optee_ftpm
   unzip -q TPM.zip -d /$plat/TPM > /dev/null
   mv /$plat/TPM/ms-tpm-20-ref-1.83r1/.* /$plat/TPM
+  sed -i '1d;2d' /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
+  sed -i "1ita-dev-kit-dir := /$plat/optee_os-$OPT_VER" /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
+  sed -i "1ism := /ta" /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
   sed -i "s'/mk/\$(COMPILER_\$(sm)).mk'/mk/gcc.mk'" /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
   cp /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk /$plat/optee_os-$OPT_VER/mk/ta_dev_kit.mk
   # cp /$plat/optee_os-$OPT_VER/ta/mk/build-user-ta.mk /$plat/optee_os-$OPT_VER/mk/ta_dev_kit.mk
@@ -15,9 +18,8 @@ do
   sed -i "s'include core/arch/arm/cpu/cortex-armv8-0.mk'include /$plat/optee_os-$OPT_VER/core/arch/arm/cpu/cortex-armv8-0.mk'" /$plat/optee_os-$OPT_VER/core/arch/arm/plat-rockchip/conf.mk
   cp /$plat/optee_os-$OPT_VER/core/arch/arm/plat-rockchip/conf.mk /$plat/optee_os-$OPT_VER/mk/conf.mk
   pushd /$plat/optee_os-$OPT_VER/ta/optee_ftpm
-    export sm=/ta
     # sed -i "s'/TPMCmd/tpm/include/prototypes'/TPMCmd/tpm/include/private/prototypes'" sub.mk
-    make -j $(nproc) TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER sm=/ta CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=65536 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu-
+    make -j $(nproc) TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=65536 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu-
   popd
   echo "Entering /$plat/optee_os-$OPT_VER"
   pushd /$plat/optee_os-$OPT_VER
