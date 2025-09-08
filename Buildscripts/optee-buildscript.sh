@@ -9,8 +9,8 @@ do
   unzip -q TPM.zip -d /$plat/TPM > /dev/null
   mv /$plat/TPM/ms-tpm-20-ref-1.83r1/.* /$plat/TPM
   sed -i '1d;2d' /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
-  sed -i "1ita-dev-kit-dir := /$plat/optee_os-$OPT_VER" /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
   sed -i "1ism := /ta" /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
+  sed -i "1ita-dev-kit-dir := /$plat/optee_os-$OPT_VER" /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
   sed -i "s'/mk/\$(COMPILER_\$(sm)).mk'/mk/gcc.mk'" /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
   cp /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk /$plat/optee_os-$OPT_VER/mk/ta_dev_kit.mk
   # cp /$plat/optee_os-$OPT_VER/ta/mk/build-user-ta.mk /$plat/optee_os-$OPT_VER/mk/ta_dev_kit.mk
