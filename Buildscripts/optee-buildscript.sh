@@ -12,6 +12,7 @@ do
   sed -i "1ism := /ta" /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
   sed -i "1ita-dev-kit-dir := /$plat/optee_os-$OPT_VER" /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
   sed -i "s'/mk/\$(COMPILER_\$(sm)).mk'/mk/gcc.mk'" /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
+  sed -i "s'\$(ta-dev-kit-dir\$(sm))/mk/link.mk'/$plat/optee_os-$OPT_VER/ta/mk/link.mk'" /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk
   cp /$plat/optee_os-$OPT_VER/ta/mk/ta_dev_kit.mk /$plat/optee_os-$OPT_VER/mk/ta_dev_kit.mk
   # cp /$plat/optee_os-$OPT_VER/ta/mk/build-user-ta.mk /$plat/optee_os-$OPT_VER/mk/ta_dev_kit.mk
   sed -i "s/PLATFORM_FLAVOR ?= rk322x/PLATFORM_FLAVOR ?= $plat/" /$plat/optee_os-$OPT_VER/core/arch/arm/plat-rockchip/conf.mk
