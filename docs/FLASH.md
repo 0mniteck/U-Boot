@@ -55,7 +55,7 @@ Check for `Loading Environment from SPIFlash... SF: Detected gd25q128 with page 
 
 `Power-off`
 
-#### Insert installation [ISO](https://cdimage.ubuntu.com/releases/oracular/release/ubuntu-24.10-desktop-arm64.iso) after adding OMNITECK's [bootaa64.efi](https://github.com/0mniteck/U-Boot/raw/refs/heads/Docker/Deploy/ubuntu/bootaa64.efi) to the ESP patition & Keep the eMMC bypassed and ethernet unplugged during boot
+#### Insert installation [ISO](https://cdimage.ubuntu.com/releases/plucky/release/ubuntu-25.04-desktop-arm64.iso) after adding OMNITECK's [bootaa64.efi](https://github.com/0mniteck/U-Boot/raw/refs/heads/Docker/Deploy/ubuntu/bootaa64.efi) to the ESP patition & Keep the eMMC bypassed and ethernet unplugged during boot
 
 `Bypass eMMC`
 
