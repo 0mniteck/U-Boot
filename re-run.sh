@@ -32,6 +32,15 @@ fi
 
 source_date="@$source_date_epoch"
 build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
+
+scan_using_grype() { # $1 = Name, $2 = Type:[Name]
+  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=Results/$1.spdx.json && rm -f -r "$HOME/syft"
+  script -q -c "grype sbom:Results/$1.spdx.json -o json > Results/$1.grype.json" Results/$1.grype.tmp
+  ansifilter < Results/$1.grype.tmp > Results/$1.grype.tmp2
+  grep "✔ Scanned for vulnerabilities" Results/$1.grype.tmp2 | tail -n 1 > Results/$1.grype.status; grep "├── by severity:" Results/$1.grype.tmp2 | tail -n 1 >> Results/$1.grype.status; grep "└── by status:" Results/$1.grype.tmp2 | tail -n 1 >> Results/$1.grype.status
+  rm -f Results/$1.grype.tmp*
+}
+
 if [ "$2" = "no" ]; then
   echo "CLEAN_BUILD: $2"
 fi
@@ -63,11 +72,7 @@ if [ "$2" = "yes" ]; then
     --build-arg ENTRYPOINT=optee \
     -f Dockerfile .
 
-  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:optee -o spdx-json=Results/optee-os.spdx.json && rm -f -r "$HOME/syft"
-  script -q -c "grype sbom:Results/optee-os.spdx.json -o json > Results/optee-os.grype.json" Results/optee-os.grype.tmp
-  ansifilter < Results/optee-os.grype.tmp > Results/optee-os.grype.tmp2
-  grep "✔ Scanned for vulnerabilities" Results/optee-os.grype.tmp2 | tail -n 1 > Results/optee-os.grype.status; grep "├── by severity:" Results/optee-os.grype.tmp2 | tail -n 1 >> Results/optee-os.grype.status; grep "└── by status:" Results/optee-os.grype.tmp2 | tail -n 1 >> Results/optee-os.grype.status
-  rm -f Results/optee-os.grype.tmp*
+  scan_using_grype optee-os docker:optee
 
   docker run -it --cpus=$(nproc) \
     --name optee \
@@ -81,12 +86,13 @@ if [ "$2" = "yes" ]; then
 
   for arch in $ARCHS
   do
-    docker cp optee:/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/
-    sha512sum Builds/$arch/tee.bin && sha512sum Builds/$arch/tee.bin >> Results/release.sha512sum
-    openssl dgst -SHA3-256 Builds/$arch/tee.bin && openssl dgst -SHA3-256 Builds/$arch/tee.bin >> Results/release.sha3sum
-    docker cp optee:/NOTPM/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee-tpm.bin
-    sha512sum Builds/$arch/tee-tpm.bin && sha512sum Builds/$arch/tee-tpm.bin >> Results/release.sha512sum
-    openssl dgst -SHA3-256 Builds/$arch/tee-tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee-tpm.bin >> Results/release.sha3sum
+    for tpm in ":-tpm" "/NOTPM:"
+    do
+      tpm=$(echo $tpm | cut -d':' -f2)
+      docker cp optee:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
+      sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
+      openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
+    done
   done
   docker stop optee > /dev/null && echo "optee stopped" && docker rm --volumes optee > /dev/null && echo "optee removed"
 
@@ -101,11 +107,7 @@ if [ "$2" = "yes" ]; then
     --build-arg ENTRYPOINT=arm-trusted \
     -f Dockerfile .
 
-  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:arm-trusted -o spdx-json=Results/arm-trusted-firmware.spdx.json && rm -f -r "$HOME/syft"
-  script -q -c "grype sbom:Results/arm-trusted-firmware.spdx.json -o json > Results/arm-trusted-firmware.grype.json" Results/arm-trusted-firmware.grype.tmp
-  ansifilter < Results/arm-trusted-firmware.grype.tmp > Results/arm-trusted-firmware.grype.tmp2
-  grep "✔ Scanned for vulnerabilities" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 > Results/arm-trusted-firmware.grype.status; grep "├── by severity:" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 >> Results/arm-trusted-firmware.grype.status; grep "└── by status:" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 >> Results/arm-trusted-firmware.grype.status
-  rm -f Results/arm-trusted-firmware.grype.tmp*
+  scan_using_grype arm-trusted-firmware docker:arm-trusted
 
   docker run -it --cpus=$(nproc) \
     --name arm-trusted \
@@ -137,11 +139,7 @@ docker buildx build --load --platform linux/arm64 --target u-boot --tag u-boot \
   --build-arg ENTRYPOINT=u-boot \
   -f Dockerfile .
 
-mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:u-boot -o spdx-json=Results/u-boot.spdx.json && rm -f -r "$HOME/syft"
-script -q -c "grype sbom:Results/u-boot.spdx.json -o json > Results/u-boot.grype.json" Results/u-boot.grype.tmp
-ansifilter < Results/u-boot.grype.tmp > Results/u-boot.grype.tmp2
-grep "✔ Scanned for vulnerabilities" Results/u-boot.grype.tmp2 | tail -n 1 > Results/u-boot.grype.status; grep "├── by severity:" Results/u-boot.grype.tmp2 | tail -n 1 >> Results/u-boot.grype.status; grep "└── by status:" Results/u-boot.grype.tmp2 | tail -n 1 >> Results/u-boot.grype.status
-rm -f Results/u-boot.grype.tmp*
+scan_using_grype u-boot docker:u-boot
 
 docker run -it --cpus=$(nproc) \
   --name u-boot \
@@ -179,11 +177,7 @@ snap remove docker --purge
 networkctl delete docker0
 rm -f -r /var/lib/snapd/cache/*
 
-mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan / --select-catalogers debian -o spdx-json=Results/ubuntu.25.04.spdx.json && rm -f -r "$HOME/syft"
-script -q -c "grype sbom:Results/ubuntu.25.04.spdx.json -o json > Results/ubuntu.25.04.grype.json" Results/ubuntu.25.04.grype.tmp
-ansifilter < Results/ubuntu.25.04.grype.tmp > Results/ubuntu.25.04.grype.tmp2
-grep "✔ Scanned for vulnerabilities" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 > Results/ubuntu.25.04.grype.status; grep "├── by severity:" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 >> Results/ubuntu.25.04.grype.status; grep "└── by status:" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 >> Results/ubuntu.25.04.grype.status
-rm -f Results/ubuntu.25.04.grype.tmp*
+scan_using_grype ubuntu.25.04 "/ --select-catalogers debian"
 
 snap remove syft --purge && rm -f -r $HOME/.cache/syft
 snap remove grype --purge
