@@ -49,9 +49,9 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
     tr -d '\000-\037\177' < $1.grype.status.3 | sed '/^$/d' > $1.grype.status.3.tmp
     line3=$(cat $1.grype.status.3.tmp)
     left3=${line3%%" [K"*}
-    echo left1 > $1.grype.status
-    echo left2 >> $1.grype.status
-    echo left3 >> $1.grype.status
+    echo $left1 > $1.grype.status
+    echo $left2 >> $1.grype.status
+    echo $left3 >> $1.grype.status
     rm -f $1.grype.tmp
     rm -f $1.grype.status.*
     cat grype.status
