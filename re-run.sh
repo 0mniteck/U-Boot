@@ -34,11 +34,28 @@ source_date="@$source_date_epoch"
 build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
 
 scan_using_grype() { # $1 = Name, $2 = Type:[Name]
-  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=Results/$1.spdx.json && rm -f -r "$HOME/syft"
-  script -q -c "grype sbom:Results/$1.spdx.json -o json > Results/$1.grype.json" Results/$1.grype.tmp
-  ansifilter < Results/$1.grype.tmp > Results/$1.grype.tmp2
-  grep "✔ Scanned for vulnerabilities" Results/$1.grype.tmp2 | tail -n 1 > Results/$1.grype.status; grep "├── by severity:" Results/$1.grype.tmp2 | tail -n 1 >> Results/$1.grype.status; grep "└── by status:" Results/$1.grype.tmp2 | tail -n 1 >> Results/$1.grype.status
-  rm -f Results/$1.grype.tmp*
+  pushd Results/
+    mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=$1.spdx.json && rm -f -r "$HOME/syft"
+    script -q -c "grype -c $HOME/.grype.yaml sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp
+    grep "✔ Scanned for vulnerabilities" $1.grype.tmp | tail -n 1 > $1.grype.status.1
+    tr -d '\000-\037\177' < $1.grype.status.1 | sed '/^$/d' > $1.grype.status.1.tmp
+    line1=$(cat $1.grype.status.1.tmp)
+    left1=${line1%%" [K"*}
+    grep "├── by severity:" $1.grype.tmp | tail -n 1 > $1.grype.status.2
+    tr -d '\000-\037\177' < $1.grype.status.2 | sed '/^$/d' > $1.grype.status.2.tmp
+    line2=$(cat $1.grype.status.2.tmp)
+    left2=${line2%%" [K"*}
+    grep "└── by status:" $1.grype.tmp | tail -n 1 > $1.grype.status.3
+    tr -d '\000-\037\177' < $1.grype.status.3 | sed '/^$/d' > $1.grype.status.3.tmp
+    line3=$(cat $1.grype.status.3.tmp)
+    left3=${line3%%" [K"*}
+    echo left1 > $1.grype.status
+    echo left2 >> $1.grype.status
+    echo left3 >> $1.grype.status
+    rm -f $1.grype.tmp
+    rm -f $1.grype.status.*
+    cat grype.status
+  popd
 }
 
 if [ "$2" = "no" ]; then
@@ -181,7 +198,7 @@ scan_using_grype ubuntu.25.04 "/ --select-catalogers debian"
 
 snap remove syft --purge && rm -f -r $HOME/.cache/syft
 snap remove grype --purge
-rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/5 -f -r && rm -f -r $HOME/.cache/grype && rm -f -r /tmp/grype-scratch*
+rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r /tmp/grype-scratch*
 
 if [ "$3" = "no" ]; then
   for dev in $LIST
