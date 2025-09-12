@@ -38,11 +38,9 @@ ARG MTLS_SUM
 ARG ARCHS
 ENV ARCHS=$ARCHS
 ENV ATF_VER=$ATF_VER
-ENV ATF_SUM=$ATF_SUM
 ENV MTLS_VER=$MTLS_VER
-ENV MTLS_SUM=$MTLS_SUM
 ADD https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/$ATF_VER.zip /
-ADD https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-$MTLS_VER.zip
+ADD https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-$MTLS_VER.zip /
 RUN echo "$ATF_SUM  $ATF_VER.zip" | sha512sum --status -c - && echo "TF-A Checksum Matched!" || exit 1
 RUN echo "$MTLS_SUM  mbedtls-$MTLS_VER.zip" | sha512sum --status -c - && echo "MTLS Checksum Matched!" || exit 1
 ARG ENTRYPOINT
@@ -57,7 +55,6 @@ ENV FORCE_SOURCE_DATE=1;
 ARG UB_VER
 ARG UB_SUM
 ENV UB_VER=$UB_VER
-ENV UB_SUM=$UB_SUM
 ADD https://github.com/u-boot/u-boot/archive/refs/tags/v$UB_VER.zip /
 RUN echo "$UB_SUM  v$UB_VER.zip" | sha512sum --status -c - && echo "U-Boot Checksum Matched!" || exit 1
 COPY Builds /Builds
