@@ -84,6 +84,9 @@ if [ "$2" = "yes" ]; then
     docker cp optee:/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/
     sha512sum Builds/$arch/tee.bin && sha512sum Builds/$arch/tee.bin >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/$arch/tee.bin && openssl dgst -SHA3-256 Builds/$arch/tee.bin >> Results/release.sha3sum
+    docker cp optee:/NOTPM/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee-tpm.bin
+    sha512sum Builds/$arch/tee-tpm.bin && sha512sum Builds/$arch/tee-tpm.bin >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/$arch/tee-tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee-tpm.bin >> Results/release.sha3sum
   done
   docker stop optee > /dev/null && echo "optee stopped" && docker rm --volumes optee > /dev/null && echo "optee removed"
 
