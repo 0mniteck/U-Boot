@@ -33,6 +33,10 @@ fi
 source_date="@$source_date_epoch"
 build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
 
+stop() {
+  docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
+}
+
 scan_using_grype() { # $1 = Name, $2 = Type:[Name]
   pushd Results/
     mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=$1.spdx.json && rm -f -r "$HOME/syft"
@@ -77,47 +81,13 @@ if [ "$4" = "yes" ]; then
   docker run --privileged --rm tonistiigi/binfmt --install all
 fi
 if [ "$2" = "yes" ]; then
-  docker buildx build --load --platform linux/arm64 --target optee --tag optee \
-    --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
-    --build-arg OPT_VER=$OPT_VER \
-    --build-arg OPT_SUM=$OPT_SUM \
-    --build-arg OPT_SUM2=$OPT_SUM2 \
-    --build-arg TPM_SUM=$TPM_SUM \
-    --build-arg HUB=$HUB \
-    --build-arg BASE=$BASE \
-    --build-arg BASE_EXTRA=$BASE_EXTRA \
-    --build-arg ENTRYPOINT=optee \
-    -f Dockerfile .
-
-  scan_using_grype optee-os docker:optee
-
-  docker run -it --cpus=$(nproc) \
-    --name optee \
-    --platform linux/arm64 \
-    --user "$(id -u):$(id -g)" \
-    --entrypoint /optee-buildscript.sh \
-    -e SOURCE_DATE_EPOCH=$source_date_epoch \
-    -e OPT_VER=$OPT_VER \
-    -e ARCHS="$ARCHS" \
-    optee
-
-  for arch in $ARCHS
-  do
-    for tpm in ":-tpm" "/NOTPM:"
-    do
-      tpm=$(echo $tpm | cut -d':' -f2)
-      docker cp optee:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
-      sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
-      openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
-    done
-  done
-  docker stop optee > /dev/null && echo "optee stopped" && docker rm --volumes optee > /dev/null && echo "optee removed"
-
   docker buildx build --load --platform linux/arm64 --target arm-trusted --tag arm-trusted \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
     --build-arg ATF_VER=$ATF_VER \
     --build-arg ATF_SUM=$ATF_SUM \
+    --build-arg MTLS_VER=$MTLS_VER \
+    --build-arg MTLS_SUM=$MTLS_SUM \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
     --build-arg BASE_EXTRA=$BASE_EXTRA \
@@ -143,7 +113,43 @@ if [ "$2" = "yes" ]; then
     sha512sum Builds/$arch/bl31.elf && sha512sum Builds/$arch/bl31.elf >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/$arch/bl31.elf && openssl dgst -SHA3-256 Builds/$arch/bl31.elf >> Results/release.sha3sum
   done
-  docker stop arm-trusted > /dev/null && echo "arm-trusted stopped" && docker rm --volumes arm-trusted > /dev/null && echo "arm-trusted removed"
+  stop arm-trusted
+  
+  docker buildx build --load --platform linux/arm64 --target optee --tag optee \
+      --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+      --build-arg OPT_VER=$OPT_VER \
+      --build-arg OPT_SUM=$OPT_SUM \
+      --build-arg OPT_SUM2=$OPT_SUM2 \
+      --build-arg TPM_SUM=$TPM_SUM \
+      --build-arg HUB=$HUB \
+      --build-arg BASE=$BASE \
+      --build-arg BASE_EXTRA=$BASE_EXTRA \
+      --build-arg ENTRYPOINT=optee \
+      -f Dockerfile .
+  
+    scan_using_grype optee-os docker:optee
+  
+    docker run -it --cpus=$(nproc) \
+      --name optee \
+      --platform linux/arm64 \
+      --user "$(id -u):$(id -g)" \
+      --entrypoint /optee-buildscript.sh \
+      -e SOURCE_DATE_EPOCH=$source_date_epoch \
+      -e OPT_VER=$OPT_VER \
+      -e ARCHS="$ARCHS" \
+      optee
+  
+    for arch in $ARCHS
+    do
+      for tpm in ":-tpm" "/NOTPM:"
+      do
+        tpm=$(echo $tpm | cut -d':' -f2)
+        docker cp optee:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
+        sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
+        openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
+      done
+    done
+    stop optee
 fi
 
 docker buildx build --load --platform linux/arm64 --target u-boot --tag u-boot \
@@ -181,10 +187,9 @@ do
     openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
   done
 done
-
 docker cp u-boot:/sys.info sys.info
-docker stop u-boot > /dev/null && echo "u-boot stopped"
 
+stop u-boot
 snap disable docker
 rm -f -r /var/snap/docker/*
 rm -f -r /var/snap/docker
@@ -223,12 +228,13 @@ if [ "$3" = "no" ]; then
   dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
   dd if=Builds/RP64-rk3399-SB/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
 fi
-
-sed -i 's/Builds/..\/Builds/g' Results/release.sha512sum
-echo "" && echo "" >> Results/release.sha512sum
-echo "# 0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> Results/release.sha512sum && echo "" >> Results/release.sha512sum
-echo "# Source Date Epoch: $source_date_epoch" >> Results/release.sha512sum
-echo "# Build Complete: $(date -u '+on %D at %R UTC')" >> Results/release.sha512sum && echo "Build Complete: $(date -u '+on %D at %R UTC')"
-echo "# Base Build System: $(uname -o) $(uname -r) $(uname -p) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> Results/release.sha512sum
-echo $(cat sys.info) >> Results/release.sha512sum
+pushd Results/
+  sed -i 's/Builds/..\/Builds/g' release.sha512sum
+  echo "" && echo "" >> release.sha512sum
+  echo "# 0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> release.sha512sum && echo "" >> release.sha512sum
+  echo "# Source Date Epoch: $source_date_epoch" >> release.sha512sum
+  echo "# Build Complete: $(date -u '+on %D at %R UTC')" >> release.sha512sum && echo "Build Complete: $(date -u '+on %D at %R UTC')"
+  echo "# Base Build System: $(uname -o) $(uname -r) $(uname -p) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> release.sha512sum
+  echo $(cat ../sys.info) >> release.sha512sum
+popd
 echo "Successful Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.build
