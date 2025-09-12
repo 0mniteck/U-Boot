@@ -15,7 +15,7 @@ do
     cp -r -f /$plat/TPM/TPMCmd/Platform/include/* platform/include/
     sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" platform/include/Platform.h
     sed -i "s'<public'</$plat/TPM/TPMCmd/tpm/include/public'" platform/include/Platform.h
-    ssed -i "s'<platform_interface'</$plat/TPM/TPMCmd/tpm/include/platform_interface'" platform/include/Platform.h
+    sed -i "s'<platform_interface'</$plat/TPM/TPMCmd/tpm/include/platform_interface'" platform/include/Platform.h
     # sed -i "5d;6d" platform/include/Platform.h
     cat platform/include/Platform.h
     #rm -f /$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration/TpmProfile.h
