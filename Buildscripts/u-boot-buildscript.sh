@@ -7,6 +7,7 @@ for dev in $BUILD_LIST
     echo "Unzipping U-Boot for $(echo $dev | cut -d':' -f1)..."
     unzip -q /v$UB_VER.zip -d /$(echo $loc | cut -d':' -f1) > /dev/null
     echo "Entering /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER"
+    platt=$(echo $(echo $dev | cut -d':' -f1) | cut -d'-' -f2)
     pushd /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER
       chmod +x /Configs/*
       make clean
@@ -21,6 +22,7 @@ for dev in $BUILD_LIST
           ../.././Configs/efi-config.sh
           ../.././Configs/$(echo $loc | cut -d':' -f2)config.sh
           if [ "$(echo $loc | cut -d':' -f2)" = "tpm-sb-" ]; then
+            tpm=-tpm
             ../.././Configs/tpm-config.sh
             ../.././Configs/harden-config.sh
           fi
@@ -39,6 +41,9 @@ for dev in $BUILD_LIST
       if [ "$(echo $dev | cut -d':' -f2)" = "rock5b-rk3588_defconfig" ] || [ "$(echo $dev | cut -d':' -f2)" = "pinetab2-rk3566_defconfig" ]; then
         ../.././Configs/tpl-config.sh
         if [ "$(echo $dev | cut -d':' -f2)" = "pinetab2-rk3566_defconfig" ]; then
+          if [ "$platt" = "rk3566" ]; then
+            platt=rk3568
+          fi
           printf ''
         fi
         sed -i '479d' arch/arm/mach-rockchip/Kconfig
@@ -61,11 +66,7 @@ echo 'void spl_board_init(void)
       if [ "$DEV_BUILD" = "yes" ]; then
         make menuconfig
       fi
-      platt=$(echo $(echo $dev | cut -d':' -f1) | cut -d'-' -f2)
-      if [ "$platt" = "rk3566" ]; then
-        platt=rk3568
-      fi
-      TEE=/Builds/$platt/tee.bin BL31=/Builds/$platt/bl31.elf FORCE_SOURCE_DATE=1 SOURCE_DATE=$SOURCE_DATE SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH make -j $(nproc) all
+      TEE=/Builds/$platt/tee$tpm.bin BL31=/Builds/$platt/bl31.elf FORCE_SOURCE_DATE=1 SOURCE_DATE=$SOURCE_DATE SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH make -j $(nproc) all
       ls -la
     popd
     mv /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER/configs/$(echo $dev | cut -d':' -f2) /$(echo $loc | cut -d':' -f1)/$(echo $dev | cut -d':' -f2)
