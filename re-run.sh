@@ -81,6 +81,43 @@ if [ "$4" = "yes" ]; then
   docker run --privileged --rm tonistiigi/binfmt --install all
 fi
 if [ "$2" = "yes" ]; then
+  docker buildx build --load --platform linux/arm64 --target optee --tag optee \
+    --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+    --build-arg OPT_VER=$OPT_VER \
+    --build-arg OPT_SUM=$OPT_SUM \
+    --build-arg OPT_SUM2=$OPT_SUM2 \
+    --build-arg TPM_SUM=$TPM_SUM \
+    --build-arg ROT_SUM=$ROT_SUM \
+    --build-arg HUB=$HUB \
+    --build-arg BASE=$BASE \
+    --build-arg BASE_EXTRA=$BASE_EXTRA \
+    --build-arg ENTRYPOINT=optee \
+    -f Dockerfile .
+
+  scan_using_grype optee-os docker:optee
+
+  docker run -it --cpus=$(nproc) \
+    --name optee \
+    --platform linux/arm64 \
+    --user "$(id -u):$(id -g)" \
+    --entrypoint /optee-buildscript.sh \
+    -e SOURCE_DATE_EPOCH=$source_date_epoch \
+    -e OPT_VER=$OPT_VER \
+    -e ARCHS="$ARCHS" \
+    optee
+
+  for arch in $ARCHS
+  do
+    for tpm in ":-tpm" "/NOTPM:"
+    do
+      tpm=$(echo $tpm | cut -d':' -f2)
+      docker cp optee:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
+      sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
+      openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
+    done
+  done
+  stop optee
+  
   docker buildx build --load --platform linux/arm64 --target arm-trusted --tag arm-trusted \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
@@ -114,42 +151,6 @@ if [ "$2" = "yes" ]; then
     openssl dgst -SHA3-256 Builds/$arch/bl31.elf && openssl dgst -SHA3-256 Builds/$arch/bl31.elf >> Results/release.sha3sum
   done
   stop arm-trusted
-  
-  docker buildx build --load --platform linux/arm64 --target optee --tag optee \
-      --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
-      --build-arg OPT_VER=$OPT_VER \
-      --build-arg OPT_SUM=$OPT_SUM \
-      --build-arg OPT_SUM2=$OPT_SUM2 \
-      --build-arg TPM_SUM=$TPM_SUM \
-      --build-arg HUB=$HUB \
-      --build-arg BASE=$BASE \
-      --build-arg BASE_EXTRA=$BASE_EXTRA \
-      --build-arg ENTRYPOINT=optee \
-      -f Dockerfile .
-  
-    scan_using_grype optee-os docker:optee
-  
-    docker run -it --cpus=$(nproc) \
-      --name optee \
-      --platform linux/arm64 \
-      --user "$(id -u):$(id -g)" \
-      --entrypoint /optee-buildscript.sh \
-      -e SOURCE_DATE_EPOCH=$source_date_epoch \
-      -e OPT_VER=$OPT_VER \
-      -e ARCHS="$ARCHS" \
-      optee
-  
-    for arch in $ARCHS
-    do
-      for tpm in ":-tpm" "/NOTPM:"
-      do
-        tpm=$(echo $tpm | cut -d':' -f2)
-        docker cp optee:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
-        sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
-        openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
-      done
-    done
-    stop optee
 fi
 
 docker buildx build --load --platform linux/arm64 --target u-boot --tag u-boot \
