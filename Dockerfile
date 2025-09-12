@@ -4,28 +4,6 @@ ARG BASE_EXTRA=default
 
 FROM $HUB:$BASE AS base
 
-FROM base AS arm-trusted
-ARG SOURCE_DATE_EPOCH
-ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
-ARG BUILD_MESSAGE_TIMESTAMP
-ENV BUILD_MESSAGE_TIMESTAMP="$BUILD_MESSAGE_TIMESTAMP"
-ARG ATF_VER
-ARG ATF_SUM
-ARG MTLS_VER
-ARG MTLS_SUM
-ARG ARCHS
-ENV ARCHS=$ARCHS
-ENV ATF_VER=$ATF_VER
-ENV ATF_SUM=$ATF_SUM
-ENV MTLS_VER=$MTLS_VER
-ENV MTLS_SUM=$MTLS_SUM
-ADD https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/$ATF_VER.zip /
-ADD https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-$MTLS_VER.zip
-RUN echo "$ATF_SUM  $ATF_VER.zip" | sha512sum --status -c - && echo "TF-A Checksum Matched!" || exit 1
-RUN echo "$MTLS_SUM  mbedtls-$MTLS_VER.zip" | sha512sum --status -c - && echo "MTLS Checksum Matched!" || exit 1
-ARG ENTRYPOINT
-COPY Buildscripts/$ENTRYPOINT-buildscript.sh /
-
 FROM $HUB-extra:$BASE_EXTRA AS optee
 ARG SOURCE_DATE_EPOCH
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
@@ -45,6 +23,28 @@ RUN echo "$OPT_SUM  $OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE Chec
 RUN echo "$OPT_SUM2  ftpm_$OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE fTPM Checksum Matched!" || exit 1
 RUN echo "$TPM_SUM  TPM.zip" | sha512sum --status -c - && echo "TPM Checksum Matched!" || exit 1
 RUN echo "$ROT_SUM  arm_rotprivk_rsa.pem" | sha512sum --status -c - && echo "ROT Key Checksum Matched!" || exit 1
+ARG ENTRYPOINT
+COPY Buildscripts/$ENTRYPOINT-buildscript.sh /
+
+FROM base AS arm-trusted
+ARG SOURCE_DATE_EPOCH
+ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
+ARG BUILD_MESSAGE_TIMESTAMP
+ENV BUILD_MESSAGE_TIMESTAMP="$BUILD_MESSAGE_TIMESTAMP"
+ARG ATF_VER
+ARG ATF_SUM
+ARG MTLS_VER
+ARG MTLS_SUM
+ARG ARCHS
+ENV ARCHS=$ARCHS
+ENV ATF_VER=$ATF_VER
+ENV ATF_SUM=$ATF_SUM
+ENV MTLS_VER=$MTLS_VER
+ENV MTLS_SUM=$MTLS_SUM
+ADD https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/$ATF_VER.zip /
+ADD https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-$MTLS_VER.zip
+RUN echo "$ATF_SUM  $ATF_VER.zip" | sha512sum --status -c - && echo "TF-A Checksum Matched!" || exit 1
+RUN echo "$MTLS_SUM  mbedtls-$MTLS_VER.zip" | sha512sum --status -c - && echo "MTLS Checksum Matched!" || exit 1
 ARG ENTRYPOINT
 COPY Buildscripts/$ENTRYPOINT-buildscript.sh /
 
