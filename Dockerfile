@@ -5,7 +5,7 @@ ARG BASE_EXTRA=default
 FROM $HUB:$BASE AS base
 
 FROM $HUB-extra:$BASE_EXTRA AS optee
-RUN apt install -y cmake
+RUN apt install -y cmake cargo rustfmt
 ARG SOURCE_DATE_EPOCH
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
 ARG OPT_VER
