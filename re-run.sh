@@ -54,7 +54,7 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
     echo $left3 >> $1.grype.status
     rm -f $1.grype.tmp
     rm -f $1.grype.status.*
-    cat grype.status
+    cat $1.grype.status
   popd
 }
 
