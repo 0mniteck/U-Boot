@@ -14,8 +14,11 @@ do
     rm -f platform/include/*
     cp -r -f /$plat/TPM/TPMCmd/Platform/include/* platform/include/
     sed -i "52d;65d;78d;103d;120d;126d;207d" /$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
-    sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" /$plat/TPM/TPMCmd/tpm/include/public/TpmAlgorithmDefines.h
-    sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" /$plat/TPM/TPMCmd/tpm/include/platform_interface/tpm_to_platform_interface.h
+    pushd /$plat/TPM/
+      find . -type f -exec sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" {}
+    popd
+    # sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" /$plat/TPM/TPMCmd/tpm/include/public/TpmAlgorithmDefines.h
+    # sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" /$plat/TPM/TPMCmd/tpm/include/platform_interface/tpm_to_platform_interface.h
     sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" platform/include/Platform.h
     sed -i "s'<public'</$plat/TPM/TPMCmd/tpm/include/public'" platform/include/Platform.h
     sed -i "s'<platform_interface'</$plat/TPM/TPMCmd/tpm/include/platform_interface'" platform/include/Platform.h
