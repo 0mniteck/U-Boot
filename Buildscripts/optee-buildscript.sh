@@ -25,7 +25,7 @@ do
     sed -i "s'<public'</$plat/TPM/TPMCmd/tpm/include/public'" platform/include/Platform.h
     sed -i "73,76d" platform/include/PlatformData.h
     sed -i "83,97d" sub.mk
-    sed "83i \\
+    sed -i "83i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
