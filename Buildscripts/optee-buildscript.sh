@@ -20,6 +20,7 @@ do
       sed -i "52d;65d;78d;103d;120d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
       sed -i "44d;48d;128d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
     popd
+    sed -i "s'srand(('rand(('" platform/include/Entropy.c
     sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" platform/include/Platform.h
     sed -i "s'<platform_interface'</$plat/TPM/TPMCmd/tpm/include/platform_interface'" platform/include/Platform.h
     sed -i "s'<public'</$plat/TPM/TPMCmd/tpm/include/public'" platform/include/Platform.h
