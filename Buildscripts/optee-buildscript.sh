@@ -14,7 +14,7 @@ do
     rm -f platform/include/*
     cp -r -f /$plat/TPM/TPMCmd/Platform/include/* platform/include/
     pushd /$plat/TPM/TPMCmd/
-      find . -type f -exec sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" {}
+      find . -type f -exec sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" {} \;
     popd
     sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" platform/include/Platform.h
     sed -i "s'<public'</$plat/TPM/TPMCmd/tpm/include/public'" platform/include/Platform.h
