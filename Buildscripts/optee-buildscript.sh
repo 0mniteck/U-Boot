@@ -28,8 +28,9 @@ do
     sed -i "12d;83,97d;104d;105d" sub.mk
     sed -i "46icflags-y += -Wno-missing-include-dirs" sub.mk
     sed -i "61icflags-platform/Clock.c-y += -Wno-nested-externs" sub.mk
-    sed -i "61icflags-platform/Entropy.c-y += -Wno-nested-externs" sub.mk
+    sed -i "61icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
     sed -i "61icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "61icflags-platform/Entropy.c-y += -Wno-nested-externs" sub.mk
     sed -i "61icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
     sed -i "61icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
     sed -i "61icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
