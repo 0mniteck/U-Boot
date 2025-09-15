@@ -24,6 +24,8 @@ do
     sed -i "s'<platform_interface'</$plat/TPM/TPMCmd/tpm/include/platform_interface'" platform/include/Platform.h
     sed -i "s'<public'</$plat/TPM/TPMCmd/tpm/include/public'" platform/include/Platform.h
     sed -i "s'<TpmProfile.h'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration/TpmProfile.h'" include/fTPM.h
+    sed -i "14d" platform/NVMem.c
+    sed -i "12i#include <stdio.h>" platform/NVMem.c
     sed -i "12d;83,97d;104d;105d" sub.mk
     sed -i "46icflags-y += -Wno-missing-include-dirs" sub.mk
     sed -i "61icflags-platform/Clock.c-y += -Wno-nested-externs" sub.mk
