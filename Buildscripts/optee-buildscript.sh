@@ -20,11 +20,25 @@ do
       sed -i "52d;65d;78d;103d;120d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
       sed -i "44d;48d;128d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
     popd
-    sed -i "s'srand(('rand(('" platform/include/Entropy.c
     sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" platform/include/Platform.h
     sed -i "s'<platform_interface'</$plat/TPM/TPMCmd/tpm/include/platform_interface'" platform/include/Platform.h
     sed -i "s'<public'</$plat/TPM/TPMCmd/tpm/include/public'" platform/include/Platform.h
-    sed -i "73,76d" platform/include/PlatformData.h
+    sed -i "s'<TpmProfile.h'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration/TpmProfile.h'" include/fTPM.h
+    sed -i "12d;83,97d;104d;105d" sub.mk
+    sed -i "46icflags-y += -Wno-missing-include-dirs" sub.mk
+    sed -i "61icflags-platform/Clock.c-y += -Wno-nested-externs" sub.mk
+    sed -i "61icflags-platform/Entropy.c-y += -Wno-nested-externs" sub.mk
+    sed -i "61icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "61icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "61icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "61icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "61icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
+    sed -i "61icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
+    sed -i "61icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "61icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
+    sed -i "61icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
+    sed -i "61icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "61icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
     sed -i "83,97d" sub.mk
     sed -i "83i \\
 srcs-y += platform/Cancel.c\\
@@ -42,6 +56,7 @@ srcs-y += platform/PowerPlat.c\\
 srcs-y += platform/RunCommand.c\\
 srcs-y += platform/Unique.c\\
 srcs-y += platform/VendorInfo.c" sub.mk
+    cat sub.mk
     make -j $(nproc) TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_USER_TA_TARGETS=ta_arm64 CFG_TA_EVENT_LOG_SIZE=65536 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- O=out
   popd
   pushd /$plat/optee_os-$OPT_VER
