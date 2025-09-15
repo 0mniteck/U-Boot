@@ -35,6 +35,7 @@ do
     sed -i "61icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
     sed -i "61icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
     sed -i "61icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
+    sed -i "61icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
     sed -i "61icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
     sed -i "61icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
     sed -i "61icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
