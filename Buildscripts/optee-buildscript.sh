@@ -11,7 +11,6 @@ do
     make -j $(nproc) PLATFORM=rockchip-$plat CFG_ARM64_core=y CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_core=aarch64-linux-gnu- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- CFG_USER_TA_TARGETS=ta_arm64 CFG_EARLY_CONSOLE_BAUDRATE=115200 EARLY_TA_PATHS=/$plat/optee_ftpm-$OPT_VER/out/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf ta_dev_kit
   popd
   pushd /$plat/optee_ftpm-$OPT_VER
-    ls -la /usr/include/time.h
     rm -r -f platform/*
     mkdir platform/include
     cp -f /$plat/TPM/TPMCmd/Platform/src/* platform/
@@ -34,7 +33,7 @@ do
     sed -i "68,70d;" fTPM.c
     sed -i "178d" /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64/include/util.h
     sed -i "20i#define s_locationCode" platform/RunCommand.c
-    sed -i "65i#include <bits/types/clock_t.h>" platform/Clock.c
+    sed -i "65i#include </usr/include/aarch64-linux-gnu/bits/types/clock_t.h>" platform/Clock.c
     sed -i "14d" platform/NVMem.c
     sed -i "12i#include <stdio.h>" platform/NVMem.c
     sed -i "12d;83,97d;104d;105d" sub.mk
