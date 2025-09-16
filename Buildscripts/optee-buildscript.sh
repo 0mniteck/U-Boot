@@ -33,7 +33,9 @@ do
     sed -i "68,70d;" fTPM.c
     sed -i "178d" /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64/include/util.h
     sed -i "20i#define s_locationCode" platform/RunCommand.c
-    sed -i "65i#include </usr/include/aarch64-linux-gnu/sys/time.h>" platform/Clock.c
+    sed -i "65d" platform/Clock.c
+    sed -i "9i#include <time.h>" platform/Clock.c
+    sed -i "9i#include <sys/time.h>" platform/Clock.c
     sed -i "14d" platform/NVMem.c
     sed -i "12i#include <stdio.h>" platform/NVMem.c
     sed -i "12d;83,97d;104d;105d" sub.mk
