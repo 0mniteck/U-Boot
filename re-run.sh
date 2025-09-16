@@ -39,8 +39,9 @@ stop() {
 
 scan_using_grype() { # $1 = Name, $2 = Type:[Name]
   pushd Results/
+    if [ -f "$HOME/.grype.yaml" ]; then GRCONF="-c $HOME/.grype.yaml"; fi
     mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=$1.spdx.json && rm -f -r "$HOME/syft"
-    script -q -c "grype -c $HOME/.grype.yaml sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp
+    script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp
     grep "✔ Scanned for vulnerabilities" $1.grype.tmp | tail -n 1 > $1.grype.status.1
     tr -d '\000-\037\177' < $1.grype.status.1 | sed '/^$/d' > $1.grype.status.1.tmp
     line1=$(cat $1.grype.status.1.tmp)
