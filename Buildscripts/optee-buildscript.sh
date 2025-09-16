@@ -35,7 +35,6 @@ do
     sed -i "20i#define s_locationCode" platform/RunCommand.c
     sed -i "65d" platform/Clock.c
     sed -i "9i#include <time.h>" platform/Clock.c
-    sed -i "9i#include <sys/time.h>" platform/Clock.c
     sed -i "14d" platform/NVMem.c
     sed -i "12i#include <stdio.h>" platform/NVMem.c
     sed -i "12d;83,97d;104d;105d" sub.mk
