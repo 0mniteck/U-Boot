@@ -35,6 +35,7 @@ do
     sed -i "27d" /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64/include/limits.h
     sed -i "70d" platform/RunCommand.c
     sed -i '70i        fprintf(stderr, "unk s location code");' platform/RunCommand.c
+    sed -i "s'ECC_CURVE_DATA'TPM_ECC_CURVE_METADATA'" include/TEE/TpmToTEEMath.h
     sed -i "12d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/wolf/include" sub.mk
