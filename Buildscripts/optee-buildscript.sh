@@ -35,7 +35,7 @@ do
     sed -i "27d" /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64/include/limits.h
     sed -i "70d" platform/RunCommand.c
     sed -i '70i        fprintf(stderr, "unk s location code");' platform/RunCommand.c
-    sed -i "12d;36d;83,97d;104,105d;109d;116,309d" sub.mk
+    sed -i "12d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/wolf/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
@@ -80,12 +80,24 @@ srcs-y += platform/PowerPlat.c\\
 srcs-y += platform/RunCommand.c\\
 srcs-y += platform/Unique.c\\
 srcs-y += platform/VendorInfo.c" sub.mk
-echo "srcs_ext-y += ./../cryptolibs/TpmBigNum/BnConvert.c
+echo "srcs_ext_base-y := \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/src/
+srcs_ext-y += ./../cryptolibs/TpmBigNum/BnConvert.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/BnEccConstants.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/BnMath.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/BnMemory.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/BnUtil.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/TpmBigNumThunks.c
+
+srcs_ext-y += ./../cryptolibs/wolf/BnToWolfMath.c
+srcs_ext-y += ./../cryptolibs/wolf/BnToWolfSupport.c
+
+srcs_ext-y += ./../cryptolibs/Ossl/BnToOsslMath.c
+srcs_ext-y += ./../cryptolibs/Ossl/TpmToOsslSupport.c
+
+srcs-y += tee/TpmToTEEMath.c
+srcs-y += tee/TpmToTEESupport.c
+srcs-y += tee/TpmToTEESym.c
+
 srcs_ext-y += X509/TpmASN1.c
 srcs_ext-y += X509/X509_ECC.c
 srcs_ext-y += X509/X509_RSA.c
