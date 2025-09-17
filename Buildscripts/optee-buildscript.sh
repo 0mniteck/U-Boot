@@ -32,29 +32,36 @@ do
     sed -i "s'_plat__NVDisable()'_plat__NVDisable(NULL,0)'" fTPM.c
     sed -i "68,70d;" fTPM.c
     sed -i "178d" /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64/include/util.h
-    sed -i "20i#define s_locationCode" platform/RunCommand.c
-    sed -i "65i#include </usr/include/time.h>" platform/Clock.c
-    sed -i "14d" platform/NVMem.c
-    sed -i "12i#include <stdio.h>" platform/NVMem.c
-    sed -i "12d;83,97d;104d;105d" sub.mk
+    sed -i "27d" /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64/include/limits.h
+    sed -i "70d" platform/RunCommand.c
+    sed -i '70i        fprintf(stderr, "unk s location code");' platform/RunCommand.c
+    sed -i "12d;36d;83,97d;104d;105d" sub.mk
+    sed -i "11iexport CC=gcc" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private/prototypes" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public/prototypes" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += /usr/include" sub.mk
     sed -i "46icflags-y += -Wno-missing-include-dirs" sub.mk
-    sed -i "60icflags-platform/Clock.c-y += -Wno-nested-externs" sub.mk
-    sed -i "60icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "60icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "60icflags-platform/Entropy.c-y += -Wno-nested-externs" sub.mk
-    sed -i "60icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "60icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "60icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "60icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
-    sed -i "60icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
-    sed -i "60icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "60icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "60icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
-    sed -i "60icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
-    sed -i "60icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "60icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
-    sed -i "60icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "83i \\
+    sed -i "67icflags-platform/Clock.c-y += -Wno-nested-externs" sub.mk
+    sed -i "67icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "67icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "67icflags-platform/Entropy.c-y += -Wno-nested-externs" sub.mk
+    sed -i "67icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "67icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "67icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "67icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
+    sed -i "67icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
+    sed -i "67icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "67icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "67icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
+    sed -i "67icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
+    sed -i "67icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "67icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
+    sed -i "67icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "106i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
@@ -70,6 +77,7 @@ srcs-y += platform/PowerPlat.c\\
 srcs-y += platform/RunCommand.c\\
 srcs-y += platform/Unique.c\\
 srcs-y += platform/VendorInfo.c" sub.mk
+    cat sub.mk
     make -j $(nproc) MEASURED_BOOT=y TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_USER_TA_TARGETS=ta_arm64 CFG_TA_EVENT_LOG_SIZE=65536 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- O=out
     read -p "Waiting fot user..."
   popd
