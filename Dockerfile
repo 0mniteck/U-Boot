@@ -11,18 +11,23 @@ ARG OPT_VER
 ARG OPT_SUM
 ARG OPT_SUM2
 ARG TPM_SUM
+ARG SSL_VER
+ARG SSL_SUM
 ARG ROT_SUM
 ARG ARCHS
 ENV ARCHS=$ARCHS
 ENV OPT_VER=$OPT_VER
+ENV SSL_VER=$SSL_VER
 ADD https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /$OPT_VER.zip
 ADD https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_$OPT_VER.zip
 ADD https://github.com/microsoft/ms-tpm-20-ref/archive/refs/tags/v1.83r1.zip /TPM.zip
+ADD https://github.com/openssl/openssl/archive/refs/tags/openssl-$SSL_VER.zip /SSL.zip
 ADD https://github.com/ARM-software/arm-trusted-firmware/raw/refs/heads/master/plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem /
 RUN echo "$OPT_SUM  $OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE Checksum Matched!" || exit 1
 RUN echo "$OPT_SUM2  ftpm_$OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE fTPM Checksum Matched!" || exit 1
 RUN echo "$TPM_SUM  TPM.zip" | sha512sum --status -c - && echo "TPM Checksum Matched!" || exit 1
-RUN echo "$ROT_SUM  arm_rotprivk_rsa.pem" | sha512sum --status -c - && echo "ROT Key Checksum Matched!" || exit 1
+RUN echo "$SSL_SUM  openssl-$SSL_VER.zip" | sha512sum --status -c - && echo "OpenSSL Checksum Matched!" || exit 1
+RUN echo "$ROT_SUM  arm_rotprivk_rsa.pem" | sha512sum --status -c - && echo "ATF ROT Key Checksum Matched!" || exit 1
 ARG ENTRYPOINT
 COPY Buildscripts/$ENTRYPOINT-buildscript.sh /
 
