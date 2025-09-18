@@ -16,14 +16,15 @@ do
     cp -f /$plat/TPM/TPMCmd/Platform/src/* platform/
     cp -r -f /$plat/TPM/TPMCmd/Platform/include/* platform/include/
     pushd /$plat/TPM/TPMCmd/
-      find . -type f -exec sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" {} \;
+      #find . -type f -exec sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" {} \;
       sed -i "52d;65d;78d;103d;120d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
       sed -i "44d;48d;128d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
+      sed -i "35d" tpm/cryptolibs/TpmBigNum/include/TpmBigNum/TpmToTpmBigNumMath.h
     popd
-    sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" platform/include/Platform.h
-    sed -i "s'<platform_interface'</$plat/TPM/TPMCmd/tpm/include/platform_interface'" platform/include/Platform.h
-    sed -i "s'<public'</$plat/TPM/TPMCmd/tpm/include/public'" platform/include/Platform.h
-    sed -i "s'<TpmProfile.h'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration/TpmProfile.h'" include/fTPM.h
+    #sed -i "s'<TpmConfiguration'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration'" platform/include/Platform.h
+    #sed -i "s'<platform_interface'</$plat/TPM/TPMCmd/tpm/include/platform_interface'" platform/include/Platform.h
+    #sed -i "s'<public'</$plat/TPM/TPMCmd/tpm/include/public'" platform/include/Platform.h
+    #sed -i "s'<TpmProfile.h'</$plat/TPM/TPMCmd/TpmConfiguration/TpmConfiguration/TpmProfile.h'" include/fTPM.h
     sed -i "s'_plat__NVEnable(void \*platParameter)'_plat__NVEnable(void\*  platParameter, size_t paramSize)'" include/fTPM.h
     sed -i "s'TPM_Manufacture(bool firstTime)'TPM_Manufacture(int firstTime)'" include/fTPM.h
     sed -i "s'_plat__NVDisable(void)'_plat__NVDisable(void\*  platParameter, size_t paramSize)'" include/fTPM.h
@@ -42,30 +43,32 @@ do
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration/TpmConfiguration" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private/prototypes" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public/prototypes" sub.mk
     sed -i "35iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
     sed -i "35iglobal-incdirs_ext-y += /usr/include" sub.mk
-    sed -i "50icflags-y += -Wno-missing-include-dirs" sub.mk
-    sed -i "70icflags-platform/Clock.c-y += -Wno-nested-externs" sub.mk
-    sed -i "70icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "70icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "70icflags-platform/Entropy.c-y += -Wno-nested-externs" sub.mk
-    sed -i "70icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "70icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "70icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "70icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
-    sed -i "70icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
-    sed -i "70icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "70icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "70icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
-    sed -i "70icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
-    sed -i "70icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "70icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
-    sed -i "70icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "109i \\
+    sed -i "52icflags-y += -Wno-missing-include-dirs" sub.mk
+    sed -i "72icflags-platform/Clock.c-y += -Wno-nested-externs" sub.mk
+    sed -i "72icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "72icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "72icflags-platform/Entropy.c-y += -Wno-nested-externs" sub.mk
+    sed -i "72icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "72icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "72icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "72icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
+    sed -i "72icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
+    sed -i "72icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "72icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "72icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
+    sed -i "72icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
+    sed -i "72icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "72icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
+    sed -i "72icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "111i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
@@ -88,17 +91,17 @@ srcs_ext-y += ./../cryptolibs/TpmBigNum/BnMath.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/BnMemory.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/BnUtil.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/TpmBigNumThunks.c
-
+ 
 srcs_ext-y += ./../cryptolibs/wolf/BnToWolfMath.c
 srcs_ext-y += ./../cryptolibs/wolf/BnToWolfSupport.c
-
+ 
 srcs_ext-y += ./../cryptolibs/Ossl/BnToOsslMath.c
 srcs_ext-y += ./../cryptolibs/Ossl/TpmToOsslSupport.c
-
+ 
 srcs-y += tee/TpmToTEEMath.c
 srcs-y += tee/TpmToTEESupport.c
 srcs-y += tee/TpmToTEESym.c
-
+ 
 srcs_ext-y += X509/TpmASN1.c
 srcs_ext-y += X509/X509_ECC.c
 srcs_ext-y += X509/X509_RSA.c
