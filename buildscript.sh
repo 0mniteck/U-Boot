@@ -94,7 +94,7 @@ echo "Tag Release: $TAG"
 echo "Test Build: $TEST"
 sleep 5
 
-sudo apt install -y ansifilter bc dosfstools parted screen snapd
+sudo apt install -y bc dosfstools parted screen snapd
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 ./clean.sh $CLEAN && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$TEST' '$AARCH
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo "" && cat Results/release.sha512sum && echo ""
