@@ -26,7 +26,7 @@ ADD https://github.com/ARM-software/arm-trusted-firmware/raw/refs/heads/master/p
 RUN echo "$OPT_SUM  $OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE Checksum Matched!" || exit 1
 RUN echo "$OPT_SUM2  ftpm_$OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE fTPM Checksum Matched!" || exit 1
 RUN echo "$TPM_SUM  TPM.zip" | sha512sum --status -c - && echo "TPM Checksum Matched!" || exit 1
-RUN echo "$SSL_SUM  openssl-$SSL_VER.zip" | sha512sum --status -c - && echo "OpenSSL Checksum Matched!" || exit 1
+RUN echo "$SSL_SUM  SSL.zip" | sha512sum --status -c - && echo "OpenSSL Checksum Matched!" || exit 1
 RUN echo "$ROT_SUM  arm_rotprivk_rsa.pem" | sha512sum --status -c - && echo "ATF ROT Key Checksum Matched!" || exit 1
 ARG ENTRYPOINT
 COPY Buildscripts/$ENTRYPOINT-buildscript.sh /
