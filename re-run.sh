@@ -88,6 +88,8 @@ if [ "$2" = "yes" ]; then
     --build-arg OPT_SUM=$OPT_SUM \
     --build-arg OPT_SUM2=$OPT_SUM2 \
     --build-arg TPM_SUM=$TPM_SUM \
+    --build-arg SSL_VER=$SSL_VER \
+    --build-arg SSL_SUM=$SSL_SUM \
     --build-arg ROT_SUM=$ROT_SUM \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
@@ -103,6 +105,7 @@ if [ "$2" = "yes" ]; then
     --user "$(id -u):$(id -g)" \
     --entrypoint /optee-buildscript.sh \
     -e SOURCE_DATE_EPOCH=$source_date_epoch \
+    -e SSL_VER=$SSL_VER \
     -e OPT_VER=$OPT_VER \
     -e ARCHS="$ARCHS" \
     optee
