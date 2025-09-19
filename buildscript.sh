@@ -22,25 +22,25 @@ export BUILD_LIST="R5B-rk3588:rock5b-rk3588_defconfig RP64-rk3399:rockpro64-rk33
 export LIST="R5B-rk3588 RP64-rk3399 PBP-rk3399"
 export ARCHS="rk3588 rk3399"
 
-while getopts ":a:c:d:r:t:l:" opt; do
+while getopts ":a:c:d:e:t:w:" opt; do
     case $opt in
-        a)
-            AARCH="$OPTARG"
+        a) # Alternate List
+            ALT="$OPTARG"
             ;;
-        c)
+        c) # Clean Directories
             CLEAN="$OPTARG"
             ;;
-        d)
+        d) # Developer Build (Skip some steps)
+            DEV="$OPTARG"
+            ;;
+        e) # SOURCE_DATE_EPOCH (For reproducibility)
             EPOCH="$OPTARG"
             ;;
-        r)
+        t) # Tag Release
             TAG="$OPTARG"
             ;;
-        t)
-            TEST="$OPTARG"
-            ;;
-        l)
-            ALT="$OPTARG"
+        w) # Cross Compile
+            CROSS="$OPTARG"
             ;;
         \?)
             echo "Invalid option: -$opt" >&2
@@ -51,14 +51,14 @@ while getopts ":a:c:d:r:t:l:" opt; do
     esac
 done
 
-if [ "$AARCH" = "" ]; then
-    AARCH="no"
+if [ "$CROSS" = "" ]; then
+    CROSS="no"
 fi
 if [ "$CLEAN" = "" ]; then
     CLEAN="yes"
 fi
-if [ "$TEST" = "" ]; then
-    TEST="no"
+if [ "$DEV" = "" ]; then
+    DEV="no"
 fi
 if [ "$ALT" = "" ]; then
     ALT="no"
@@ -92,16 +92,17 @@ do
 done
 echo "$lis1 \"" >> vars.env
 
-echo "Cross-Compile: $AARCH"
+echo "Cross-Compile: $CROSS"
 echo "Clean Build: $CLEAN"
-echo "Override Source Epoch: $EPOCH"
 echo "Tag Release: $TAG"
-echo "Test Build: $TEST"
+echo "Developer Build: $DEV"
+echo "Using Alternate List: $ALT"
+echo "Override Source Epoch: $EPOCH"
 sleep 5
 
 sudo apt install -y bc dosfstools parted screen snapd
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
-./clean.sh $CLEAN && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$TEST' '$AARCH
+./clean.sh $CLEAN && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$DEV' '$CROSS
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo "" && cat Results/release.sha512sum && echo ""
 mv builder.log Results/builder.log && status="$(cat status.build)" && ./clean.sh cleanup && ls -la Builds/*
 read -p "$status: --> sign/commit/push" && ./git.sh "$status" "$TAG"
