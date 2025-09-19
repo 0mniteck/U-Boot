@@ -22,7 +22,7 @@ export BUILD_LIST="R5B-rk3588:rock5b-rk3588_defconfig RP64-rk3399:rockpro64-rk33
 export LIST="R5B-rk3588 RP64-rk3399 PBP-rk3399"
 export ARCHS="rk3588 rk3399"
 
-while getopts ":a:c:d:r:t:" opt; do
+while getopts ":a:c:d:r:t:l:" opt; do
     case $opt in
         a)
             AARCH="$OPTARG"
@@ -38,6 +38,9 @@ while getopts ":a:c:d:r:t:" opt; do
             ;;
         t)
             TEST="$OPTARG"
+            ;;
+        l)
+            ALT="$OPTARG"
             ;;
         \?)
             echo "Invalid option: -$opt" >&2
@@ -57,8 +60,10 @@ fi
 if [ "$TEST" = "" ]; then
     TEST="no"
 fi
-
-if [ "$TEST" = "yes" ]; then
+if [ "$ALT" = "" ]; then
+    ALT="no"
+fi
+if [ "$ALT" = "yes" ]; then
   export BUILD_LIST="PT2-rk3566:pinetab2-rk3566_defconfig"
   export LIST="PT2-rk3566"
   export ARCHS="rk3568"
