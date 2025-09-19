@@ -105,4 +105,7 @@ git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 ./clean.sh $CLEAN && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$DEV' '$CROSS
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo "" && cat Results/release.sha512sum && echo ""
 mv builder.log Results/builder.log && status="$(cat status.build)" && ./clean.sh cleanup && ls -la Builds/*
-read -p "$status: --> sign/commit/push" && ./git.sh "$status" "$TAG"
+read -p "$status: --> sign/commit/push"
+if [ "$DEV" = "no" ]; then
+    ./git.sh "$status" "$TAG"
+fi
