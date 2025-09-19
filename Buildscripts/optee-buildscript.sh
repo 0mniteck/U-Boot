@@ -20,8 +20,6 @@ do
     pushd /$plat/TPM/TPMCmd/
       sed -i "52d;65d;78d;103d;120d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
       sed -i "44d;48d;128d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
-      # sed -i "35d" tpm/cryptolibs/TpmBigNum/include/TpmBigNum/TpmToTpmBigNumMath.h
-      # sed -i "35i#include \'BnToOsslMath.h\'" tpm/cryptolibs/TpmBigNum/include/TpmBigNum/TpmToTpmBigNumMath.h
       sed -i "s'0x30100000L'0x40100000L'" tpm/cryptolibs/Ossl/include/Ossl/BnToOsslMath.h
     popd
     sed -i "s'_plat__NVEnable(void \*platParameter)'_plat__NVEnable(void\*  platParameter, size_t paramSize)'" include/fTPM.h
@@ -38,10 +36,8 @@ do
     sed -i "s'ECC_CURVE_DATA'TPM_ECC_CURVE'" include/TEE/TpmToTEEMath.h
     sed -i "12d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
-    # sed -i "11icppflags-y += -include TpmAlgorithmDefines.h" sub.mk
     sed -i "'s'cppflags-y += -D_ARM_ -DFAIL_TRACE=NO'cppflags-y += -D_ARM_ -DFAIL_TRACE=NO -DBN_MATH_LIB=Ossl'" sub.mk
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk 
-    # sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/wolf/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
@@ -53,17 +49,13 @@ do
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private/prototypes" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public" sub.mk
-    # sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public/prototypes" sub.mk
     sed -i "35iglobal-incdirs_ext-y += /$plat/openssl" sub.mk
     sed -i "35iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
     sed -i "35iglobal-incdirs_ext-y += /usr/include" sub.mk
-    # sed -i "53icflags-y += -Wno-missing-include-dirs" sub.mk
     sed -i "53icflags-y += -Wno-strict-aliasing" sub.mk
     sed -i "53icflags-y += -Wno-nested-externs" sub.mk
-    sed -i "75icflags-platform/Clock.c-y += -Wno-nested-externs" sub.mk
     sed -i "75icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
     sed -i "75icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "75icflags-platform/Entropy.c-y += -Wno-nested-externs" sub.mk
     sed -i "75icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
     sed -i "75icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
     sed -i "75icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
@@ -76,7 +68,7 @@ do
     sed -i "75icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
     sed -i "75icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
     sed -i "75icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "114i \\
+    sed -i "112i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
