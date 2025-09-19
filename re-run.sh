@@ -20,6 +20,7 @@ build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
 
 if [ "$4" = "yes" ]; then
   echo "CROSS_COMPILE: $4"
+  export CROSS="--platform linux/arm64"
 fi
 if [ "$2" = "no" ]; then
   echo "CLEAN_BUILD: $2"
@@ -27,13 +28,13 @@ fi
 if [ "$3" = "yes" ]; then
   echo "DEV_BUILD: $3"
   load() { # $1 = Location/Name
-    export LOAD="--platform linux/arm64 --target $1 --tag $1"
+    export LOAD="--load $CROSS --target $1 --tag $1"
     export NAME=$1
     return
     }
 else
   load() { # $1 = Location/Name
-    export LOAD="--load --metadata-file Results/$1.meta.json --platform linux/arm64 --target $1 --tag $1"
+    export LOAD="--load --metadata-file Results/$1.meta.json $CROSS --target $1 --tag $1"
     export BUILDX_METADATA_PROVENANCE=max
     export NAME=$1
     return
@@ -95,9 +96,9 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
   fi
 }
 
-docker buildx create --name U-Boot-Builder --platform linux/arm64 --driver-opt "network=host" --bootstrap --use
+docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
 if [ "$4" = "yes" ]; then
-  docker run --privileged --rm tonistiigi/binfmt --install all
+  docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
 fi
 if [ "$2" = "yes" ]; then
   load optee
@@ -119,8 +120,7 @@ if [ "$2" = "yes" ]; then
   scan_using_grype $NAME docker:$NAME $3
 
   docker run -it --cpus=$(nproc) \
-    --name $NAME \
-    --platform linux/arm64 \
+    --name $NAME $CROSS \
     --user "$(id -u):$(id -g)" \
     --entrypoint /$NAME-buildscript.sh \
     -e SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -158,8 +158,7 @@ if [ "$2" = "yes" ]; then
   scan_using_grype $NAME docker:$NAME $3
 
   docker run -it --cpus=$(nproc) \
-    --name $NAME \
-    --platform linux/arm64 \
+    --name $NAME $CROSS \
     --user "$(id -u):$(id -g)" \
     --entrypoint /$NAME-buildscript.sh \
     -e SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -191,8 +190,7 @@ docker buildx build $LOAD \
 scan_using_grype $NAME docker:$NAME $3
 
 docker run -it --cpus=$(nproc) \
-  --name $NAME \
-  --platform linux/arm64 \
+  --name $NAME $CROSS \
   --user "$(id -u):$(id -g)" \
   --entrypoint /$NAME-buildscript.sh \
   -e SOURCE_DATE_EPOCH=$source_date_epoch \
