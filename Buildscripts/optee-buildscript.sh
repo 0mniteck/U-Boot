@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 trap '[[ $pid ]] && kill $pid; exit' EXIT
+unzip -q SSL.zip -d / > /dev/null
+rm -f -r /usr/include/openssl/
+mv /openssl-openssl-$SSL_VER/crypto /usr/include/openssl
 for plat in $ARCHS
 do
   unzip -q $OPT_VER.zip -d /$plat > /dev/null
   unzip -q ftpm_$OPT_VER.zip -d /$plat > /dev/null
   unzip -q TPM.zip -d /$plat > /dev/null
-  unzip -q SSL.zip -d /$plat > /dev/null
   mv /$plat/ms-tpm-20-ref-1.83r1 /$plat/TPM
-  mkdir -p /$plat/openssl/
-  mv /$plat/openssl-openssl-$SSL_VER/crypto /$plat/openssl/openssl
   pushd /$plat/optee_os-$OPT_VER
     make -j $(nproc) PLATFORM=rockchip-$plat CFG_ARM64_core=y CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_core=aarch64-linux-gnu- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- CFG_USER_TA_TARGETS=ta_arm64 CFG_EARLY_CONSOLE_BAUDRATE=115200 EARLY_TA_PATHS=/$plat/optee_ftpm-$OPT_VER/out/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf ta_dev_kit
   popd
@@ -18,8 +18,8 @@ do
     cp -f /$plat/TPM/TPMCmd/Platform/src/* platform/
     cp -r -f /$plat/TPM/TPMCmd/Platform/include/* platform/include/
     pushd /$plat/TPM/TPMCmd/
-      sed -i "52d;65d;78d;103d;120d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
-      sed -i "44d;48d;128d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
+      # sed -i "52d;65d;78d;103d;120d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
+      # sed -i "44d;48d;128d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
       sed -i "s'0x30100000L'0x40100000L'" tpm/cryptolibs/Ossl/include/Ossl/BnToOsslMath.h
     popd
     sed -i "s'_plat__NVEnable(void \*platParameter)'_plat__NVEnable(void\*  platParameter, size_t paramSize)'" include/fTPM.h
