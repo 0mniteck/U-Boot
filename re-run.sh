@@ -275,4 +275,11 @@ pushd Results/
   echo "# Base Build System: $(uname -o) $(uname -r) $(uname -p) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> release.sha512sum
   echo $(cat ../sys.info) >> release.sha512sum
 popd
+if [ "$check_file" = "1" ]; then
+  pushd Results/
+    cp /tmp/release.last.sha512sum release.last.sha512sum
+    sha512sum -c release.last.sha512sum
+    rm -f /tmp/release.last.sha512sum && rm -f release.last.sha512sum
+  popd
+fi
 echo "Successful Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.build
