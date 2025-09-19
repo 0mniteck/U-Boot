@@ -27,13 +27,13 @@ if [ "$2" = "no" ]; then
 fi
 if [ "$3" = "yes" ]; then
   echo "DEV_BUILD: $3"
-  load() { # $1 = Location/Name
+  load() { # $1 = Name
     export LOAD="--load $CROSS --target $1 --tag $1"
     export NAME=$1
     return
     }
 else
-  load() { # $1 = Location/Name
+  load() { # $1 Name
     export LOAD="--load --metadata-file Results/$1.meta.json $CROSS --target $1 --tag $1"
     export BUILDX_METADATA_PROVENANCE=max
     export NAME=$1
