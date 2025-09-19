@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q SSL.zip -d / > /dev/null
-rm -f -r /usr/include/openssl/
+rm -f -r /usr/include/openssl
 mv /openssl-openssl-$SSL_VER/crypto /usr/include/openssl
+ls -la /usr/include/openssl
 for plat in $ARCHS
 do
   unzip -q $OPT_VER.zip -d /$plat > /dev/null
@@ -11,17 +12,22 @@ do
   mv /$plat/ms-tpm-20-ref-1.83r1 /$plat/TPM
   pushd /$plat/optee_os-$OPT_VER
     make -j $(nproc) PLATFORM=rockchip-$plat CFG_ARM64_core=y CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_core=aarch64-linux-gnu- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- CFG_USER_TA_TARGETS=ta_arm64 CFG_EARLY_CONSOLE_BAUDRATE=115200 EARLY_TA_PATHS=/$plat/optee_ftpm-$OPT_VER/out/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf ta_dev_kit
+    sed -i "178d" out/arm-plat-rockchip/export-ta_arm64/include/util.h
+    sed -i "27d" out/arm-plat-rockchip/export-ta_arm64/include/limits.h
+  popd
+  pushd /$plat/TPM/TPMCmd/
+    sed -i "s'XYZ 'OMNITECK '" Platform/src/VendorInfo.c
+    sed -i "s'xCG 'TCG '" Platform/src/VendorInfo.c
+    sed -i "5d;7d" Platform/include/Platform.h
+    sed -i "70d" Platform/src/RunCommand.c
+    sed -i '70i        fprintf(stderr, "unk s location code");' Platform/src/RunCommand.c
+    sed -i "s'0x30100000L'0x40100000L'" tpm/cryptolibs/Ossl/include/Ossl/BnToOsslMath.h
   popd
   pushd /$plat/optee_ftpm-$OPT_VER
     rm -r -f platform/*
     mkdir platform/include
     cp -f /$plat/TPM/TPMCmd/Platform/src/* platform/
     cp -r -f /$plat/TPM/TPMCmd/Platform/include/* platform/include/
-    pushd /$plat/TPM/TPMCmd/
-      # sed -i "52d;65d;78d;103d;120d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
-      # sed -i "44d;48d;128d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
-      sed -i "s'0x30100000L'0x40100000L'" tpm/cryptolibs/Ossl/include/Ossl/BnToOsslMath.h
-    popd
     sed -i "s'_plat__NVEnable(void \*platParameter)'_plat__NVEnable(void\*  platParameter, size_t paramSize)'" include/fTPM.h
     sed -i "s'TPM_Manufacture(bool firstTime)'TPM_Manufacture(int firstTime)'" include/fTPM.h
     sed -i "s'_plat__NVDisable(void)'_plat__NVDisable(void\*  platParameter, size_t paramSize)'" include/fTPM.h
@@ -29,14 +35,7 @@ do
     sed -i "s'(_plat__NVEnable(NULL))'(_plat__NVEnable(NULL,0))'" fTPM.c
     sed -i "s'_plat__NVDisable()'_plat__NVDisable(NULL,0)'" fTPM.c
     sed -i "68,70d;" fTPM.c
-    sed -i "178d" /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64/include/util.h
-    sed -i "27d" /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64/include/limits.h
-    sed -i "70d" platform/RunCommand.c
-    sed -i '70i        fprintf(stderr, "unk s location code");' platform/RunCommand.c
-    sed -i "s'XYZ 'OMNITECK '" platform/VendorInfo.c
-    sed -i "s'xCG 'TCG '" platform/VendorInfo.c
     sed -i "s'ECC_CURVE_DATA'TPM_ECC_CURVE'" include/TEE/TpmToTEEMath.h
-    sed -i "5d;7d" platform/include/Platform.h
     sed -i "3d;12d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
