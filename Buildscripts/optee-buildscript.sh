@@ -3,6 +3,7 @@ trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q SSL.zip -d / > /dev/null
 rm -f -r /usr/include/openssl
 mv /openssl-openssl-$SSL_VER/include/crypto /usr/include/openssl
+mv /openssl-openssl-$SSL_VER/include/openssl /usr/include/openssl/openssl
 ls -la /usr/include/openssl
 for plat in $ARCHS
 do
@@ -52,24 +53,25 @@ do
     sed -i "34iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private/prototypes" sub.mk
     sed -i "34iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public" sub.mk
     sed -i "34iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
+    sed -i "34iglobal-incdirs_ext-y += /usr/include/openssl" sub.mk
     sed -i "34iglobal-incdirs_ext-y += /usr/include" sub.mk
-    sed -i "51icflags-y += -Wno-strict-aliasing" sub.mk
-    sed -i "51icflags-y += -Wno-nested-externs" sub.mk
-    sed -i "73icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "73icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "73icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "73icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "73icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "73icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
-    sed -i "73icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
-    sed -i "73icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "73icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "73icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
-    sed -i "73icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
-    sed -i "73icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "73icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
-    sed -i "73icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "110i \\
+    sed -i "52icflags-y += -Wno-strict-aliasing" sub.mk
+    sed -i "52icflags-y += -Wno-nested-externs" sub.mk
+    sed -i "74icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "74icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "74icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "74icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "74icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "74icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
+    sed -i "74icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
+    sed -i "74icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "74icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "74icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
+    sed -i "74icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
+    sed -i "74icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "74icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
+    sed -i "74icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "111i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
