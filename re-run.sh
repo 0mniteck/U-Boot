@@ -1,5 +1,26 @@
 #!/bin/bash
 
+source_date_epoch=1;
+if [ "$1" != 0 ]; then
+  echo 'Using override timestamp for SOURCE_DATE_EPOCH: $(date -d @$(($1)) = $1';
+  source_date_epoch=$(($1));
+else
+  timestamp=$(date -d $(date +%D) +%s);
+  if [ "${timestamp}" != "" ]; then
+    echo "Setting SOURCE_DATE_EPOCH from today's date: $(date +%D) = @$timestamp";
+    source_date_epoch=$((timestamp));
+  else
+    echo "Can't get timestamp. Defaulting to 1.";
+    source_date_epoch=1;
+  fi
+fi
+
+source_date="@$source_date_epoch"
+build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
+
+if [ "$4" = "yes" ]; then
+  echo "CROSS_COMPILE: $4"
+fi
 if [ "$2" = "no" ]; then
   echo "CLEAN_BUILD: $2"
 fi
@@ -18,9 +39,7 @@ else
     return
     }
 fi
-if [ "$4" = "yes" ]; then
-  echo "CROSS_COMPILE: $4"
-fi
+
 echo "SOURCE_DATE: $source_date"
 echo "SOURCE_DATE_EPOCH: $source_date_epoch"
 echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
@@ -41,24 +60,6 @@ else
   snap install docker --revision=3267 && systemctl stop snap.docker.nvidia-container-toolkit
   systemctl disable snap.docker.nvidia-container-toolkit
 fi
-
-source_date_epoch=1;
-if [ "$1" != 0 ]; then
-  echo 'Using override timestamp for SOURCE_DATE_EPOCH: $(date -d @$(($1)) = $1';
-  source_date_epoch=$(($1));
-else
-  timestamp=$(date -d $(date +%D) +%s);
-  if [ "${timestamp}" != "" ]; then
-    echo "Setting SOURCE_DATE_EPOCH from today's date: $(date +%D) = @$timestamp";
-    source_date_epoch=$((timestamp));
-  else
-    echo "Can't get timestamp. Defaulting to 1.";
-    source_date_epoch=1;
-  fi
-fi
-
-source_date="@$source_date_epoch"
-build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
 
 stop() {
   docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
