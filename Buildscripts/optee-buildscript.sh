@@ -5,7 +5,7 @@ rm -f -r /usr/include/openssl
 mv /openssl-openssl-$SSL_VER/include/crypto /usr/include/openssl
 mv /openssl-openssl-$SSL_VER/include/openssl /usr/include/openssl/openssl
 mv /openssl-openssl-$SSL_VER/include/internal /usr/include/openssl/internal
-ls -la /usr/include/openssl
+mv /usr/include/openssl/openssl/opensslv.h.in /usr/include/openssl/openssl/opensslv.h
 for plat in $ARCHS
 do
   unzip -q $OPT_VER.zip -d /$plat > /dev/null
