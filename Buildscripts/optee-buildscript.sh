@@ -37,7 +37,7 @@ do
     sed -i "3d;12d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
     sed -i "11icppflags-y += -include TpmAlgorithmDefines.h"
-    # sed -i "17icppflags-y += -DALG_ECC=YES -DECC_NIST_P384=YES -DALG_RSA=YES -DRSA_4096=YES" sub.mk
+    sed -i "18a -DBN_MATH_LIB=Ossl" sub.mk
     # sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/wolf/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
