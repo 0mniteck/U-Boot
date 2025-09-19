@@ -25,6 +25,8 @@ do
     sed -i "5d;7d" Platform/include/Platform.h
     sed -i "70d" Platform/src/RunCommand.c
     sed -i '70i        fprintf(stderr, "unk s location code");' Platform/src/RunCommand.c
+    sed -i "52d;65d;78d;103d;120d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
+    sed -i "44d;48d;128d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
     sed -i "s'0x30100000L'0x40100000L'" tpm/cryptolibs/Ossl/include/Ossl/BnToOsslMath.h
   popd
   pushd /$plat/optee_ftpm-$OPT_VER
