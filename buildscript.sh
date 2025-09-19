@@ -24,22 +24,22 @@ export ARCHS="rk3588 rk3399"
 
 while getopts ":a:c:d:e:t:w:" opt; do
     case $opt in
-        a) # Alternate List
+        a) # Alternate List (yes/No)
             ALT="$OPTARG"
             ;;
-        c) # Clean Directories
+        c) # Clean Directories (Yes/no)
             CLEAN="$OPTARG"
             ;;
-        d) # Developer Build (Skip some steps)
+        d) # Developer Build [Skip some steps] (yes/No)
             DEV="$OPTARG"
             ;;
-        e) # SOURCE_DATE_EPOCH (For reproducibility)
+        e) # SOURCE_DATE_EPOCH [For reproducibility] ex. "1758309600"
             EPOCH="$OPTARG"
             ;;
-        t) # Tag Release
+        t) # Tag Release refs/tags/("tagname") *Required
             TAG="$OPTARG"
             ;;
-        w) # Cross Compile
+        w) # Cross Compile (yes/No)
             CROSS="$OPTARG"
             ;;
         \?)
