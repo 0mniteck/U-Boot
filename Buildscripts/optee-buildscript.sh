@@ -69,7 +69,7 @@ do
     sed -i "73icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
     sed -i "73icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
     sed -i "73icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "130i \\
+    sed -i "110i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
