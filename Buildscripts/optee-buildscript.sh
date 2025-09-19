@@ -34,22 +34,27 @@ do
     sed -i "70d" platform/RunCommand.c
     sed -i '70i        fprintf(stderr, "unk s location code");' platform/RunCommand.c
     sed -i "s'ECC_CURVE_DATA'TPM_ECC_CURVE'" include/TEE/TpmToTEEMath.h
-    sed -i "12d;36d;83,97d;104,105d;110,309d" sub.mk
+    sed -i "3d;12d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
-    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/wolf/include" sub.mk
+    sed -i "11icppflags-y += -include TpmAlgorithmDefines.h"
+    # sed -i "17icppflags-y += -DALG_ECC=YES -DECC_NIST_P384=YES -DALG_RSA=YES -DRSA_4096=YES" sub.mk
+    # sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/wolf/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration/TpmConfiguration" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/" sub.mk
+    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/prototypes" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private/prototypes" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public" sub.mk
-    sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public/prototypes" sub.mk
+    # sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public/prototypes" sub.mk
     sed -i "35iglobal-incdirs_ext-y += /$plat/openssl" sub.mk
     sed -i "35iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
     sed -i "35iglobal-incdirs_ext-y += /usr/include" sub.mk
-    sed -i "53icflags-y += -Wno-missing-include-dirs" sub.mk
+    # sed -i "53icflags-y += -Wno-missing-include-dirs" sub.mk
     sed -i "53icflags-y += -Wno-strict-aliasing" sub.mk
     sed -i "53icflags-y += -Wno-nested-externs" sub.mk
     sed -i "75icflags-platform/Clock.c-y += -Wno-nested-externs" sub.mk
@@ -91,10 +96,6 @@ srcs_ext-y += ./../cryptolibs/TpmBigNum/BnMath.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/BnMemory.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/BnUtil.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/TpmBigNumThunks.c
- 
-srcs_ext-y += ./../cryptolibs/wolf/BnToWolfMath.c
-srcs_ext-y += ./../cryptolibs/wolf/BnToWolfSupport.c
- 
 srcs_ext-y += ./../cryptolibs/Ossl/BnToOsslMath.c
 srcs_ext-y += ./../cryptolibs/Ossl/TpmToOsslSupport.c
  
@@ -306,7 +307,7 @@ srcs_ext-y += support/TableMarshalData.c
 srcs_ext-y += support/TpmFail.c
 srcs_ext-y += support/TpmSizeChecks.c" >> sub.mk
     cat sub.mk
-    make -j $(nproc) ALG_ECC=y ECC_NIST_P384=y ALG_RSA=y RSA_4096=y MEASURED_BOOT=y TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_USER_TA_TARGETS=ta_arm64 CFG_TA_EVENT_LOG_SIZE=65536 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- O=out
+    make -j $(nproc) BN_MATH_LIB=Ossl VERBOSE=1 TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_USER_TA_TARGETS=ta_arm64 CFG_TA_EVENT_LOG_SIZE=65536 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- O=out
     read -p "Waiting fot user..."
   popd
   pushd /$plat/optee_os-$OPT_VER
