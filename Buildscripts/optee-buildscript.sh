@@ -2,7 +2,7 @@
 trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q SSL.zip -d / > /dev/null
 rm -f -r /usr/include/openssl
-mv /openssl-openssl-$SSL_VER/crypto /usr/include/openssl
+mv /openssl-openssl-$SSL_VER/include/crypto /usr/include/openssl
 ls -la /usr/include/openssl
 for plat in $ARCHS
 do
