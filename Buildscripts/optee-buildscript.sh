@@ -22,6 +22,7 @@ do
       sed -i "44d;48d;128d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
       # sed -i "35d" tpm/cryptolibs/TpmBigNum/include/TpmBigNum/TpmToTpmBigNumMath.h
       # sed -i "35i#include \'BnToOsslMath.h\'" tpm/cryptolibs/TpmBigNum/include/TpmBigNum/TpmToTpmBigNumMath.h
+      sed -i "'s'0x30100000L'0x40100000L" tpm/cryptolibs/Ossl/include/Ossl/BnToOsslMath.h
     popd
     sed -i "s'_plat__NVEnable(void \*platParameter)'_plat__NVEnable(void\*  platParameter, size_t paramSize)'" include/fTPM.h
     sed -i "s'TPM_Manufacture(bool firstTime)'TPM_Manufacture(int firstTime)'" include/fTPM.h
@@ -38,7 +39,7 @@ do
     sed -i "12d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
     # sed -i "11icppflags-y += -include TpmAlgorithmDefines.h" sub.mk
-    sed -i "18 a'$'-DBN_MATH_LIB=Ossl'" sub.mk
+    sed -i "'s'cppflags-y += -D_ARM_ -DFAIL_TRACE=NO'cppflags-y += -D_ARM_ -DFAIL_TRACE=NO -DBN_MATH_LIB=Ossl'" sub.mk
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk 
     # sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/wolf/include" sub.mk
     sed -i "35iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
