@@ -4,6 +4,17 @@ source_date_epoch=1;
 if [ "$1" != 0 ]; then
   echo 'Using override timestamp for SOURCE_DATE_EPOCH: $(date -d @$(($1)) = $1';
   source_date_epoch=$(($1));
+elif [ "$3" = no ]; then
+  timestamp=$(cat Results/release.sha512sum | grep Epoch | cut -d ' ' -f5)
+  if [ "${timestamp}" != "" ]; then
+    echo "Setting SOURCE_DATE_EPOCH from release.sha512sum: $(cat Results/release.sha512sum | grep Epoch | cut -d ' ' -f5)"
+    source_date_epoch=$((timestamp))
+    check_file=1
+    cp Results/release.sha512sum /tmp/release.last.sha512sum
+  else
+    echo "Can't get latest commit timestamp. Defaulting to 1."
+    source_date_epoch=1
+  fi
 else
   timestamp=$(date -d $(date +%D) +%s);
   if [ "${timestamp}" != "" ]; then
