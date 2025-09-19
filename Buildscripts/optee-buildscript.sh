@@ -34,7 +34,7 @@ do
     sed -i "70d" platform/RunCommand.c
     sed -i '70i        fprintf(stderr, "unk s location code");' platform/RunCommand.c
     sed -i "s'ECC_CURVE_DATA'TPM_ECC_CURVE'" include/TEE/TpmToTEEMath.h
-    sed -i "12d;36d;83,97d;104,105d;110,309d" sub.mk
+    sed -i "3d;12d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
     sed -i "'s'cppflags-y += -D_ARM_ -DFAIL_TRACE=NO'cppflags-y += -D_ARM_ -DFAIL_TRACE=NO -DBN_MATH_LIB=Ossl'" sub.mk
