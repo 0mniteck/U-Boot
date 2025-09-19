@@ -5,7 +5,12 @@ rm -f -r /usr/include/openssl
 mv /openssl-openssl-$SSL_VER/include/crypto /usr/include/openssl
 mv /openssl-openssl-$SSL_VER/include/openssl /usr/include/openssl/openssl
 mv /openssl-openssl-$SSL_VER/include/internal /usr/include/openssl/internal
-mv /usr/include/openssl/openssl/opensslv.h.in /usr/include/openssl/openssl/opensslv.h
+pushd /usr/include/openssl/openssl
+  for f in *.h.in; do
+      mv "$f" "${f%.h.in}.h"
+  done
+popd
+mv /usr/include/openssl/openssl/*.h.in /usr/include/openssl/openssl/*.h
 for plat in $ARCHS
 do
   unzip -q $OPT_VER.zip -d /$plat > /dev/null
