@@ -10,7 +10,6 @@ pushd /usr/include/openssl/openssl
       mv "$f" "${f%.h.in}.h"
   done
 popd
-mv /usr/include/openssl/openssl/*.h.in /usr/include/openssl/openssl/*.h
 for plat in $ARCHS
 do
   unzip -q $OPT_VER.zip -d /$plat > /dev/null
