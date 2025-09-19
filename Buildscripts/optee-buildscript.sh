@@ -62,22 +62,21 @@ do
     sed -i "34iglobal-incdirs_ext-y += /usr/include" sub.mk
     sed -i "52icflags-y += -Wno-strict-aliasing" sub.mk
     sed -i "52icflags-y += -Wno-nested-externs" sub.mk
-    sed -i "52icflags-y += -Wno-macro-redefined" sub.mk
-    sed -i "75icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "75icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "75icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "75icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "75icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "75icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
-    sed -i "75icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
-    sed -i "75icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "75icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "75icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
-    sed -i "75icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
-    sed -i "75icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "75icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
-    sed -i "75icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "112i \\
+    sed -i "74icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "74icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "74icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "74icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "74icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "74icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
+    sed -i "74icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
+    sed -i "74icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "74icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "74icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
+    sed -i "74icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
+    sed -i "74icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "74icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
+    sed -i "74icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "111i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
