@@ -3,6 +3,7 @@ trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q SSL.zip -d / > /dev/null
 rm -f -r /usr/include/openssl
 pushd /openssl-openssl-$SSL_VER/
+  sed -i "1,15d;51,121d;158,228d;230,373d;375,422d" build.info # Just build what's needed.
   ./Configure
   make
 popd
