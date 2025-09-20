@@ -20,6 +20,8 @@ do
     sed -i "27d" out/arm-plat-rockchip/export-ta_arm64/include/limits.h
   popd
   pushd /$plat/TPM/TPMCmd/
+    sed -i "4i#undef __ONCE_ALIGNMENT" Platform/include/Platform.h
+    sed -i '5i#define __ONCE_ALIGNMENT=\"__attribute__\\\\(\\\\(aligned\\\\(8\\\\)\\\\)\\\\)\"' Platform/include/Platform.h
     sed -i "s'XYZ 'OMNITECK '" Platform/src/VendorInfo.c
     sed -i "s'xCG 'TCG '" Platform/src/VendorInfo.c
     sed -i "5d;7d" Platform/include/Platform.h
@@ -28,6 +30,7 @@ do
     sed -i "52d;65d;78d;103d;120d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
     sed -i "44d;48d;128d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
     sed -i "s'0x30100000L'0x40100000L'" tpm/cryptolibs/Ossl/include/Ossl/BnToOsslMath.h
+    cat Platform/include/Platform.h
   popd
   pushd /$plat/optee_ftpm-$OPT_VER
     rm -r -f platform/*
@@ -45,7 +48,7 @@ do
     sed -i "3d;12d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
-    sed -i "s'cppflags-y += -D_ARM_ -DFAIL_TRACE=NO'cppflags-y += -D_ARM_ -DFAIL_TRACE=NO -DBN_MATH_LIB=Ossl -U__ONCE_ALIGNMENT -D__ONCE_ALIGNMENT=\"__attribute__\\\\(\\\\(aligned\\\\(8\\\\)\\\\)\\\\)\"'" sub.mk
+    sed -i "s'cppflags-y += -D_ARM_ -DFAIL_TRACE=NO'cppflags-y += -D_ARM_ -DFAIL_TRACE=NO -DBN_MATH_LIB=Ossl'" sub.mk
     sed -i "34iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
     sed -i "34iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
     sed -i "34iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
