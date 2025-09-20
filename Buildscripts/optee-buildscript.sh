@@ -4,6 +4,7 @@ unzip -q SSL.zip -d / > /dev/null
 rm -f -r /usr/include/openssl
 pushd /openssl-openssl-$SSL_VER/
   ./Configure
+  make
 popd
 mv /openssl-openssl-$SSL_VER/include /usr/include/openssl
 pushd /usr/include/openssl/openssl
