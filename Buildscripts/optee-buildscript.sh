@@ -21,8 +21,8 @@ do
   popd
   pushd /$plat/TPM/TPMCmd/
     sed -i "5d;7d" Platform/include/Platform.h
-    sed -i "4i#undef __ONCE_ALIGNMENT" Platform/include/Platform.h
-    sed -i '5i#define __ONCE_ALIGNMENT=\"__attribute__\\\\(\\\\(aligned\\\\(8\\\\)\\\\)\\\\)\"' Platform/include/Platform.h
+    sed -i "5i#undef __ONCE_ALIGNMENT" Platform/include/Platform.h
+    sed -i '6i#define __ONCE_ALIGNMENT=\"__attribute__\\\\(\\\\(aligned\\\\(8\\\\)\\\\)\\\\)\"' Platform/include/Platform.h
     sed -i "s'XYZ 'OMNITECK '" Platform/src/VendorInfo.c
     sed -i "s'xCG 'TCG '" Platform/src/VendorInfo.c
     sed -i "70d" Platform/src/RunCommand.c
