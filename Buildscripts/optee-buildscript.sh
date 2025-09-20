@@ -6,11 +6,11 @@ pushd /openssl-openssl-$SSL_VER/
   ./Configure
 popd
 mv /openssl-openssl-$SSL_VER/include /usr/include/openssl
-#pushd /usr/include/openssl/openssl
-#  for f in *.h.in; do
-#      mv "$f" "${f%.h.in}.h"
-#  done
-#popd
+pushd /usr/include/openssl/openssl
+  for f in *.h.in; do
+      mv "$f" "${f%.h.in}.h"
+  done
+popd
 for plat in $ARCHS
 do
   unzip -q $OPT_VER.zip -d /$plat > /dev/null
