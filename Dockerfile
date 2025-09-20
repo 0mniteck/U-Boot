@@ -6,6 +6,7 @@ FROM $HUB:$BASE AS base
 
 FROM $HUB-extra:$BASE_EXTRA AS optee
 RUN apt install libtext-template-perl -y
+RUN cpan -i Text::Template
 ARG SOURCE_DATE_EPOCH
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
 ARG OPT_VER
