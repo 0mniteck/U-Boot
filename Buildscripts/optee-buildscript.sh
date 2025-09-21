@@ -6,6 +6,7 @@ pushd /openssl-openssl-$SSL_VER/
   sed -i "1,15d" build.info
   ./Configure
   make
+  cat include/openssl/configuration.h
   cp include/crypto/sm4.h include/openssl/sm4.h
 popd
 mv /openssl-openssl-$SSL_VER/include /usr/include/openssl
