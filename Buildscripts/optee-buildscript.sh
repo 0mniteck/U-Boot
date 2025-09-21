@@ -46,8 +46,9 @@ do
     sed -i "s'4096'(4096-0x80)'" include/fTPM.h
     sed -i "s'(_plat__NVEnable(NULL))'(_plat__NVEnable(NULL,0))'" fTPM.c
     sed -i "s'_plat__NVDisable()'_plat__NVDisable(NULL,0)'" fTPM.c
-    sed -i "68,70d;" fTPM.c
-    sed -i "s'SupportLibInit'BnSupportLibInit'" tee/TpmToTEESupport.c
+    sed -i "68,70d" fTPM.c
+    sed -i "9,16d" tee/TpmToTEESupport.c
+    # sed -i "s'SupportLibInit'BnSupportLibInit'" tee/TpmToTEESupport.c
     sed -i "s'ECC_CURVE_DATA'TPM_ECC_CURVE'" include/TEE/TpmToTEEMath.h
     sed -i "3d;12d;17d;20d;22,29d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
