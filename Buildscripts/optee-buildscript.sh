@@ -38,8 +38,8 @@ do
     cp -f /$plat/TPM/TPMCmd/Platform/src/* platform/
     cp -r -f /$plat/TPM/TPMCmd/Platform/include/* platform/include/
     sed -i "s'_plat__NVEnable(void \*platParameter)'_plat__NVEnable(void\*  platParameter, size_t paramSize)'" include/fTPM.h
-    sed -i "s'TPM_Manufacture(bool firstTime)'TPM_Manufacture(int firstTime)'" include/fTPM.h
     sed -i "s'_plat__NVDisable(void)'_plat__NVDisable(void\*  platParameter, size_t paramSize)'" include/fTPM.h
+    sed -i "s'TPM_Manufacture(bool firstTime)'TPM_Manufacture(int firstTime)'" include/fTPM.h
     sed -i "s'4096'(4096-0x80)'" include/fTPM.h
     sed -i "s'(_plat__NVEnable(NULL))'(_plat__NVEnable(NULL,0))'" fTPM.c
     sed -i "s'_plat__NVDisable()'_plat__NVDisable(NULL,0)'" fTPM.c
