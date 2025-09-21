@@ -9,6 +9,7 @@ pushd /openssl-openssl-$SSL_VER/
   cp include/crypto/sm4.h include/openssl/sm4.h
 popd
 mv /openssl-openssl-$SSL_VER/include /usr/include/openssl
+sed -i "s'#define __ONCE_ALIGNMENT'#define __ONCE_ALIGNMENT=\"__attribute__\\\\(\\\\(aligned\\\\(8\\\\)\\\\)\\\\)\"'" /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
 for plat in $ARCHS
 do
   unzip -q $OPT_VER.zip -d /$plat > /dev/null
@@ -22,8 +23,8 @@ do
   popd
   pushd /$plat/TPM/TPMCmd/
     sed -i "5d;7d" Platform/include/Platform.h
-    sed -i "5i#undef __ONCE_ALIGNMENT" Platform/include/Platform.h
-    sed -i "6i#define __ONCE_ALIGNMENT __attribute__((aligned(8)))" Platform/include/Platform.h
+    #sed -i "5i#undef __ONCE_ALIGNMENT" Platform/include/Platform.h
+    #sed -i "6i#define __ONCE_ALIGNMENT __attribute__((aligned(8)))" Platform/include/Platform.h
     sed -i "s'XYZ 'OMNITECK '" Platform/src/VendorInfo.c
     sed -i "s'xCG 'TCG '" Platform/src/VendorInfo.c
     sed -i "70d" Platform/src/RunCommand.c
