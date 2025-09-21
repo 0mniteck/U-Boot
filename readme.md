@@ -5,6 +5,7 @@
   * [ ] Test TPM2_FTPM_TEE
     * [ ] Build ms-tpm-20-ref
       * [ ] Openssl use source includes v3.5.3
+        * [ ] Set OPENSSL_CONFIGURED_API 30000
       * [ ] Update optee_ftp/sub.mk to support v1.83
     * [ ] TPM_PCR_ALLOCATE
     * [ ] MEASURED_BOOT
