@@ -10,6 +10,7 @@ pushd /openssl-openssl-$SSL_VER/
 popd
 mv /openssl-openssl-$SSL_VER/include /usr/include/openssl
 sed -i "s'#define __ONCE_ALIGNMENT'#define __ONCE_ALIGNMENT=\"__attribute__\\\\(\\\\(aligned\\\\(8\\\\)\\\\)\\\\)\"'" /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
+cat /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
 for plat in $ARCHS
 do
   unzip -q $OPT_VER.zip -d /$plat > /dev/null
@@ -33,7 +34,6 @@ do
     sed -i "44d;48d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
     sed -i "s'0x30100000L'0x40100000L'" tpm/cryptolibs/Ossl/include/Ossl/BnToOsslMath.h
     sed -i "10d;26d" tpm/cryptolibs/common/include/CryptoInterface.h
-    cat Platform/include/Platform.h
   popd
   pushd /$plat/optee_ftpm-$OPT_VER
     rm -r -f platform/*
