@@ -6,6 +6,7 @@ pushd /openssl-openssl-$SSL_VER/
   sed -i "1,15d" build.info
   ./Configure
   make
+  sed -i "s'OPENSSL_CONFIGURED_API 30500'OPENSSL_CONFIGURED_API 30000'" include/openssl/configuration.h
   cat include/openssl/configuration.h
   cp include/crypto/sm4.h include/openssl/sm4.h
 popd
