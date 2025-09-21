@@ -31,6 +31,7 @@ do
     sed -i "44d;48d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
     sed -i "s'0x30100000L'0x40100000L'" tpm/cryptolibs/Ossl/include/Ossl/BnToOsslMath.h
     sed -i "10d;26d" tpm/cryptolibs/common/include/CryptoInterface.h
+    cat Platform/include/Platform.h
   popd
   pushd /$plat/optee_ftpm-$OPT_VER
     rm -r -f platform/*
