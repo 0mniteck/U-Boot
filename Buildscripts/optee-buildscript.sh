@@ -6,6 +6,7 @@ pushd /openssl-openssl-$SSL_VER/
   sed -i "1,15d" build.info # Just build what's needed.
   ./Configure
   make
+  cp include/crypto/sm4.h include/openssl/sm4.h
 popd
 mv /openssl-openssl-$SSL_VER/include /usr/include/openssl
 for plat in $ARCHS
