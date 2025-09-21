@@ -1,8 +1,11 @@
 # U-Boot RockChip <sup><sub>- rk3399 (HARDENING), & rk3588 (TESTING)</sub></sup>
 
 ### Project Goals:
-* [ ] Enable TPM Support
+* [ ] Enable vTPM Support
   * [ ] Test TPM2_FTPM_TEE
+    * [ ] Build ms-tpm-20-ref
+      * [ ] Openssl use source includes v3.5.3
+      * [ ] Update optee_ftp/sub.mk to support v1.83
     * [ ] TPM_PCR_ALLOCATE
     * [ ] MEASURED_BOOT
   * [ ] Check if [new patches](https://github.com/radxa-pkg/radxa-overlays/pull/385) fixed problem
@@ -11,7 +14,7 @@
   * [x] U-boot modifications to use u-boot-tpl vs rockchip-tpl
   * [x] Resolve rk3588 issues - Enable TPL in Kconfig
   * [ ] Resolve rk3568 issues - SPL_MAX
-* [x] Enable UEFI Secure Boot with Root CA only on a Yubikey
+* [x] Enable Self Signing of UEFI Secure Boot with Root CA only on a Yubikey
   * [ ] Use-once model for next secure boot signing (Reset Yubikey after initial signing)
     * [ ] 2025 Q4 signing
       * [ ] Debian from trixie ISO shimaa64efi/bootaa64.efi
@@ -22,6 +25,8 @@
     * [ ] Test 3072 bit RSA
     * [ ] Test ECDSA verification
 * [ ] Sign FIT images and enable COT (Chain of Trust) in ATF
+  * [x] Enable COT
+  * [ ] Sign rotprivk to replace dev certs
 * [ ] [Setup Secure Bootflow](https://labs.withsecure.com/content/dam/labs/docs/2020-05-u-booting-securely-wp-final.pdf)
   * [ ] U-Boot Secure boot with verified FIT -> TF-A -> Default: run bootcmd -> UEFI Secure Boot
     * [x] Protect against untrusted environment variables
