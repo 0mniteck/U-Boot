@@ -25,7 +25,7 @@ do
   pushd /$plat/TPM/TPMCmd/
     sed -i "5d;7d" Platform/include/Platform.h
     sed -i "19i#define MALLOC_INITIAL_POOL_MIN_SIZE  1024" Platform/include/Platform.h
-    sed -i "19i#OPENSSL_CONFIGURED_API  30000" Platform/include/Platform.h
+    sed -i "19i#define OPENSSL_CONFIGURED_API  30000" Platform/include/Platform.h
     sed -i "s'XYZ 'OMNITECK '" Platform/src/VendorInfo.c
     sed -i "s'xCG 'TCG '" Platform/src/VendorInfo.c
     sed -i "70d" Platform/src/RunCommand.c
