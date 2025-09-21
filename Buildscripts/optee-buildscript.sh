@@ -65,7 +65,7 @@ do
     sed -i "34iglobal-incdirs_ext-y += /usr/include" sub.mk
     sed -i "52icflags-y += -Wno-strict-aliasing" sub.mk
     sed -i "52icflags-y += -Wno-nested-externs" sub.mk
-    sed -i "52icflags-y += -Wno-missing-field-initializers" sub.mk
+    sed -i "52icflags-y += -Wno-macro-redefined" sub.mk
     sed -i "75icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
     sed -i "75icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
     sed -i "75icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
