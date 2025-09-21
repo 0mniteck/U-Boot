@@ -50,38 +50,38 @@ do
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
     sed -i "s'-DGCC -DSIMULATION=NO -DVTPM'-DGCC -DVTPM=YES'" sub.mk
     sed -i "15icppflags-y += -DBN_MATH_LIB=Ossl -DALG_SM4=YES" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration/TpmConfiguration" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/prototypes" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private/prototypes" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += /usr/include/openssl" sub.mk
-    sed -i "24iglobal-incdirs_ext-y += /usr/include" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration/TpmConfiguration" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/prototypes" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private/prototypes" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += /usr/include/openssl" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += /usr/include" sub.mk
     sed -i "42icflags-y += -Wno-strict-aliasing" sub.mk
     sed -i "42icflags-y += -Wno-nested-externs" sub.mk
     sed -i "42icflags-y += -Wno-deprecated-declarations" sub.mk
-    sed -i "65icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "65icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "65icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "65icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "65icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "65icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
-    sed -i "65icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
-    sed -i "65icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "65icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "65icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
-    sed -i "65icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
-    sed -i "65icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "65icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
-    sed -i "65icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "102i \\
+    sed -i "66icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "66icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "66icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "66icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "66icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "66icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
+    sed -i "66icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
+    sed -i "66icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "66icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "66icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
+    sed -i "66icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
+    sed -i "66icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "66icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
+    sed -i "66icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "103 \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
@@ -315,7 +315,7 @@ srcs_ext-y += support/TableMarshalData.c
 srcs_ext-y += support/TpmFail.c
 srcs_ext-y += support/TpmSizeChecks.c" >> sub.mk
     cat sub.mk
-    make -j $(nproc) VERBOSE=1 TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_USER_TA_TARGETS=ta_arm64 CFG_TA_EVENT_LOG_SIZE=65536 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- O=out
+    make -j $(nproc) VERBOSE=1 TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_USER_TA_TARGETS=ta_arm64 CFG_TA_EVENT_LOG_SIZE=1024 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- O=out
     read -p "Waiting fot user..."
   popd
   pushd /$plat/optee_os-$OPT_VER
