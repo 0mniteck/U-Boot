@@ -9,7 +9,7 @@ pushd /openssl-openssl-$SSL_VER/
   cp include/crypto/sm4.h include/openssl/sm4.h
 popd
 mv /openssl-openssl-$SSL_VER/include /usr/include/openssl
-sed -i "s'#define __ONCE_ALIGNMENT'#define __ONCE_ALIGNMENT __attribute__\\\\(\\\\(aligned\\\\(8\\\\)\\\\)\\\\)'" /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
+sed -i "s'#define __ONCE_ALIGNMENT'#define __ONCE_ALIGNMENT __attribute__((aligned(8)))'" /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
 cat /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
 for plat in $ARCHS
 do
