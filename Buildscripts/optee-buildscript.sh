@@ -51,6 +51,7 @@ do
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
     sed -i "s'-DGCC -DSIMULATION=NO -DVTPM'-DGCC -DRUNTIME_SIZE_CHECKS=NO -DVTPM=YES'" sub.mk
     sed -i "15icppflags-y += -DBN_MATH_LIB=Ossl -DALG_SM4=YES" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64/host_include" sub.mk
     sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
     sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
     sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
@@ -65,25 +66,25 @@ do
     sed -i "25iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
     sed -i "25iglobal-incdirs_ext-y += /usr/include/openssl" sub.mk
     sed -i "25iglobal-incdirs_ext-y += /usr/include" sub.mk
-    sed -i "42icflags-y += -Wno-strict-aliasing" sub.mk
-    sed -i "42icflags-y += -Wno-nested-externs" sub.mk
-    sed -i "42icflags-y += -Wno-redundant-decls" sub.mk
-    sed -i "42icflags-y += -Wno-deprecated-declarations" sub.mk
-    sed -i "67icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "67icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "67icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "67icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "67icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "67icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
-    sed -i "67icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
-    sed -i "67icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "67icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "67icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
-    sed -i "67icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
-    sed -i "67icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "67icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
-    sed -i "67icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "104i \\
+    sed -i "43icflags-y += -Wno-strict-aliasing" sub.mk
+    sed -i "43icflags-y += -Wno-nested-externs" sub.mk
+    sed -i "43icflags-y += -Wno-redundant-decls" sub.mk
+    sed -i "43icflags-y += -Wno-deprecated-declarations" sub.mk
+    sed -i "68icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "68icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "68icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "68icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "68icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "68icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
+    sed -i "68icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
+    sed -i "68icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "68icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "68icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
+    sed -i "68icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
+    sed -i "68icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
+    sed -i "68icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
+    sed -i "68icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "105i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
