@@ -97,7 +97,9 @@ echo "Clean Build: $CLEAN"
 echo "Tag Release: $TAG"
 echo "Developer Build: $DEV"
 echo "Using Alternate List: $ALT"
-echo "Override Source Epoch: $EPOCH"
+if [ "$EPOCH" != "" ]; then
+    echo "Override Source Epoch: $EPOCH"
+fi
 sleep 5
 
 sudo apt install -y bc dosfstools parted screen snapd
