@@ -32,8 +32,40 @@ do
     sed -i '70i        fprintf(stderr, "unk s location code");' Platform/src/RunCommand.c
     sed -i "65d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
     sed -i "44d;48d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
-    cat Platform/include/Platform.h
+    echo "
+// From Cancel.c
+BOOL                 s_isCanceled;
+
+// From Clock.c
+unsigned int         s_adjustRate;
+BOOL                 s_timerReset;
+BOOL                 s_timerStopped;
+
+#ifndef HARDWARE_CLOCK
+clock64_t            s_realTimePrevious;
+clock64_t            s_tpmTime;
+
+clock64_t            s_lastSystemTime;
+clock64_t            s_lastReportedTime;
+
+#endif
+
+// From LocalityPlat.c
+unsigned char        s_locality;
+
+// From Power.c
+BOOL                 s_powerLost;
+
+// From Entropy.c
+// This values is used to determine if the entropy generator is broken. If two
+// consecutive values are the same, then the entropy generator is considered to be
+// broken.
+uint32_t             lastEntropy;
+
+// From PPPlat.c
+BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     cat Platform/src/VendorInfo.c
+    cat Platform/src/PlatformData.c
   popd
   pushd /$plat/optee_ftpm-$OPT_VER
     rm -r -f platform/*
@@ -52,6 +84,7 @@ do
     sed -i "51i#define MALLOC_INITIAL_POOL_MIN_SIZE 1024" include/user_ta_header_defines.h
     sed -i "3d;12d;17d;20d;22,29d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
+    sed -i "12icppflags-y += -include reference/include/RuntimeSupport.h"
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
     sed -i "s'-DGCC -DSIMULATION=NO -DVTPM'-DGCC -DRUNTIME_SIZE_CHECKS=NO -DVTPM=YES'" sub.mk
     sed -i "15icppflags-y += -DBN_MATH_LIB=Ossl -DALG_SM4=YES" sub.mk
