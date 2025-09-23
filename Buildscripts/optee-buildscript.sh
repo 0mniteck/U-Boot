@@ -104,6 +104,7 @@ BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     sed -i "25iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
     sed -i "25iglobal-incdirs_ext-y += /usr/include/openssl" sub.mk
     sed -i "25iglobal-incdirs_ext-y += /usr/include" sub.mk
+    sed -i "25iglobal-incdirs-y += platform/include/prototypes" sub.mk
     sed -i "43icflags-y += -Wno-strict-aliasing" sub.mk
     sed -i "43icflags-y += -Wno-nested-externs" sub.mk
     sed -i "43icflags-y += -Wno-redundant-decls" sub.mk
