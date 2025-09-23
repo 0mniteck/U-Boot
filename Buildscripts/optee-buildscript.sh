@@ -11,7 +11,7 @@ pushd /openssl-openssl-$SSL_VER/
   cp include/crypto/sm4.h include/openssl/sm4.h
 popd
 mv /openssl-openssl-$SSL_VER/include /usr/include/openssl
-sed -i "s'#define __ONCE_ALIGNMENT'#define __ONCE_ALIGNMENT __attribute__((aligned(8)))'" /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
+# sed -i "s'#define __ONCE_ALIGNMENT'#define __ONCE_ALIGNMENT __attribute__((aligned(8)))'" /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
 for plat in $ARCHS
 do
   unzip -q $OPT_VER.zip -d /$plat > /dev/null
@@ -25,14 +25,15 @@ do
   popd
   pushd /$plat/TPM/TPMCmd/
     sed -i "5d;7d" Platform/include/Platform.h
-    sed -i "19i#define MALLOC_INITIAL_POOL_MIN_SIZE  1024" Platform/include/Platform.h
-    sed -i "s'XYZ 'OMNITECK '" Platform/src/VendorInfo.c
-    sed -i "s'xCG 'TCG '" Platform/src/VendorInfo.c
+    sed -i "s'XYZ 'OMTK'" Platform/src/VendorInfo.c
+    sed -i "s'xCG 'xTCG'" Platform/src/VendorInfo.c
+    sed -i "s'\\\\0\\\\0\\\\0\\\\0'TEST'" Platform/src/VendorInfo.c
     sed -i "70d" Platform/src/RunCommand.c
     sed -i '70i        fprintf(stderr, "unk s location code");' Platform/src/RunCommand.c
     sed -i "65d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
     sed -i "44d;48d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
     cat Platform/include/Platform.h
+    cat Platform/src/VendorInfo.c
   popd
   pushd /$plat/optee_ftpm-$OPT_VER
     rm -r -f platform/*
@@ -48,13 +49,14 @@ do
     sed -i "68,70d" fTPM.c
     sed -i "9,16d" tee/TpmToTEESupport.c
     sed -i "s'ECC_CURVE_DATA'TPM_ECC_CURVE'" include/TEE/TpmToTEEMath.h
+    sed -i "51i#define MALLOC_INITIAL_POOL_MIN_SIZE 1024" include/user_ta_header_defines.h
     sed -i "3d;12d;17d;20d;22,29d;36d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
     sed -i "s'-DGCC -DSIMULATION=NO -DVTPM'-DGCC -DRUNTIME_SIZE_CHECKS=NO -DVTPM=YES'" sub.mk
     sed -i "15icppflags-y += -DBN_MATH_LIB=Ossl -DALG_SM4=YES" sub.mk
-    # sed -i "19ildflags-y += -Wl,--allow-shlib-undefined" sub.mk
-    sed -i "19ildflags-y += -Wl,-undefined,dynamic_lookup" sub.mk
+    # sed -i "19ildflags += -Wl,--allow-shlib-undefined" sub.mk
+    # sed -i "19ildflags += -Wl,-undefined,dynamic_lookup" sub.mk
     sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
     sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
     sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
