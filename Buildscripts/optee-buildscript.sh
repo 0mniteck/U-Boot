@@ -147,11 +147,11 @@ srcs_ext-y += ./../cryptolibs/TpmBigNum/BnUtil.c
 srcs_ext-y += ./../cryptolibs/TpmBigNum/TpmBigNumThunks.c
 srcs_ext-y += ./../cryptolibs/Ossl/BnToOsslMath.c
 srcs_ext-y += ./../cryptolibs/Ossl/TpmToOsslSupport.c
- 
+
 srcs-y += tee/TpmToTEEMath.c
 srcs-y += tee/TpmToTEESupport.c
 srcs-y += tee/TpmToTEESym.c
- 
+
 srcs_ext-y += X509/TpmASN1.c
 srcs_ext-y += X509/X509_ECC.c
 srcs_ext-y += X509/X509_RSA.c
