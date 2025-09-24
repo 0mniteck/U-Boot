@@ -103,12 +103,12 @@ BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     sed -i "26iglobal-incdirs_ext-y += /usr/include/openssl" sub.mk
     sed -i "26iglobal-incdirs_ext-y += /usr/include" sub.mk
     sed -i "25iglobal-incdirs-y += platform/include/prototypes" sub.mk
-    sed -i "44icflags-y += -Wno-strict-aliasing" sub.mk
-    sed -i "44icflags-y += -Wno-nested-externs" sub.mk
-    sed -i "44icflags-y += -Wno-redundant-decls" sub.mk
-    sed -i "44icflags-y += -Wno-deprecated-declarations" sub.mk
-    sed -i "44icflags-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "61i \\
+    sed -i "45icflags-y += -Wno-strict-aliasing" sub.mk
+    sed -i "45icflags-y += -Wno-nested-externs" sub.mk
+    sed -i "45icflags-y += -Wno-redundant-decls" sub.mk
+    sed -i "45icflags-y += -Wno-deprecated-declarations" sub.mk
+    sed -i "45icflags-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "62i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
