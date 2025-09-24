@@ -77,18 +77,16 @@ BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     sed -i "s'4096'(4096-0x80)'" include/fTPM.h
     sed -i "s'(_plat__NVEnable(NULL))'(_plat__NVEnable(NULL,0))'" fTPM.c
     sed -i "s'_plat__NVDisable()'_plat__NVDisable(NULL,0)'" fTPM.c
-    sed -i "68,70d" fTPM.c
+    sed -i "68,70d;163,164d;363,365d;367d;429,439d" fTPM.c
     sed -i "9,16d" tee/TpmToTEESupport.c
     sed -i "s'ECC_CURVE_DATA'TPM_ECC_CURVE'" include/TEE/TpmToTEEMath.h
     sed -i "51i#define MALLOC_INITIAL_POOL_MIN_SIZE 1024" include/user_ta_header_defines.h
-    sed -i "45d" reference/include/RuntimeSupport.h
     sed -i "3d;12d;17d;20d;22,29d;36d;48,79d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
-    sed -i "12icppflags-y += -include reference/include/RuntimeSupport.h" sub.mk
-    sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
+    sed -i "12i " sub.mk
+    sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=Ossl'" sub.mk
     sed -i "s'-DGCC -DSIMULATION=NO -DVTPM'-DGCC -DRUNTIME_SIZE_CHECKS=NO -DVTPM=YES'" sub.mk
     sed -i "15icppflags-y += -DBN_MATH_LIB=Ossl -DALG_SM4=YES" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
     sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
     sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
     sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs" sub.mk
@@ -126,12 +124,6 @@ srcs-y += platform/RunCommand.c\\
 srcs-y += platform/Unique.c\\
 srcs-y += platform/VendorInfo.c" sub.mk
 echo "srcs_ext_base-y := \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/src/
-srcs_ext-y += ./../cryptolibs/TpmBigNum/BnConvert.c
-srcs_ext-y += ./../cryptolibs/TpmBigNum/BnEccConstants.c
-srcs_ext-y += ./../cryptolibs/TpmBigNum/BnMath.c
-srcs_ext-y += ./../cryptolibs/TpmBigNum/BnMemory.c
-srcs_ext-y += ./../cryptolibs/TpmBigNum/BnUtil.c
-srcs_ext-y += ./../cryptolibs/TpmBigNum/TpmBigNumThunks.c
 srcs_ext-y += ./../cryptolibs/Ossl/BnToOsslMath.c
 srcs_ext-y += ./../cryptolibs/Ossl/TpmToOsslSupport.c
 
@@ -342,6 +334,7 @@ srcs_ext-y += support/TableDrivenMarshal.c
 srcs_ext-y += support/TableMarshalData.c
 srcs_ext-y += support/TpmFail.c
 srcs_ext-y += support/TpmSizeChecks.c" >> sub.mk
+    sed -i "43,56d" sub.mk
     cat sub.mk
     make -j $(nproc) VERBOSE=1 TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_USER_TA_TARGETS=ta_arm64 CFG_TA_EVENT_LOG_SIZE=1024 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- O=out
     read -p "Waiting for user..."
