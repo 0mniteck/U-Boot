@@ -81,7 +81,7 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
   if [ "$3" != "yes" ]; then
     pushd Results/
       if [ -f "$HOME/.grype.yaml" ]; then GRCONF="-c $HOME/.grype.yaml"; fi
-      mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=$1.spdx.json && rm -f -r "$HOME/syft"
+      mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=$1.spdx.json
       script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp
       grep "✔ Scanned for vulnerabilities" $1.grype.tmp | tail -n 1 > $1.grype.status.1
       tr -d '\000-\037\177' < $1.grype.status.1 | sed '/^$/d' > $1.grype.status.1.tmp
@@ -236,9 +236,9 @@ rm -f -r /var/lib/snapd/cache/*
 
 scan_using_grype ubuntu.25.04 "/ --select-catalogers debian" $3
 
-snap remove syft --purge && rm -f -r $HOME/.cache/syft
+snap remove syft --purge && 
 snap remove grype --purge
-rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r /tmp/grype-scratch*
+rm /root/getter* -f -r && rm /root/grype* -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype* && rm -f -r /tmp/getter*
 
 if [ "$3" = "no" ]; then
   for dev in $LIST
