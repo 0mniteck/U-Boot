@@ -28,6 +28,13 @@ do
     sed -i "s'XYZ 'OMTK'" Platform/src/VendorInfo.c
     sed -i "s'xCG 'xTCG'" Platform/src/VendorInfo.c
     sed -i "s'\\\\0\\\\0\\\\0\\\\0'TEST'" Platform/src/VendorInfo.c
+    sed -i "s'uint32_t _plat__GetManufacturerCapabilityCode()'uint32_t _plat__GetManufacturerCapabilityCode(void)'" Platform/src/VendorInfo.c
+    sed -i "s'uint32_t StringToUint32(char s\[4\])'uint32_t StringToUint32(const char s\[4\])'" Platform/src/VendorInfo.c
+    sed -i "s'uint32_t _plat__GetTpmFirmwareVersionHigh()'uint32_t _plat__GetTpmFirmwareVersionHigh(void)'" Platform/src/VendorInfo.c
+    sed -i "s'uint32_t _plat__GetTpmFirmwareVersionLow()'uint32_t _plat__GetTpmFirmwareVersionLow(void)'" Platform/src/VendorInfo.c
+    sed -i "s'uint32_t _plat__GetTpmType()'uint32_t _plat__GetTpmType(void)'" Platform/src/VendorInfo.c
+    sed -i "s'UINT32 _platPcr__NumberOfPcrs()'UINT32 _platPcr__NumberOfPcrs(void)'" Platform/src/PlatformPcr.c
+    sed -i "s'void _plat__TearDown()'void _plat__TearDown(void)'" Platform/src/NVMem.c
     sed -i "70d" Platform/src/RunCommand.c
     sed -i '70i        fprintf(stderr, "unk s location code");' Platform/src/RunCommand.c
     sed -i "65d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
@@ -35,37 +42,28 @@ do
     echo "
 // From Cancel.c
 BOOL                 s_isCanceled;
-
 // From Clock.c
 unsigned int         s_adjustRate;
 BOOL                 s_timerReset;
 BOOL                 s_timerStopped;
-
 #ifndef HARDWARE_CLOCK
 clock64_t            s_realTimePrevious;
 clock64_t            s_tpmTime;
-
 clock64_t            s_lastSystemTime;
 clock64_t            s_lastReportedTime;
-
 #endif
-
 // From LocalityPlat.c
 unsigned char        s_locality;
-
 // From Power.c
 BOOL                 s_powerLost;
-
 // From Entropy.c
 // This values is used to determine if the entropy generator is broken. If two
 // consecutive values are the same, then the entropy generator is considered to be
 // broken.
 uint32_t             lastEntropy;
-
 // From PPPlat.c
 BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     cat Platform/src/VendorInfo.c
-    cat Platform/src/PlatformData.c
   popd
   pushd /$plat/optee_ftpm-$OPT_VER
     rm -r -f platform/*
@@ -82,48 +80,50 @@ BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     sed -i "9,16d" tee/TpmToTEESupport.c
     sed -i "s'ECC_CURVE_DATA'TPM_ECC_CURVE'" include/TEE/TpmToTEEMath.h
     sed -i "51i#define MALLOC_INITIAL_POOL_MIN_SIZE 1024" include/user_ta_header_defines.h
-    sed -i "3d;12d;17d;20d;22,29d;36d;83,97d;104,105d;110,309d" sub.mk
+    sed -i "45d" reference/include/RuntimeSupport.h
+    sed -i "3d;12d;17d;20d;22,29d;36d;48,79d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
-    sed -i "12icppflags-y += -include reference/include/RuntimeSupport.h"
+    sed -i "12icppflags-y += -include reference/include/RuntimeSupport.h" sub.mk
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
     sed -i "s'-DGCC -DSIMULATION=NO -DVTPM'-DGCC -DRUNTIME_SIZE_CHECKS=NO -DVTPM=YES'" sub.mk
     sed -i "15icppflags-y += -DBN_MATH_LIB=Ossl -DALG_SM4=YES" sub.mk
     # sed -i "19ildflags += -Wl,--allow-shlib-undefined" sub.mk
     # sed -i "19ildflags += -Wl,-undefined,dynamic_lookup" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration/TpmConfiguration" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/prototypes" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private/prototypes" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += /usr/include/openssl" sub.mk
-    sed -i "25iglobal-incdirs_ext-y += /usr/include" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration/TpmConfiguration" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/prototypes" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private/prototypes" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += /usr/include/openssl" sub.mk
+    sed -i "26iglobal-incdirs_ext-y += /usr/include" sub.mk
     sed -i "25iglobal-incdirs-y += platform/include/prototypes" sub.mk
-    sed -i "43icflags-y += -Wno-strict-aliasing" sub.mk
-    sed -i "43icflags-y += -Wno-nested-externs" sub.mk
-    sed -i "43icflags-y += -Wno-redundant-decls" sub.mk
-    sed -i "43icflags-y += -Wno-deprecated-declarations" sub.mk
-    sed -i "68icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "68icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "68icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "68icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "68icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "68icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
-    sed -i "68icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
-    sed -i "68icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "68icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "68icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
-    sed -i "68icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
-    sed -i "68icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
-    sed -i "68icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
-    sed -i "68icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
-    sed -i "105i \\
+    sed -i "44icflags-y += -Wno-strict-aliasing" sub.mk
+    sed -i "44icflags-y += -Wno-nested-externs" sub.mk
+    sed -i "44icflags-y += -Wno-redundant-decls" sub.mk
+    sed -i "44icflags-y += -Wno-deprecated-declarations" sub.mk
+    sed -i "44icflags-y += -Wno-implicit-function-declaration" sub.mk
+  #  sed -i "68icflags-platform/Clock.c-y += -Wno-missing-declarations" sub.mk
+  #  sed -i "68icflags-platform/Clock.c-y += -Wno-implicit-function-declaration" sub.mk
+  #  sed -i "68icflags-platform/Entropy.c-y += -Wno-implicit-function-declaration" sub.mk
+  #  sed -i "68icflags-platform/RunCommand.c-y += -Wno-implicit-function-declaration" sub.mk
+  #  sed -i "68icflags-platform/RunCommand.c-y += -Wno-missing-declarations" sub.mk
+  #  sed -i "68icflags-platform/RunCommand.c-y += -Wno-builtin-declaration-mismatch" sub.mk
+  #  sed -i "68icflags-platform/NVMem.c-y += -Wno-int-conversion" sub.mk
+  #  sed -i "68icflags-platform/NVMem.c-y += -Wno-missing-declarations" sub.mk
+  #  sed -i "68icflags-platform/PlatformPcr.c-y += -Wno-old-style-definition" sub.mk
+  #  sed -i "68icflags-platform/PlatformPcr.c-y += -Wno-sign-compare" sub.mk
+  #  sed -i "68icflags-platform/VendorInfo.c-y += -Wno-missing-prototypes" sub.mk
+  #  sed -i "68icflags-platform/VendorInfo.c-y += -Wno-old-style-definition" sub.mk
+  #  sed -i "68icflags-platform/VendorInfo.c-y += -Wno-discarded-qualifiers" sub.mk
+  #  sed -i "68icflags-platform/VendorInfo.c-y += -Wno-missing-declarations" sub.mk
+    sed -i "59i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
