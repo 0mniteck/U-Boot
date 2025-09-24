@@ -33,10 +33,11 @@ do
     sed -i "s'uint32_t _plat__GetTpmFirmwareVersionHigh()'uint32_t _plat__GetTpmFirmwareVersionHigh(void)'" Platform/src/VendorInfo.c tpm/include/platform_interface/tpm_to_platform_interface.h
     sed -i "s'uint32_t _plat__GetTpmFirmwareVersionLow()'uint32_t _plat__GetTpmFirmwareVersionLow(void)'" Platform/src/VendorInfo.c tpm/include/platform_interface/tpm_to_platform_interface.h
     sed -i "s'uint32_t _plat__GetTpmType()'uint32_t _plat__GetTpmType(void)'" Platform/src/VendorInfo.c tpm/include/platform_interface/tpm_to_platform_interface.h
+    sed -i "s'void _plat__TearDown()'void _plat__TearDown(void)'" Platform/src/NVMem.c tpm/include/platform_interface/tpm_to_platform_interface.h
     sed -i "s'UINT32 _platPcr__NumberOfPcrs()'UINT32 _platPcr__NumberOfPcrs(void)'" Platform/src/PlatformPcr.c
-    sed -i "s'void _plat__TearDown()'void _plat__TearDown(void)'" Platform/src/NVMem.c
     sed -i "70d" Platform/src/RunCommand.c
     sed -i '70i        fprintf(stderr, "unk s location code");' Platform/src/RunCommand.c
+    sed -i '5i#include "TpmEcc_Util_fp.h"' tpm/src/crypt/ecc/TpmEcc_Util.c
     sed -i "65d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
     sed -i "44d;48d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
     echo "
