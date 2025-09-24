@@ -238,7 +238,7 @@ scan_using_grype ubuntu.25.04 "/ --select-catalogers debian" $3
 
 snap remove syft --purge && 
 snap remove grype --purge
-rm /root/getter* -f -r && rm /root/grype* -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype* && rm -f -r /tmp/getter*
+rm /root/getter* -f -r && rm /root/grype* -f -r && rm /root/syft -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype* && rm -f -r /tmp/getter*
 
 if [ "$3" = "no" ]; then
   for dev in $LIST
