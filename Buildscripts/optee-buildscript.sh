@@ -29,14 +29,10 @@ do
     sed -i "s'xCG 'xTCG'" Platform/src/VendorInfo.c
     sed -i "s'\\\\0\\\\0\\\\0\\\\0'TEST'" Platform/src/VendorInfo.c
     sed -i "s'uint32_t StringToUint32(char s\[4\])'uint32_t StringToUint32(const char s\[4\])'" Platform/src/VendorInfo.c
-    sed -i "s'uint32_t _plat__GetManufacturerCapabilityCode()'uint32_t _plat__GetManufacturerCapabilityCode(void)'" Platform/src/VendorInfo.c
-    sed -i "s'uint32_t _plat__GetTpmFirmwareVersionHigh()'uint32_t _plat__GetTpmFirmwareVersionHigh(void)'" Platform/src/VendorInfo.c
-    sed -i "s'uint32_t _plat__GetTpmFirmwareVersionLow()'uint32_t _plat__GetTpmFirmwareVersionLow(void)'" Platform/src/VendorInfo.c
-    sed -i "s'uint32_t _plat__GetTpmType()'uint32_t _plat__GetTpmType(void)'" Platform/src/VendorInfo.c
-    sed -i "s'uint32_t _plat__GetManufacturerCapabilityCode()'uint32_t _plat__GetManufacturerCapabilityCode(void)'" tpm/include/platform_interface/tpm_to_platform_interface.h
-    sed -i "s'uint32_t _plat__GetTpmFirmwareVersionHigh()'uint32_t _plat__GetTpmFirmwareVersionHigh(void)'" tpm/include/platform_interface/tpm_to_platform_interface.h
-    sed -i "s'uint32_t _plat__GetTpmFirmwareVersionLow()'uint32_t _plat__GetTpmFirmwareVersionLow(void)'" tpm/include/platform_interface/tpm_to_platform_interface.h
-    sed -i "s'uint32_t _plat__GetTpmType()'uint32_t _plat__GetTpmType(void)'" tpm/include/platform_interface/tpm_to_platform_interface.h
+    sed -i "s'uint32_t _plat__GetManufacturerCapabilityCode()'uint32_t _plat__GetManufacturerCapabilityCode(void)'" Platform/src/VendorInfo.c tpm/include/platform_interface/tpm_to_platform_interface.h
+    sed -i "s'uint32_t _plat__GetTpmFirmwareVersionHigh()'uint32_t _plat__GetTpmFirmwareVersionHigh(void)'" Platform/src/VendorInfo.c tpm/include/platform_interface/tpm_to_platform_interface.h
+    sed -i "s'uint32_t _plat__GetTpmFirmwareVersionLow()'uint32_t _plat__GetTpmFirmwareVersionLow(void)'" Platform/src/VendorInfo.c tpm/include/platform_interface/tpm_to_platform_interface.h
+    sed -i "s'uint32_t _plat__GetTpmType()'uint32_t _plat__GetTpmType(void)'" Platform/src/VendorInfo.c tpm/include/platform_interface/tpm_to_platform_interface.h
     sed -i "s'UINT32 _platPcr__NumberOfPcrs()'UINT32 _platPcr__NumberOfPcrs(void)'" Platform/src/PlatformPcr.c
     sed -i "s'void _plat__TearDown()'void _plat__TearDown(void)'" Platform/src/NVMem.c
     sed -i "70d" Platform/src/RunCommand.c
