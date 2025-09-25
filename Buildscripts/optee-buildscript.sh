@@ -97,7 +97,6 @@ BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     sed -i "51i#define MALLOC_INITIAL_POOL_MIN_SIZE 1024" include/user_ta_header_defines.h
     sed -i "3d;12d;17d;20d;22,29d;36d;48,79d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
-    sed -i "12i " sub.mk
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
     sed -i "s'-DGCC -DSIMULATION=NO -DVTPM'-DGCC -DRUNTIME_SIZE_CHECKS=NO -DVTPM=YES'" sub.mk
     sed -i "15icppflags-y += -DBN_MATH_LIB=Ossl -DALG_SM4=YES" sub.mk
