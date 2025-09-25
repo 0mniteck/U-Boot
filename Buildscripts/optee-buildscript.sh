@@ -117,7 +117,6 @@ BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     sed -i "25iglobal-incdirs_ext-y += /usr/include" sub.mk
     sed -i "24iglobal-incdirs-y += platform/include/prototypes" sub.mk
     sed -i "44icflags-y += -Wno-strict-aliasing" sub.mk
-    sed -i "44icflags-y += -Wno-nested-externs" sub.mk
     sed -i "44icflags-y += -Wno-redundant-decls" sub.mk
     sed -i "61i \\
 srcs-y += platform/Cancel.c\\
