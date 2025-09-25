@@ -112,6 +112,37 @@ if [ "$4" = "yes" ]; then
   docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
 fi
 if [ "$2" = "yes" ]; then
+  load edk2
+  docker buildx build $LOAD \
+    --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+    --build-arg EDKP_VER=$EDKP_VER \
+    --build-arg EDKP_SUM=$EDKP_SUM \
+    --build-arg EDK_VER=$EDK_VER \
+    --build-arg HUB=$HUB \
+    --build-arg BASE=$BASE \
+    --build-arg BASE_EXTRA=$BASE_EXTRA \
+    --build-arg ENTRYPOINT=$NAME \
+    -f Dockerfile .
+
+  scan_using_grype $NAME docker:$NAME $3
+
+  docker run -it --cpus=$(nproc) \
+    --name $NAME $CROSS \
+    --user "$(id -u):$(id -g)" \
+    --entrypoint /$NAME-buildscript.sh \
+    -e SOURCE_DATE_EPOCH=$source_date_epoch \
+    -e EDKP_VER=$EDKP_VER \
+    -e WORKSPACE=/ \
+    -e PACKAGES_PATH=/edk2-$(echo $EDK_VER):/edk2-platforms-$(echo $EDKP_VER) \
+    -e ACTIVE_PLATFORM='Platform/StandaloneMm/PlatformStandaloneMmPkg/PlatformStandaloneMmRpmb.dsc' \
+    -e GCC5_AARCH64_PREFIX=aarch64-linux-gnu- \
+    $NAME
+
+  docker cp $NAME:/Build/MmStandaloneRpmb/RELEASE_GCC5/FV/BL32_AP_MM.fd Builds/rk3399/BL32_AP_MM.fd
+  sha512sum Builds/rk3399/BL32_AP_MM.fd && sha512sum Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha512sum
+  openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd && openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha3sum
+  stop $NAME
+  
   load optee
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
