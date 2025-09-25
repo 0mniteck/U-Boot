@@ -30,10 +30,6 @@ do
     sed -i "s'\\\\0\\\\0\\\\0\\\\0'TEST'" Platform/src/VendorInfo.c
     sed -i "3i\\
 static uint32_t ByteArrayToUint32(BYTE s[4])\\
-{\\
-    uint8_t* b = (uint8_t*)s;\\
-    return (((uint32_t)b[0] << 8 | b[1]) << 8 | b[2]) << 8 | b[3];\\
-}\\
 " tpm/include/public/endian_swap.h
     sed -i "53i\\
         default:\\
