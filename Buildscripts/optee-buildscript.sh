@@ -29,7 +29,6 @@ do
     sed -i "s'XYZ 'OMTK'" Platform/src/VendorInfo.c
     sed -i "s'xCG 'xTCG'" Platform/src/VendorInfo.c
     sed -i "s'\\\\0\\\\0\\\\0\\\\0'TEST'" Platform/src/VendorInfo.c
-    sed -i "3i#include Memory_fp.h" tpm/include/public/endian_swap.h
     sed -i "53i\\
         default:\\
             return StringToUint32(VENDOR_STRING_1);" Platform/src/VendorInfo.c
@@ -47,7 +46,8 @@ do
         default:\\
             s_adjustRate += CLOCK_ADJUST_MEDIUM;\\
             break;" Platform/src/Clock.c
-    sed -i '82i            break;' Platform/src/NVMem.c
+    sed -i '82i\            break;' Platform/src/NVMem.c
+    sed -i '3i#include "Memory_fp.h"' tpm/include/public/endian_swap.h
     sed -i '5i#include "TpmEcc_Util_fp.h"' tpm/src/crypt/ecc/TpmEcc_Util.c
     sed -i "65d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
     sed -i "44d;48d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
