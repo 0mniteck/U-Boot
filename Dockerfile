@@ -5,7 +5,7 @@ ARG BASE_EXTRA=default
 FROM $HUB:$BASE AS base
 
 FROM $HUB-extra:$BASE_EXTRA AS edk2
-RUN apt install -y build-essential gcc-5 acpica-tools nasm unzip uuid-dev wget python3-distutils
+RUN apt install -y gcc-5 nasm python3-distutils
 ARG SOURCE_DATE_EPOCH
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
 ARG EDKP_VER
