@@ -29,9 +29,9 @@ do
     sed -i "s'XYZ 'OMTK'" Platform/src/VendorInfo.c
     sed -i "s'xCG 'xTCG'" Platform/src/VendorInfo.c
     sed -i "s'\\\\0\\\\0\\\\0\\\\0'TEST'" Platform/src/VendorInfo.c
-    sed -i "3i\\
-static uint32_t ByteArrayToUint32(BYTE s[4])\\
-" tpm/include/public/endian_swap.h
+#    sed -i "3i\\
+#static uint32_t ByteArrayToUint32(BYTE s[4])\\
+#" tpm/include/public/endian_swap.h
     sed -i "53i\\
         default:\\
             return StringToUint32(VENDOR_STRING_1);" Platform/src/VendorInfo.c
