@@ -4,6 +4,21 @@ ARG BASE_EXTRA=default
 
 FROM $HUB:$BASE AS base
 
+FROM $HUB-extra:$BASE_EXTRA AS edk2
+RUN apt install -y build-essential gcc-5 acpica-tools nasm unzip uuid-dev wget python3-distutils
+ARG SOURCE_DATE_EPOCH
+ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
+ARG EDKP_VER
+ARG EDKP_SUM
+ARG EDK_VER
+ENV EDKP_VER=$EDKP_VER
+ADD https://github.com/tianocore/edk2-platforms/archive/$EDKP_VER.zip
+RUN echo "$EDKP_SUM  $EDKP_VER.zip" | sha512sum --status -c - && echo "EDK2 Platform Checksum Matched!" || exit 1
+RUN git clone https://github.com/tianocore/edk2.git -b $(echo $EDK_VER) edk2-$(echo $EDK_VER)
+RUN pushd /root/edk2-$(echo $EDK_VER); git submodule init; git submodule update --init --recursive; popd
+ARG ENTRYPOINT
+COPY Buildscripts/$ENTRYPOINT-buildscript.sh /
+
 FROM $HUB-extra:$BASE_EXTRA AS optee
 ARG SOURCE_DATE_EPOCH
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
