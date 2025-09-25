@@ -28,6 +28,16 @@ do
     sed -i "s'XYZ 'OMTK'" Platform/src/VendorInfo.c
     sed -i "s'xCG 'xTCG'" Platform/src/VendorInfo.c
     sed -i "s'\\\\0\\\\0\\\\0\\\\0'TEST'" Platform/src/VendorInfo.c
+    sed -i "3i\\
+static uint32_t ByteArrayToUint32(BYTE s[4])\\
+{\\
+    uint8_t* b = (uint8_t*)s;\\
+    return (((uint32_t)b[0] << 8 | b[1]) << 8 | b[2]) << 8 | b[3];\\
+}\\
+" tpm/include/public/endian_swap.h
+    sed -i "53i\\
+        default:\\
+            return StringToUint32(VENDOR_STRING_1);" Platform/src/VendorInfo.c
     sed -i "s'uint32_t StringToUint32(char s\[4\])'uint32_t StringToUint32(const char s\[4\])'" Platform/src/VendorInfo.c
     sed -i "s'uint32_t _plat__GetManufacturerCapabilityCode()'uint32_t _plat__GetManufacturerCapabilityCode(void)'" Platform/src/VendorInfo.c tpm/include/platform_interface/tpm_to_platform_interface.h
     sed -i "s'uint32_t _plat__GetTpmFirmwareVersionHigh()'uint32_t _plat__GetTpmFirmwareVersionHigh(void)'" Platform/src/VendorInfo.c tpm/include/platform_interface/tpm_to_platform_interface.h
@@ -38,6 +48,11 @@ do
     sed -i "s'for(int 'for(long unsigned int '" Platform/src/PlatformPcr.c
     sed -i "70d" Platform/src/RunCommand.c
     sed -i '70i        fprintf(stderr, "unk s location code");' Platform/src/RunCommand.c
+    sed -i "230i\\
+        default:\\
+            s_adjustRate += CLOCK_ADJUST_MEDIUM;\\
+            break;" Platform/src/Clock.c
+    sed -i '82i            break;' Platform/src/NVMem.c
     sed -i '5i#include "TpmEcc_Util_fp.h"' tpm/src/crypt/ecc/TpmEcc_Util.c
     sed -i "65d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
     sed -i "44d;48d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
@@ -65,15 +80,17 @@ BOOL                 s_powerLost;
 uint32_t             lastEntropy;
 // From PPPlat.c
 BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
+    cat Platform/src/VendorInfo.c
+    cat Platform/src/Clock.c
+    cat Platform/src/NVMem.c
+    cat tpm/include/public/endian_swap.h
   popd
   pushd /$plat/optee_ftpm-$OPT_VER
     rm -r -f platform/*
     mkdir platform/include
     cp -f /$plat/TPM/TPMCmd/Platform/src/* platform/
     cp -r -f /$plat/TPM/TPMCmd/Platform/include/* platform/include/
-    sed -i "s'_plat__NVEnable(void \*platParameter)'_plat__NVEnable(void\*  platParameter, size_t paramSize)'" include/fTPM.h
-    sed -i "s'_plat__NVDisable(void)'_plat__NVDisable(void\*  platParameter, size_t paramSize)'" include/fTPM.h
-    sed -i "s'TPM_Manufacture(bool firstTime)'TPM_Manufacture(int firstTime)'" include/fTPM.h
+    sed -i "78,83d;88,89d;91,92d;" include/fTPM.h
     sed -i "s'4096'(4096-0x80)'" include/fTPM.h
     sed -i "s'(_plat__NVEnable(NULL))'(_plat__NVEnable(NULL,0))'" fTPM.c
     sed -i "s'_plat__NVDisable()'_plat__NVDisable(NULL,0)'" fTPM.c
@@ -84,30 +101,31 @@ BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     sed -i "3d;12d;17d;20d;22,29d;36d;48,79d;83,97d;104,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
     sed -i "12i " sub.mk
-    sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=Ossl'" sub.mk
+    sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
     sed -i "s'-DGCC -DSIMULATION=NO -DVTPM'-DGCC -DRUNTIME_SIZE_CHECKS=NO -DVTPM=YES'" sub.mk
     sed -i "15icppflags-y += -DBN_MATH_LIB=Ossl -DALG_SM4=YES" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration/TpmConfiguration" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/prototypes" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private/prototypes" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public/prototypes" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += /usr/include/openssl" sub.mk
-    sed -i "26iglobal-incdirs_ext-y += /usr/include" sub.mk
-    sed -i "25iglobal-incdirs-y += platform/include/prototypes" sub.mk
-    sed -i "45icflags-y += -Wno-strict-aliasing" sub.mk
-    sed -i "45icflags-y += -Wno-nested-externs" sub.mk
-    sed -i "45icflags-y += -Wno-redundant-decls" sub.mk
-    sed -i "45icflags-y += -Wno-deprecated-declarations" sub.mk
-    sed -i "45icflags-y += -Wno-implicit-function-declaration" sub.mk
-    sed -i "62i \\
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/TpmBigNum/include" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/Ossl/include" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs/common/include" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/cryptolibs" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration/TpmConfiguration" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/TpmConfiguration" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/platform_interface/prototypes" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/private/prototypes" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/include/public/prototypes" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += /usr/include/aarch64-linux-gnu" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += /usr/include/openssl" sub.mk
+    sed -i "25iglobal-incdirs_ext-y += /usr/include" sub.mk
+    sed -i "24iglobal-incdirs-y += platform/include/prototypes" sub.mk
+    sed -i "46icflags-y += -Wno-strict-aliasing" sub.mk
+    sed -i "46icflags-y += -Wno-nested-externs" sub.mk
+    sed -i "46icflags-y += -Wno-redundant-decls" sub.mk
+    sed -i "46icflags-y += -Wno-deprecated-declarations" sub.mk
+    sed -i "46icflags-y += -Wno-implicit-function-declaration" sub.mk
+    sed -i "61i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
@@ -124,6 +142,12 @@ srcs-y += platform/RunCommand.c\\
 srcs-y += platform/Unique.c\\
 srcs-y += platform/VendorInfo.c" sub.mk
 echo "srcs_ext_base-y := \$(CFG_MS_TPM_20_REF)/TPMCmd/tpm/src/
+srcs_ext-y += ./../cryptolibs/TpmBigNum/BnConvert.c
+srcs_ext-y += ./../cryptolibs/TpmBigNum/BnEccConstants.c
+srcs_ext-y += ./../cryptolibs/TpmBigNum/BnMath.c
+srcs_ext-y += ./../cryptolibs/TpmBigNum/BnMemory.c
+srcs_ext-y += ./../cryptolibs/TpmBigNum/BnUtil.c
+srcs_ext-y += ./../cryptolibs/TpmBigNum/TpmBigNumThunks.c
 srcs_ext-y += ./../cryptolibs/Ossl/BnToOsslMath.c
 srcs_ext-y += ./../cryptolibs/Ossl/TpmToOsslSupport.c
 
@@ -334,8 +358,10 @@ srcs_ext-y += support/TableDrivenMarshal.c
 srcs_ext-y += support/TableMarshalData.c
 srcs_ext-y += support/TpmFail.c
 srcs_ext-y += support/TpmSizeChecks.c" >> sub.mk
+    cat sub.mk
     sed -i "43,56d" sub.mk
     cat sub.mk
+    cat include/fTPM.h
     make -j $(nproc) VERBOSE=1 TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_USER_TA_TARGETS=ta_arm64 CFG_TA_EVENT_LOG_SIZE=1024 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- O=out
     read -p "Waiting for user..."
   popd
