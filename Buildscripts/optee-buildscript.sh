@@ -92,10 +92,10 @@ BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     sed -i "s'(_plat__NVEnable(NULL))'(_plat__NVEnable(NULL,0))'" fTPM.c
     sed -i "s'_plat__NVDisable()'_plat__NVDisable(NULL,0)'" fTPM.c
     sed -i "68,70d;163,164d;363,365d;367d;429,439d" fTPM.c
-    sed -i "9,16d" tee/TpmToTEESupport.c
+    sed -i "s'SupportLibInit'BnSupportLibInit'" tee/TpmToTEESupport.c
     sed -i "s'ECC_CURVE_DATA'TPM_ECC_CURVE'" include/TEE/TpmToTEEMath.h
     sed -i "51i#define MALLOC_INITIAL_POOL_MIN_SIZE 1024" include/user_ta_header_defines.h
-    sed -i "3d;12d;17d;20d;22,29d;36d;48,79d;83,97d;104,105d;110,309d" sub.mk
+    sed -i "3d;12d;17d;20d;22,29d;36d;39,79d;83,97d;103,105d;110,309d" sub.mk
     sed -i "11iexport CC=gcc" sub.mk
     sed -i "s'-DMATH_LIB=TEE'-DMATH_LIB=TpmBigNum'" sub.mk
     sed -i "s'-DGCC -DSIMULATION=NO -DVTPM'-DGCC -DRUNTIME_SIZE_CHECKS=NO -DVTPM=YES'" sub.mk
@@ -119,8 +119,6 @@ BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     sed -i "46icflags-y += -Wno-strict-aliasing" sub.mk
     sed -i "46icflags-y += -Wno-nested-externs" sub.mk
     sed -i "46icflags-y += -Wno-redundant-decls" sub.mk
-    sed -i "46icflags-y += -Wno-deprecated-declarations" sub.mk
-    sed -i "46icflags-y += -Wno-implicit-function-declaration" sub.mk
     sed -i "61i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
