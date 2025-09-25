@@ -12,7 +12,7 @@ ARG EDKP_VER
 ARG EDKP_SUM
 ARG EDK_VER
 ENV EDKP_VER=$EDKP_VER
-ADD https://github.com/tianocore/edk2-platforms/archive/$EDKP_VER.zip
+ADD https://github.com/tianocore/edk2-platforms/archive/$EDKP_VER.zip /$EDKP_VER.zip
 RUN echo "$EDKP_SUM  $EDKP_VER.zip" | sha512sum --status -c - && echo "EDK2 Platform Checksum Matched!" || exit 1
 RUN git clone https://github.com/tianocore/edk2.git -b $(echo $EDK_VER) edk2-$(echo $EDK_VER)
 RUN pushd /root/edk2-$(echo $EDK_VER); git submodule init; git submodule update --init --recursive; popd
