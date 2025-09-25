@@ -3,8 +3,8 @@
 ### Project Goals:
 * [ ] Enable vTPM Support
   * [ ] Test TPM2_FTPM_TEE
-    * [ ] Build StandaloneMM
-      * [ ] Migrate from old branch
+    * [x] Build StandaloneMM
+      * [x] Migrate from old branch
     * [ ] Build ms-tpm-20-ref
       * [x] Openssl use source includes v3.5.3
         * [x] Set OPENSSL_CONFIGURED_API 30000
