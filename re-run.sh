@@ -132,6 +132,7 @@ if [ "$2" = "yes" ]; then
     --entrypoint /$NAME-buildscript.sh \
     -e SOURCE_DATE_EPOCH=$source_date_epoch \
     -e EDKP_VER=$EDKP_VER \
+    -e EDK_VER=$EDK_VER \
     -e WORKSPACE=/ \
     -e PACKAGES_PATH=/edk2-$(echo $EDK_VER):/edk2-platforms-$(echo $EDKP_VER) \
     -e ACTIVE_PLATFORM='Platform/StandaloneMm/PlatformStandaloneMmPkg/PlatformStandaloneMmRpmb.dsc' \
