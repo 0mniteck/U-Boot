@@ -105,6 +105,8 @@ if [ "$EPOCH" != "" ]; then
 fi
 sleep 5
 
+chmod -R +x Buildscripts/
+chmod -R +x Configs/
 sudo apt install -y bc dosfstools parted screen snapd
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 ./clean.sh $CLEAN && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$DEV' '$CROSS
