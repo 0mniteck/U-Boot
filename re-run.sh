@@ -60,8 +60,10 @@ echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/release.sha512
 echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum
 
 sudo apt install -y snapd
-snap install syft --classic
-snap install grype --classic
+if [ "$3" != "yes" ]; then
+  snap install syft --classic
+  snap install grype --classic
+fi
 rm -f -r /var/snap/docker*
 snap remove docker --purge
 mkdir /var/snap/docker && chown root:root /var/snap/docker
