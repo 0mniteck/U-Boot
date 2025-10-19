@@ -5,7 +5,7 @@ ARG BASE_EXTRA=default
 FROM $HUB:$BASE AS base
 
 FROM $HUB-extra:$BASE_EXTRA AS edk2
-RUN apt install -y dirmngr gpg nasm
+RUN apt install -y dirmngr gpg gpg-agent nasm
 RUN gcc --version
 RUN gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
 RUN echo "deb [arch=amd64] https://archive.ubuntu.com/ubuntu bionic main universe" > /etc/apt/sources.list.d/bionic.list
