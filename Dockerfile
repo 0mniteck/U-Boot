@@ -8,7 +8,8 @@ FROM $HUB-extra:$BASE_EXTRA AS edk2
 RUN apt install -y dirmngr gpg gpg-agent nasm
 RUN gcc --version
 RUN gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
-RUN echo "deb [arch=amd64] https://archive.ubuntu.com/ubuntu bionic main universe" > /etc/apt/sources.list.d/bionic.list
+RUN gpg --export --armor --output /usr/share/keyrings/tmp.gpg
+RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/tmp.gpg] https://archive.ubuntu.com/ubuntu bionic main universe" > /etc/apt/sources.list.d/bionic.list
 RUN apt update && apt install -y gcc-5 g++-5
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 5
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 5
