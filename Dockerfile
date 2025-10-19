@@ -4,8 +4,15 @@ ARG BASE_EXTRA=default
 
 FROM $HUB:$BASE AS base
 
-FROM ubuntu:18.04@sha256:f97a5103cca28097326814718e711c9c41b54853c26959d73495e40b1dd608f2 AS edk2
-RUN apt install -y build-essential git gcc-5 acpica-tools nasm unzip uuid-dev wget python3-distutils
+FROM $HUB-extra:$BASE_EXTRA AS edk2
+RUN apt install -y nasm
+RUN gcc --version
+RUN echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu bionic main universe" > /etc/apt/sources.list.d/bionic.list
+RUN apt update && apt install -y gcc-5 g++-5
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 5
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 5
+RUN update-alternatives --config gcc
+RUN gcc --version
 ARG SOURCE_DATE_EPOCH
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
 ARG EDKP_VER
