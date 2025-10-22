@@ -40,9 +40,3 @@ git clone git@github.com:0mniteck/U-Boot.git -b "refs/tags/tagname" && \
 cd U-Boot && \
 ./buildscript.sh
 ```
-
-### Requirements:
-
-* [ ] Debian based OS
-
-* [ ] Any microSD in the /dev/mmcblk1 slot
