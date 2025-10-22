@@ -4,7 +4,6 @@
 
 ```
 buildscript.sh
-
  -a {Alternate List: yes/No}
  -c {Clean: Yes/no}
  -d (Developer Build: yes/No)
