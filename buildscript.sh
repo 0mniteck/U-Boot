@@ -25,7 +25,7 @@ export BUILD_LIST="R5B-rk3588:rock5b-rk3588_defconfig RP64-rk3399:rockpro64-rk33
 export LIST="R5B-rk3588 RP64-rk3399 PBP-rk3399"
 export ARCHS="rk3588 rk3399"
 
-while getopts ":a:c:d:e:t:w:" opt; do
+while getopts ":a:c:d:e:m:t:w:" opt; do
     case $opt in
         a) # Alternate List (yes/No)
             ALT="$OPTARG"
@@ -38,6 +38,9 @@ while getopts ":a:c:d:e:t:w:" opt; do
             ;;
         e) # SOURCE_DATE_EPOCH [For reproducibility] ex. "1758309600"
             EPOCH="$OPTARG"
+            ;;
+        m) # Mount External [U2F Backed Luks] Partition ex. "mmcblk1p1"
+            MOUNT="$OPTARG"
             ;;
         t) # Tag Release refs/tags/("tagname") *Required
             TAG="$OPTARG"
@@ -103,13 +106,16 @@ echo "Using Alternate List: $ALT"
 if [ "$EPOCH" != "" ]; then
     echo "Override Source Epoch: $EPOCH"
 fi
+if [ "$MOUNT" != "" ]; then
+    echo "Mount: /dev/$MOUNT"
+fi
 sleep 5
 
 chmod -R +x Buildscripts/
 chmod -R +x Configs/
 sudo apt install -y bc dosfstools parted screen snapd
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
-./clean.sh $CLEAN && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$DEV' '$CROSS
+./clean.sh $CLEAN && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$DEV' '$CROSS' '$MOUNT
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo "" && cat Results/release.sha512sum && echo ""
 mv builder.log Results/builder.log && status="$(cat status.build)" && ./clean.sh cleanup && ls -la Builds/*
 read -p "$status: --> sign/commit/push"
