@@ -29,6 +29,10 @@ fi
 source_date="@$source_date_epoch"
 build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
 
+if [ "$5" != "" ]; then
+  echo "MOUNT: /dev/$5"
+  export MOUNT="/dev/$5"
+fi
 if [ "$4" = "yes" ]; then
   echo "CROSS_COMPILE: $4"
   export CROSS="--platform linux/arm64"
@@ -64,10 +68,26 @@ if [ "$3" != "yes" ]; then
   snap install syft --classic
   snap install grype --classic
 fi
-rm -f -r /var/snap/docker*
+snap disable docker
+rm -f -r /var/snap/docker/*
+if [ "$5" != "" ]; then
+  umount -f /dev/mapper/Luks-Signal
+  sleep 5
+  systemd-cryptsetup detach Luks-Signal
+fi
+rm -f -r /var/snap/docker
+sleep 5
 snap remove docker --purge
-mkdir /var/snap/docker && chown root:root /var/snap/docker
-
+if [ "$5" != "" ]; then
+  systemd-cryptsetup attach Luks-Signal /dev/$5
+fi
+mkdir /var/snap/docker
+if [ "$5" != "" ]; then
+  mount /dev/mapper/Luks-Signal /var/snap/docker
+  rm -f -r /var/snap/docker/*
+fi
+rm -f -r /var/lib/snapd/cache/*
+chown root:root /var/snap/docker
 if [ "$4" = "yes" ]; then
   snap install docker --revision=3265
 else
@@ -75,7 +95,7 @@ else
   systemctl disable snap.docker.nvidia-container-toolkit
 fi
 
-stop() {
+stop() { # $1 = Name
   docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
 }
 
