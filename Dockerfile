@@ -4,17 +4,56 @@ ARG BASE_EXTRA=default
 
 FROM $HUB:$BASE AS base
 
+FROM $HUB-extra:$BASE_EXTRA AS edk2
+RUN apt install -y dirmngr gpg gpg-agent nasm
+RUN gcc --version
+RUN gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
+RUN gpg --export --armor --output /usr/share/keyrings/tmp.gpg
+RUN echo "deb [arch=arm64 signed-by=/usr/share/keyrings/tmp.gpg] https://ports.ubuntu.com/ubuntu-ports bionic main universe" > /etc/apt/sources.list.d/bionic.list
+RUN apt update && apt install -y gcc-5 g++-5
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 5
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 5
+RUN update-alternatives --config gcc
+RUN gcc --version
+ARG SOURCE_DATE_EPOCH
+ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
+ARG EDKP_VER
+ARG EDKP_SUM
+ARG EDK_VER
+ENV EDK_VER=$EDK_VER
+ENV EDKP_VER=$EDKP_VER
+ADD https://github.com/tianocore/edk2-platforms/archive/$EDKP_VER.zip /$EDKP_VER.zip
+RUN echo "$EDKP_SUM  $EDKP_VER.zip" | sha512sum --status -c - && echo "EDK2 Platform Checksum Matched!" || exit 1
+RUN git clone https://github.com/tianocore/edk2.git -b $EDK_VER edk2-$EDK_VER
+RUN cd /edk2-$EDK_VER && git submodule init && git submodule update --init --recursive
+ARG ENTRYPOINT
+COPY Buildscripts/$ENTRYPOINT-buildscript.sh /
+
 FROM $HUB-extra:$BASE_EXTRA AS optee
 ARG SOURCE_DATE_EPOCH
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
 ARG OPT_VER
 ARG OPT_SUM
+ARG OPT_SUM2
+ARG TPM_SUM
+ARG SSL_VER
+ARG SSL_SUM
+ARG ROT_SUM
 ARG ARCHS
 ENV ARCHS=$ARCHS
 ENV OPT_VER=$OPT_VER
-ENV OPT_SUM=$OPT_SUM
-ADD https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /
+ENV SSL_VER=$SSL_VER
+ADD https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /$OPT_VER.zip
+ADD https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_$OPT_VER.zip
+ADD https://github.com/microsoft/ms-tpm-20-ref/archive/refs/tags/v1.83r1.zip /TPM.zip
+ADD https://github.com/openssl/openssl/archive/refs/tags/openssl-$SSL_VER.zip /SSL.zip
+ADD https://github.com/ARM-software/arm-trusted-firmware/raw/refs/heads/master/plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem /
 RUN echo "$OPT_SUM  $OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE Checksum Matched!" || exit 1
+RUN echo "$OPT_SUM2  ftpm_$OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE fTPM Checksum Matched!" || exit 1
+RUN echo "$TPM_SUM  TPM.zip" | sha512sum --status -c - && echo "TPM Checksum Matched!" || exit 1
+RUN echo "$SSL_SUM  SSL.zip" | sha512sum --status -c - && echo "OpenSSL Checksum Matched!" || exit 1
+RUN echo "$ROT_SUM  arm_rotprivk_rsa.pem" | sha512sum --status -c - && echo "ATF ROT Key Checksum Matched!" || exit 1
+COPY Builds/rk3399/BL32_AP_MM.fd /BL32_AP_MM.fd
 ARG ENTRYPOINT
 COPY Buildscripts/$ENTRYPOINT-buildscript.sh /
 
@@ -25,12 +64,16 @@ ARG BUILD_MESSAGE_TIMESTAMP
 ENV BUILD_MESSAGE_TIMESTAMP="$BUILD_MESSAGE_TIMESTAMP"
 ARG ATF_VER
 ARG ATF_SUM
+ARG MTLS_VER
+ARG MTLS_SUM
 ARG ARCHS
 ENV ARCHS=$ARCHS
 ENV ATF_VER=$ATF_VER
-ENV ATF_SUM=$ATF_SUM
+ENV MTLS_VER=$MTLS_VER
 ADD https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/$ATF_VER.zip /
+ADD https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-$MTLS_VER.zip /
 RUN echo "$ATF_SUM  $ATF_VER.zip" | sha512sum --status -c - && echo "TF-A Checksum Matched!" || exit 1
+RUN echo "$MTLS_SUM  mbedtls-$MTLS_VER.zip" | sha512sum --status -c - && echo "MTLS Checksum Matched!" || exit 1
 ARG ENTRYPOINT
 COPY Buildscripts/$ENTRYPOINT-buildscript.sh /
 
@@ -43,7 +86,6 @@ ENV FORCE_SOURCE_DATE=1;
 ARG UB_VER
 ARG UB_SUM
 ENV UB_VER=$UB_VER
-ENV UB_SUM=$UB_SUM
 ADD https://github.com/u-boot/u-boot/archive/refs/tags/v$UB_VER.zip /
 RUN echo "$UB_SUM  v$UB_VER.zip" | sha512sum --status -c - && echo "U-Boot Checksum Matched!" || exit 1
 COPY Builds /Builds

@@ -5,7 +5,7 @@ if [ "$1" = "yes" ]; then
     find . ! -type d -delete
     for dev in $LIST
     do
-      for loc in $dev $dev-SB $dev-MU-SB
+      for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
       do
         touch $loc/tmp
       done
@@ -25,7 +25,7 @@ if [ "$1" = "cleanup" ]; then
   pushd Builds/
     for dev in $LIST
     do
-      for loc in $dev $dev-SB $dev-MU-SB
+      for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
       do
         rm -f $loc/tmp
       done

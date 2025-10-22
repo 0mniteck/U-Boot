@@ -2,11 +2,10 @@
 trap '[[ $pid ]] && kill $pid; exit' EXIT
 for plat in $ARCHS
 do
-  echo "Unzipping TF-A for $plat..."
   unzip -q $ATF_VER.zip -d /$plat > /dev/null
-  echo "Entering /$plat/arm-trusted-firmware-$ATF_VER"
+  unzip -q mbedtls-$MTLS_VER.zip -d /$plat > /dev/null
   pushd /$plat/arm-trusted-firmware-$ATF_VER
-    make realclean && make BUILD_MESSAGE_TIMESTAMP="$(echo '"'$BUILD_MESSAGE_TIMESTAMP'"')" PLAT=$plat bl31
+    make realclean && make BUILD_MESSAGE_TIMESTAMP="$(echo '"'$BUILD_MESSAGE_TIMESTAMP'"')" PLAT=$plat SPD=opteed MBEDTLS_DIR=/$plat/mbedtls-mbedtls-$MTLS_VER TRUSTED_BOARD_BOOT=1 GENERATE_COT=1 ARM_ROTPK_LOCATION=devel_rsa ROT_KEY=plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem bl31
     ls -la build/$plat/release/bl31/
   popd
 done

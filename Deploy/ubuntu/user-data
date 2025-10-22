@@ -34,13 +34,13 @@ apt:
       source: |
         Types: deb
         URIs: https://us.ports.ubuntu.com/ubuntu-ports
-        Suites: oracular oracular-updates oracular-backports
+        Suites: plucky plucky-updates plucky-backports
         Components: main universe
         Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
         Types: deb
         URIs: https://us.ports.ubuntu.com/ubuntu-ports
-        Suites: oracular-security
+        Suites: plucky-security
         Components: main universe
         Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
     cloudflare.sources:
@@ -187,13 +187,13 @@ autoinstall:
         source: |
           Types: deb
           URIs: https://us.ports.ubuntu.com/ubuntu-ports
-          Suites: oracular oracular-updates oracular-backports
+          Suites: plucky plucky-updates plucky-backports
           Components: main universe
           Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
           Types: deb
           URIs: https://us.ports.ubuntu.com/ubuntu-ports
-          Suites: oracular-security
+          Suites: plucky-security
           Components: main universe
           Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
       cloudflare.sources:

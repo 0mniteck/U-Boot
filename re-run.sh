@@ -1,24 +1,20 @@
 #!/bin/bash
 
-echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/release.sha512sum && echo "" >> Results/release.sha512sum && echo "Starting Build: $(date -u '+on %D at %R UTC')"
-sudo apt install -y snapd
-snap install syft --classic
-snap install grype --classic
-rm -f -r /var/snap/docker*
-snap remove docker --purge
-mkdir /var/snap/docker && chown root:root /var/snap/docker
-
-if [ "$4" = "yes" ]; then
-  snap install docker --revision=3265
-else
-  snap install docker --revision=3267 && systemctl stop snap.docker.nvidia-container-toolkit
-  systemctl disable snap.docker.nvidia-container-toolkit
-fi
-
 source_date_epoch=1;
 if [ "$1" != 0 ]; then
   echo 'Using override timestamp for SOURCE_DATE_EPOCH: $(date -d @$(($1)) = $1';
   source_date_epoch=$(($1));
+elif [ "$3" = no ]; then
+  timestamp=$(cat Results/release.sha512sum | grep Epoch | cut -d ' ' -f5)
+  if [ "${timestamp}" != "" ]; then
+    echo "Setting SOURCE_DATE_EPOCH from release.sha512sum: $(cat Results/release.sha512sum | grep Epoch | cut -d ' ' -f5)"
+    source_date_epoch=$((timestamp))
+    check_file=1
+    cp Results/release.sha512sum /tmp/release.last.sha512sum
+  else
+    echo "Can't get latest commit timestamp. Defaulting to 1."
+    source_date_epoch=1
+  fi
 else
   timestamp=$(date -d $(date +%D) +%s);
   if [ "${timestamp}" != "" ]; then
@@ -32,141 +28,264 @@ fi
 
 source_date="@$source_date_epoch"
 build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
+
+if [ "$5" != "" ]; then
+  echo "MOUNT: /dev/$5"
+  export MOUNT="/dev/$5"
+fi
+if [ "$4" = "yes" ]; then
+  echo "CROSS_COMPILE: $4"
+  export CROSS="--platform linux/arm64"
+fi
 if [ "$2" = "no" ]; then
   echo "CLEAN_BUILD: $2"
 fi
 if [ "$3" = "yes" ]; then
   echo "DEV_BUILD: $3"
+  load() { # $1 = Name
+    export LOAD="--load $CROSS --target $1 --tag $1"
+    export NAME=$1
+    return
+    }
+else
+  load() { # $1 Name
+    export LOAD="--load --metadata-file Results/$1.meta.json $CROSS --target $1 --tag $1"
+    export BUILDX_METADATA_PROVENANCE=max
+    export NAME=$1
+    return
+    }
 fi
-if [ "$4" = "yes" ]; then
-  echo "CROSS_COMPILE: $4"
-fi
+
 echo "SOURCE_DATE: $source_date"
 echo "SOURCE_DATE_EPOCH: $source_date_epoch"
 echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/release.sha512sum && echo "" >> Results/release.sha512sum && echo "Starting Build: $(date -u '+on %D at %R UTC')"
 echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum
-docker buildx create --name U-Boot-Builder --platform linux/arm64 --driver-opt "network=host" --bootstrap --use
+
+sudo apt install -y snapd
+if [ "$3" != "yes" ]; then
+  snap install syft --classic
+  snap install grype --classic
+fi
+snap disable docker
+rm -f -r /var/snap/docker/*
+if [ "$5" != "" ]; then
+  umount -f /dev/mapper/Luks-Signal
+  sleep 5
+  systemd-cryptsetup detach Luks-Signal
+fi
+rm -f -r /var/snap/docker
+sleep 5
+snap remove docker --purge
+if [ "$5" != "" ]; then
+  systemd-cryptsetup attach Luks-Signal /dev/$5
+fi
+mkdir /var/snap/docker
+if [ "$5" != "" ]; then
+  mount /dev/mapper/Luks-Signal /var/snap/docker
+  rm -f -r /var/snap/docker/*
+fi
+rm -f -r /var/lib/snapd/cache/*
+chown root:root /var/snap/docker
 if [ "$4" = "yes" ]; then
-  docker run --privileged --rm tonistiigi/binfmt --install all
+  snap install docker --revision=3265
+else
+  snap install docker --revision=3267 && systemctl stop snap.docker.nvidia-container-toolkit
+  systemctl disable snap.docker.nvidia-container-toolkit
+fi
+
+stop() { # $1 = Name
+  docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
+}
+
+scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
+  if [ "$3" != "yes" ]; then
+    pushd Results/
+      if [ -f "$HOME/.grype.yaml" ]; then GRCONF="-c $HOME/.grype.yaml"; fi
+      mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=$1.spdx.json
+      script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp
+      grep "✔ Scanned for vulnerabilities" $1.grype.tmp | tail -n 1 > $1.grype.status.1
+      tr -d '\000-\037\177' < $1.grype.status.1 | sed '/^$/d' > $1.grype.status.1.tmp
+      line1=$(cat $1.grype.status.1.tmp)
+      left1=${line1%%" [K"*}
+      grep "├── by severity:" $1.grype.tmp | tail -n 1 > $1.grype.status.2
+      tr -d '\000-\037\177' < $1.grype.status.2 | sed '/^$/d' > $1.grype.status.2.tmp
+      line2=$(cat $1.grype.status.2.tmp)
+      left2=${line2%%" [K"*}
+      grep "└── by status:" $1.grype.tmp | tail -n 1 > $1.grype.status.3
+      tr -d '\000-\037\177' < $1.grype.status.3 | sed '/^$/d' > $1.grype.status.3.tmp
+      line3=$(cat $1.grype.status.3.tmp)
+      left3=${line3%%" [K"*}
+      echo $left1 > $1.grype.status
+      echo $left2 >> $1.grype.status
+      echo $left3 >> $1.grype.status
+      rm -f $1.grype.tmp
+      rm -f $1.grype.status.*
+      cat $1.grype.status
+    popd
+  else
+    return
+  fi
+}
+
+docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
+if [ "$4" = "yes" ]; then
+  docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
 fi
 if [ "$2" = "yes" ]; then
-  docker buildx build --load --platform linux/arm64 --target optee --tag optee \
+  load edk2
+  docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
-    --build-arg OPT_VER=$OPT_VER \
-    --build-arg OPT_SUM=$OPT_SUM \
+    --build-arg EDKP_VER=$EDKP_VER \
+    --build-arg EDKP_SUM=$EDKP_SUM \
+    --build-arg EDK_VER=$EDK_VER \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
     --build-arg BASE_EXTRA=$BASE_EXTRA \
-    --build-arg ENTRYPOINT=optee \
+    --build-arg ENTRYPOINT=$NAME \
     -f Dockerfile .
 
-  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:optee -o spdx-json=Results/optee-os.spdx.json && rm -f -r "$HOME/syft"
-  script -q -c "grype sbom:Results/optee-os.spdx.json -o json > Results/optee-os.grype.json" Results/optee-os.grype.tmp
-  ansifilter < Results/optee-os.grype.tmp > Results/optee-os.grype.tmp2
-  grep "✔ Scanned for vulnerabilities" Results/optee-os.grype.tmp2 | tail -n 1 > Results/optee-os.grype.status; grep "├── by severity:" Results/optee-os.grype.tmp2 | tail -n 1 >> Results/optee-os.grype.status; grep "└── by status:" Results/optee-os.grype.tmp2 | tail -n 1 >> Results/optee-os.grype.status
-  rm -f Results/optee-os.grype.tmp*
+  scan_using_grype $NAME docker:$NAME $3
 
   docker run -it --cpus=$(nproc) \
-    --name optee \
-    --platform linux/arm64 \
+    --name $NAME $CROSS \
     --user "$(id -u):$(id -g)" \
-    --entrypoint /optee-buildscript.sh \
+    --entrypoint /$NAME-buildscript.sh \
     -e SOURCE_DATE_EPOCH=$source_date_epoch \
+    -e EDKP_VER=$EDKP_VER \
+    -e EDK_VER=$EDK_VER \
+    -e WORKSPACE=/ \
+    -e PACKAGES_PATH=/edk2-$(echo $EDK_VER):/edk2-platforms-$(echo $EDKP_VER) \
+    -e ACTIVE_PLATFORM='Platform/StandaloneMm/PlatformStandaloneMmPkg/PlatformStandaloneMmRpmb.dsc' \
+    -e GCC5_AARCH64_PREFIX=aarch64-linux-gnu- \
+    $NAME
+
+  docker cp $NAME:/Build/MmStandaloneRpmb/RELEASE_GCC5/FV/BL32_AP_MM.fd Builds/rk3399/BL32_AP_MM.fd
+  sha512sum Builds/rk3399/BL32_AP_MM.fd && sha512sum Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha512sum
+  openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd && openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha3sum
+  stop $NAME
+  
+  load optee
+  docker buildx build $LOAD \
+    --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+    --build-arg OPT_VER=$OPT_VER \
+    --build-arg OPT_SUM=$OPT_SUM \
+    --build-arg OPT_SUM2=$OPT_SUM2 \
+    --build-arg TPM_SUM=$TPM_SUM \
+    --build-arg SSL_VER=$SSL_VER \
+    --build-arg SSL_SUM=$SSL_SUM \
+    --build-arg ROT_SUM=$ROT_SUM \
+    --build-arg HUB=$HUB \
+    --build-arg BASE=$BASE \
+    --build-arg BASE_EXTRA=$BASE_EXTRA \
+    --build-arg ENTRYPOINT=$NAME \
+    -f Dockerfile .
+
+  scan_using_grype $NAME docker:$NAME $3
+
+  docker run -it --cpus=$(nproc) \
+    --name $NAME $CROSS \
+    --user "$(id -u):$(id -g)" \
+    --entrypoint /$NAME-buildscript.sh \
+    -e SOURCE_DATE_EPOCH=$source_date_epoch \
+    -e SSL_VER=$SSL_VER \
     -e OPT_VER=$OPT_VER \
     -e ARCHS="$ARCHS" \
-    optee
+    $NAME
 
   for arch in $ARCHS
   do
-    docker cp optee:/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/
-    sha512sum Builds/$arch/tee.bin && sha512sum Builds/$arch/tee.bin >> Results/release.sha512sum
-    openssl dgst -SHA3-256 Builds/$arch/tee.bin && openssl dgst -SHA3-256 Builds/$arch/tee.bin >> Results/release.sha3sum
+    for tpm in ":-tpm" "/NOTPM:"
+    do
+      tpm=$(echo $tpm | cut -d':' -f2)
+      docker cp $NAME:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
+      sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
+      openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
+    done
   done
-  docker stop optee > /dev/null && echo "optee stopped" && docker rm --volumes optee > /dev/null && echo "optee removed"
+  stop $NAME
 
-  docker buildx build --load --platform linux/arm64 --target arm-trusted --tag arm-trusted \
+  load arm-trusted
+  docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
     --build-arg ATF_VER=$ATF_VER \
     --build-arg ATF_SUM=$ATF_SUM \
+    --build-arg MTLS_VER=$MTLS_VER \
+    --build-arg MTLS_SUM=$MTLS_SUM \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
     --build-arg BASE_EXTRA=$BASE_EXTRA \
-    --build-arg ENTRYPOINT=arm-trusted \
+    --build-arg ENTRYPOINT=$NAME \
     -f Dockerfile .
 
-  mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:arm-trusted -o spdx-json=Results/arm-trusted-firmware.spdx.json && rm -f -r "$HOME/syft"
-  script -q -c "grype sbom:Results/arm-trusted-firmware.spdx.json -o json > Results/arm-trusted-firmware.grype.json" Results/arm-trusted-firmware.grype.tmp
-  ansifilter < Results/arm-trusted-firmware.grype.tmp > Results/arm-trusted-firmware.grype.tmp2
-  grep "✔ Scanned for vulnerabilities" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 > Results/arm-trusted-firmware.grype.status; grep "├── by severity:" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 >> Results/arm-trusted-firmware.grype.status; grep "└── by status:" Results/arm-trusted-firmware.grype.tmp2 | tail -n 1 >> Results/arm-trusted-firmware.grype.status
-  rm -f Results/arm-trusted-firmware.grype.tmp*
+  scan_using_grype $NAME docker:$NAME $3
 
   docker run -it --cpus=$(nproc) \
-    --name arm-trusted \
-    --platform linux/arm64 \
+    --name $NAME $CROSS \
     --user "$(id -u):$(id -g)" \
-    --entrypoint /arm-trusted-buildscript.sh \
+    --entrypoint /$NAME-buildscript.sh \
     -e SOURCE_DATE_EPOCH=$source_date_epoch \
     -e BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
     -e ATF_VER=$ATF_VER \
     -e ARCHS="$ARCHS" \
-    arm-trusted
+    $NAME
 
   for arch in $ARCHS
   do
-    docker cp arm-trusted:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
+    docker cp $NAME:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
     sha512sum Builds/$arch/bl31.elf && sha512sum Builds/$arch/bl31.elf >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/$arch/bl31.elf && openssl dgst -SHA3-256 Builds/$arch/bl31.elf >> Results/release.sha3sum
   done
-  docker stop arm-trusted > /dev/null && echo "arm-trusted stopped" && docker rm --volumes arm-trusted > /dev/null && echo "arm-trusted removed"
+  stop $NAME
 fi
 
-docker buildx build --load --platform linux/arm64 --target u-boot --tag u-boot \
+load u-boot
+docker buildx build $LOAD \
   --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
   --build-arg UB_VER=$UB_VER \
   --build-arg UB_SUM=$UB_SUM \
   --build-arg HUB=$HUB \
   --build-arg BASE=$BASE \
   --build-arg BASE_EXTRA=$BASE_EXTRA \
-  --build-arg ENTRYPOINT=u-boot \
+  --build-arg ENTRYPOINT=$NAME \
   -f Dockerfile .
 
-mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan docker:u-boot -o spdx-json=Results/u-boot.spdx.json && rm -f -r "$HOME/syft"
-script -q -c "grype sbom:Results/u-boot.spdx.json -o json > Results/u-boot.grype.json" Results/u-boot.grype.tmp
-ansifilter < Results/u-boot.grype.tmp > Results/u-boot.grype.tmp2
-grep "✔ Scanned for vulnerabilities" Results/u-boot.grype.tmp2 | tail -n 1 > Results/u-boot.grype.status; grep "├── by severity:" Results/u-boot.grype.tmp2 | tail -n 1 >> Results/u-boot.grype.status; grep "└── by status:" Results/u-boot.grype.tmp2 | tail -n 1 >> Results/u-boot.grype.status
-rm -f Results/u-boot.grype.tmp*
+scan_using_grype $NAME docker:$NAME $3
 
 docker run -it --cpus=$(nproc) \
-  --name u-boot \
-  --platform linux/arm64 \
+  --name $NAME $CROSS \
   --user "$(id -u):$(id -g)" \
-  --entrypoint /u-boot-buildscript.sh \
+  --entrypoint /$NAME-buildscript.sh \
   -e SOURCE_DATE_EPOCH=$source_date_epoch \
   -e SOURCE_DATE=$source_date \
   -e UB_VER=$UB_VER \
   -e BUILD_LIST="$BUILD_LIST" \
   -e DEV_BUILD=$3 \
-  u-boot
+  $NAME
 
 for dev in $LIST
 do
-  for loc in $dev $dev-SB $dev-MU-SB
+  for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
   do
-    docker cp u-boot:/$loc/ Builds
+    docker cp $NAME:/$loc/ Builds
     sha512sum Builds/$loc/u-boot-rockchip.bin && sha512sum Builds/$loc/u-boot-rockchip.bin >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin >> Results/release.sha3sum
     sha512sum Builds/$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
   done
 done
-
-docker cp u-boot:/sys.info sys.info
-docker stop u-boot > /dev/null && echo "u-boot stopped"
+docker cp $NAME:/sys.info sys.info
+stop $NAME
 
 snap disable docker
 rm -f -r /var/snap/docker/*
+if [ "$5" != "" ]; then
+  umount -f /dev/mapper/Luks-Signal
+  sleep 5
+  systemd-cryptsetup detach Luks-Signal
+fi
 rm -f -r /var/snap/docker
 sleep 5
 snap remove docker --purge
@@ -174,20 +293,16 @@ snap remove docker --purge
 networkctl delete docker0
 rm -f -r /var/lib/snapd/cache/*
 
-mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan / --select-catalogers debian -o spdx-json=Results/ubuntu.25.04.spdx.json && rm -f -r "$HOME/syft"
-script -q -c "grype sbom:Results/ubuntu.25.04.spdx.json -o json > Results/ubuntu.25.04.grype.json" Results/ubuntu.25.04.grype.tmp
-ansifilter < Results/ubuntu.25.04.grype.tmp > Results/ubuntu.25.04.grype.tmp2
-grep "✔ Scanned for vulnerabilities" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 > Results/ubuntu.25.04.grype.status; grep "├── by severity:" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 >> Results/ubuntu.25.04.grype.status; grep "└── by status:" Results/ubuntu.25.04.grype.tmp2 | tail -n 1 >> Results/ubuntu.25.04.grype.status
-rm -f Results/ubuntu.25.04.grype.tmp*
+scan_using_grype ubuntu.25.04 "/ --select-catalogers debian" $3
 
-snap remove syft --purge && rm -f -r $HOME/.cache/syft
+snap remove syft --purge && 
 snap remove grype --purge
-rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/5 -f -r && rm -f -r $HOME/.cache/grype && rm -f -r /tmp/grype-scratch*
+rm /root/getter* -f -r && rm /root/grype* -f -r && rm /root/syft -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype* && rm -f -r /tmp/getter*
 
 if [ "$3" = "no" ]; then
   for dev in $LIST
   do
-    for loc in $dev $dev-SB $dev-MU-SB
+    for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
     do
       pushd Builds/$loc/
       dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
@@ -205,14 +320,25 @@ if [ "$3" = "no" ]; then
     done
   done
   dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
-  dd if=Builds/RP64-rk3399-SB/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
+  dd if=Builds/RP64-rk3399-TPM-SB/sdcard.img of=/dev/mmcblk1 conv=notrunc status=progress
+else
+  dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
+  dd if=Builds/RP64-rk3399-TPM-SB/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
 fi
-
-sed -i 's/Builds/..\/Builds/g' Results/release.sha512sum
-echo "" && echo "" >> Results/release.sha512sum
-echo "# 0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> Results/release.sha512sum && echo "" >> Results/release.sha512sum
-echo "# Source Date Epoch: $source_date_epoch" >> Results/release.sha512sum
-echo "# Build Complete: $(date -u '+on %D at %R UTC')" >> Results/release.sha512sum && echo "Build Complete: $(date -u '+on %D at %R UTC')"
-echo "# Base Build System: $(uname -o) $(uname -r) $(uname -p) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> Results/release.sha512sum
-echo $(cat sys.info) >> Results/release.sha512sum
+pushd Results/
+  sed -i 's/Builds/..\/Builds/g' release.sha512sum
+  echo "" && echo "" >> release.sha512sum
+  echo "# 0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> release.sha512sum && echo "" >> release.sha512sum
+  echo "# Source Date Epoch: $source_date_epoch" >> release.sha512sum
+  echo "# Build Complete: $(date -u '+on %D at %R UTC')" >> release.sha512sum && echo "Build Complete: $(date -u '+on %D at %R UTC')"
+  echo "# Base Build System: $(uname -o) $(uname -r) $(uname -p) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> release.sha512sum
+  echo $(cat ../sys.info) >> release.sha512sum
+popd
+if [ "$check_file" = "1" ]; then
+  pushd Results/
+    cp /tmp/release.last.sha512sum release.last.sha512sum
+    sha512sum -c release.last.sha512sum
+    rm -f /tmp/release.last.sha512sum && rm -f release.last.sha512sum
+  popd
+fi
 echo "Successful Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.build
