@@ -63,7 +63,6 @@ ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/release.sha512sum && echo "" >> Results/release.sha512sum && echo "Starting Build: $(date -u '+on %D at %R UTC')"
 echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum
 
-sudo apt install -y snapd
 if [ "$3" != "yes" ]; then
   snap install syft --classic
   snap install grype --classic
