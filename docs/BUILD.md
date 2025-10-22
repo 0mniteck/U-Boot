@@ -4,11 +4,14 @@
 
 ```
 buildscript.sh
- -a {Cross-Compile: yes/No}
+
+ -a {Alternate List: yes/No}
  -c {Clean: Yes/no}
- -d {Date: source_date_epoch}
- -r {Release-tag: tagname}
- -t {Test-mode: yes/No}
+ -d (Developer Build: yes/No)
+ -e {Date: source_date_epoch}
+ -m (Mount: mmcblk1p1)
+ -t {release-Tag: tagname}
+ -w {Cross Compile: yes/No}
 ```
 
 #### To compile current release run:
@@ -17,7 +20,7 @@ buildscript.sh
 sudo su && \
 git clone git@github.com:0mniteck/U-Boot.git && \
 cd U-Boot && \
-./buildscript.sh -r "tagname"
+./buildscript.sh -t "tagname"
 ```
 
 #### To cross-compile current release run:
@@ -26,7 +29,7 @@ cd U-Boot && \
 sudo su && \
 git clone git@github.com:0mniteck/U-Boot.git && \
 cd U-Boot && \
-./buildscript.sh -r "tagname" -a yes
+./buildscript.sh -t "tagname" -w yes
 ```
 
 #### To compile for reproducibility run:
@@ -35,7 +38,7 @@ cd U-Boot && \
 sudo su && \
 git clone git@github.com:0mniteck/U-Boot.git -b "refs/tags/tagname" && \
 cd U-Boot && \
-./buildscript.sh -d "$(cat Results/release.sha512sum | grep Epoch | cut -d ' ' -f5)"
+./buildscript.sh
 ```
 
 ### Requirements:
