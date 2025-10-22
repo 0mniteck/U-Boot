@@ -281,6 +281,11 @@ stop $NAME
 
 snap disable docker
 rm -f -r /var/snap/docker/*
+if [ "$5" != "" ]; then
+  umount -f /dev/mapper/Luks-Signal
+  sleep 5
+  systemd-cryptsetup detach Luks-Signal
+fi
 rm -f -r /var/snap/docker
 sleep 5
 snap remove docker --purge
