@@ -38,6 +38,7 @@
     * [x] Change BOOTCMD to `efiload; reset;`
     * [x] Enable STACKPROTECTOR
     * [ ] DISABLE_CONSOLE
+* [x] Add local docker build-cache 
 * [x] Generate SBOM at buildtime
   * [x] Scan with Grype
   * [x] Display Status
