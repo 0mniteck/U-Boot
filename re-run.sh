@@ -156,9 +156,9 @@ if [ "$2" = "yes" ]; then
     -e EDKP_VER=$EDKP_VER \
     -e EDK_VER=$EDK_VER \
     -e WORKSPACE=/ \
-    -e PACKAGES_PATH=/edk2-$(echo $EDK_VER):/edk2-platforms-$(echo $EDKP_VER) \
-    -e ACTIVE_PLATFORM='Platform/StandaloneMm/PlatformStandaloneMmPkg/PlatformStandaloneMmRpmb.dsc' \
-    -e GCC5_AARCH64_PREFIX=aarch64-linux-gnu- \
+    -e PACKAGES_PATH="/edk2-$(echo $EDK_VER):/edk2-platforms-$(echo $EDKP_VER)" \
+    -e ACTIVE_PLATFORM="Platform/StandaloneMm/PlatformStandaloneMmPkg/PlatformStandaloneMmRpmb.dsc" \
+    -e GCC5_AARCH64_PREFIX="aarch64-linux-gnu-" \
     $NAME
 
   docker cp $NAME:/Build/MmStandaloneRpmb/RELEASE_GCC5/FV/BL32_AP_MM.fd Builds/rk3399/BL32_AP_MM.fd
