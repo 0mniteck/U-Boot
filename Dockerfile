@@ -4,8 +4,8 @@ ARG BASE_EXTRA=default
 
 FROM $HUB:$BASE AS base
 
-FROM $HUB-extra:$BASE_EXTRA AS edk2
-RUN apt install -y dirmngr gpg gpg-agent nasm
+FROM base AS edk2
+RUN apt install -y dirmngr gpg gpg-agent nasm python3-distutils
 RUN gcc --version
 RUN gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
 RUN gpg --export --armor --output /usr/share/keyrings/tmp.gpg
