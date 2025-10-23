@@ -45,7 +45,10 @@ if [ "$1" = "cleanup" ]; then
     done
   popd
   pushd Results/
-    rm -f tmp
+    for con in edk2 arm-trusted optee-os u-boot ubuntu.25.04
+    do
+      rm -f $loc/tmp
+    done
   popd
   rm -f status.build && rm -f sys.info && rm -f vars.env
 fi
