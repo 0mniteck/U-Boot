@@ -5,10 +5,10 @@
   * [ ] Test TPM2_FTPM_TEE
     * [x] Build StandaloneMM
       * [x] Migrate from old branch
-    * [ ] Build ms-tpm-20-ref
+    * [x] Build ms-tpm-20-ref
       * [x] Openssl use source includes v3.5.3
         * [x] Set OPENSSL_CONFIGURED_API 30000
-      * [ ] Update optee_ftp/sub.mk to support v1.83
+      * [ ] Update optee_ftpm/sub.mk to support v1.83
     * [ ] TPM_PCR_ALLOCATE
     * [ ] MEASURED_BOOT
   * [ ] Check if [new patches](https://github.com/radxa-pkg/radxa-overlays/pull/385) fixed problem
