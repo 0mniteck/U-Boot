@@ -19,7 +19,7 @@ if [ "$1" = "pre.cleanup" ]; then
     find . ! -type d -delete
     for con in edk2 arm-trusted optee-os u-boot ubuntu.25.04
       do
-        mkdir $loc
+        mkdir -p $loc
         touch $loc/tmp
       done
   popd
