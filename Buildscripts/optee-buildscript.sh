@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -x
 trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q SSL.zip -d / > /dev/null
 rm -f -r /usr/include/openssl
