@@ -5,7 +5,7 @@ ARG BASE_EXTRA=default
 FROM $HUB:$BASE AS base
 
 FROM base AS edk2
-RUN apt install -y dirmngr gpg gpg-agent nasm python3-distutils
+RUN apt install -y dirmngr gpg gpg-agent nasm
 RUN gcc --version
 RUN gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32
 RUN gpg --export --armor --output /usr/share/keyrings/tmp.gpg
@@ -14,6 +14,7 @@ RUN apt update && apt install -y gcc-5
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 5
 RUN update-alternatives --config gcc
 RUN gcc --version
+RUN pip install setuptools
 ARG SOURCE_DATE_EPOCH
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
 ARG EDKP_VER
