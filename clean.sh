@@ -24,10 +24,12 @@ if [ "$1" = "pre.cleanup" ]; then
       done
   popd
 fi
+
 if [ "$1" = "cleanup.cache" ]; then
   rm -r -f Cache
   mkdir Cache
 fi
+
 if [ "$1" = "cleanup" ]; then
   pushd Builds/
     for dev in $LIST
