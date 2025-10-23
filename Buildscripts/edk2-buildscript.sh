@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -x
 trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q $EDKP_VER.zip > /dev/null
 pushd /edk2-$EDK_VER
