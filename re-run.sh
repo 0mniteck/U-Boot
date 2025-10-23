@@ -28,6 +28,7 @@ fi
 
 source_date="@$source_date_epoch"
 build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
+local_cache="--cache-to type=local,dest=Cache,mode=max,compression=gzip --cache-from type=local,src=Cache"
 
 if [ "$5" != "" ]; then
   echo "MOUNT: /dev/$5"
@@ -43,13 +44,13 @@ fi
 if [ "$3" = "yes" ]; then
   echo "DEV_BUILD: $3"
   load() { # $1 = Name
-    export LOAD="--load $CROSS --target $1 --tag $1"
+    export LOAD="--load $CROSS $local_cache --target $1 --tag $1"
     export NAME=$1
     return
     }
 else
   load() { # $1 Name
-    export LOAD="--load --metadata-file Results/$1.meta.json $CROSS --target $1 --tag $1"
+    export LOAD="--load $CROSS $local_cache --target $1 --tag $1 --metadata-file Results/$1.meta.json"
     export BUILDX_METADATA_PROVENANCE=max
     export NAME=$1
     return
