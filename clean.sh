@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" = "yes" ]; then
+if [ "$1" = "pre.cleanup" ]; then
   pushd Builds/
     find . ! -type d -delete
     for dev in $LIST
@@ -17,10 +17,17 @@ if [ "$1" = "yes" ]; then
   popd
   pushd Results/
     find . ! -type d -delete
-    touch tmp
+    for con in edk2 arm-trusted optee-os u-boot ubuntu.25.04
+      do
+        mkdir $loc
+        touch $loc/tmp
+      done
   popd
 fi
-
+if [ "$1" = "cleanup.cache" ]; then
+  rm -r -f Cache
+  mkdir Cache
+fi
 if [ "$1" = "cleanup" ]; then
   pushd Builds/
     for dev in $LIST
