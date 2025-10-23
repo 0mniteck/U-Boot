@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" = "pre.cleanup" ]; then
+if [ "$1" = "yes" ]; then
   pushd Builds/
     find . ! -type d -delete
     for dev in $LIST
