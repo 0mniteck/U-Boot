@@ -50,7 +50,7 @@ if [ "$3" = "yes" ]; then
     }
 else
   load() { # $1 Name
-    export LOAD="--load $CROSS $local_cache --target $1 --tag $1 --metadata-file Results/$1.meta.json"
+    export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1.meta.json"
     export BUILDX_METADATA_PROVENANCE=max
     export NAME=$1
     return
