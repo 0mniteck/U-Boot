@@ -76,6 +76,7 @@ if [ "$5" != "" ]; then
 fi
 rm -f -r /var/snap/docker
 sleep 5
+snap enable docker
 snap remove docker --purge
 if [ "$5" != "" ]; then
   systemd-cryptsetup attach Luks-Signal /dev/$5
