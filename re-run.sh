@@ -28,7 +28,7 @@ fi
 
 source_date="@$source_date_epoch"
 build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
-local_cache="--cache-to type=local,dest=Cache,mode=max --cache-from type=local,src=Cache"
+local_cache="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
 
 if [ "$5" != "" ]; then
   echo "MOUNT: /dev/$5"
