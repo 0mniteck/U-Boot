@@ -20,14 +20,14 @@ if [ "$1" = "pre.cleanup" ]; then
     for con in edk2 arm-trusted optee-os u-boot ubuntu.25.04
       do
         mkdir -p $loc
-        touch $loc/tmp
+        touch $con/tmp
       done
   popd
 fi
 
 if [ "$1" = "cleanup.cache" ]; then
-  rm -r -f Cache
-  mkdir Cache
+  rm -r -f .git/Cache
+  mkdir -p .git/Cache
 fi
 
 if [ "$1" = "cleanup" ]; then
@@ -47,7 +47,7 @@ if [ "$1" = "cleanup" ]; then
   pushd Results/
     for con in edk2 arm-trusted optee-os u-boot ubuntu.25.04
     do
-      rm -f $loc/tmp
+      rm -f $con/tmp
     done
   popd
   rm -f status.build && rm -f sys.info && rm -f vars.env
