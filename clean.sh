@@ -1,6 +1,8 @@
 #!/bin/bash
 
 if [ "$1" = "pre.cleanup" ]; then
+  git reset --hard
+  git clean -xfd
   pushd Builds/
     find . ! -type d -delete
     for dev in $LIST
