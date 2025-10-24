@@ -23,6 +23,7 @@ if [ "$1" = "pre.cleanup" ]; then
         touch $con/tmp
       done
   popd
+  mkdir -p .git/Cache
 fi
 
 if [ "$1" = "cleanup.cache" ]; then
