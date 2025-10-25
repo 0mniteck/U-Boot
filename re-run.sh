@@ -136,7 +136,7 @@ if [ "$4" = "yes" ]; then
 fi
 
 load base
-docker buildx build $LOAD docker buildx build $LOAD \
+docker buildx build $LOAD \
   --build-arg HUB=$HUB \
   --build-arg BASE=$BASE \
   -f Dockerfile .
