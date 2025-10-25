@@ -6,8 +6,8 @@
     * [x] Build StandaloneMM
       * [x] Migrate from old branch
     * [x] Build ms-tpm-20-ref
-      * [x] Openssl use source includes v3.5.3
-        * [x] Set OPENSSL_CONFIGURED_API 30000
+      * [x] Openssl use source include current upstream
+        * [x] Set OPENSSL_CONFIGURED_API 101010
       * [ ] Update optee_ftpm/sub.mk to support v1.83
     * [ ] TPM_PCR_ALLOCATE
     * [ ] MEASURED_BOOT
