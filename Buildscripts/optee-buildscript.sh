@@ -4,6 +4,7 @@ unzip -q SSL.zip -d / > /dev/null
 rm -f -r /usr/include/openssl
 pushd /openssl-openssl-$SSL_VER/
   sed -i "1,15d" build.info
+  sed -i "s'MAJOR=.'MAJOR=3'" VERSION.dat
   sed -i "s'MINOR=.'MINOR=0'" VERSION.dat
   sed -i "s'PATCH=.'PATCH=0'" VERSION.dat
   ./Configure
