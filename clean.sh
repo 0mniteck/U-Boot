@@ -19,7 +19,7 @@ if [ "$1" = "pre.cleanup" ]; then
   popd
   pushd Results/
     find . ! -type d -delete
-    for con in edk2 arm-trusted optee-os u-boot ubuntu.25.04
+    for con in edk2 arm-trusted optee u-boot ubuntu.25.04
       do
         mkdir -p $con
         touch $con/tmp
@@ -48,7 +48,7 @@ if [ "$1" = "cleanup" ]; then
     done
   popd
   pushd Results/
-    for con in edk2 arm-trusted optee-os u-boot ubuntu.25.04
+    for con in edk2 arm-trusted optee u-boot ubuntu.25.04
     do
       rm -f $con/tmp
     done
