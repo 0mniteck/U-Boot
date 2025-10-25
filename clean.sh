@@ -3,8 +3,8 @@
 if [ "$1" = "git.cleanup" ]; then
   git reset --hard
   git clean -xfd
-  mkdir -p .git/Cache
   git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
+  mkdir -p .git/Cache
 fi
 
 if [ "$1" = "pre.cleanup" ]; then
