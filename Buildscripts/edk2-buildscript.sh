@@ -2,7 +2,6 @@
 trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q $EDKP_VER.zip > /dev/null
 pushd /edk2-$EDK_VER
-  # Remove if statements that are not nessasary assuming clang or gcc
   sed -i "19,20d;22,24d" BaseTools/Source/C/VfrCompile/GNUmakefile
   sed -i "176d;179,182d" BaseTools/Source/C/Makefiles/header.makefile
   source edksetup.sh
