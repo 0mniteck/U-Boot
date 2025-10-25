@@ -102,7 +102,6 @@ stop() { # $1 = Name
 
 scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
   if [ "$3" != "yes" ]; then
-    mkdir -p Results/$1
     pushd Results/$1
       if [ -f "$HOME/.grype.yaml" ]; then GRCONF="-c $HOME/.grype.yaml"; fi
       mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=$1.spdx.json
@@ -127,7 +126,6 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
       cat $1.grype.status
     popd
   else
-    mkdir -p Results/$1
     return
   fi
 }
