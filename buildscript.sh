@@ -117,15 +117,15 @@ sleep 5
 chmod -R +x Buildscripts/
 chmod -R +x Configs/
 
-sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
-git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 if [ "$CLEAN" = "yes" ]; then
   ./clean.sh pre.cleanup
   if [ "$DEV" != "yes" ]; then
     ./clean.sh cleanup.cache
   fi
 fi
-echo "" > builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$DEV' '$CROSS' '$MOUNT
+
+sudo apt update && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
+> builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$DEV' '$CROSS' '$MOUNT
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo "" && cat Results/release.sha512sum && echo "" && cat Results/release.sha3sum && echo ""
 mv builder.log Results/builder.log && status="$(cat status.build)" && ./clean.sh cleanup && ls -la Builds/*
 read -p "$status: --> sign/commit/push"
