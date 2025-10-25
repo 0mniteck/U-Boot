@@ -26,53 +26,56 @@ export LIST="R5B-rk3588 RP64-rk3399 PBP-rk3399"
 export ARCHS="rk3588 rk3399"
 
 while getopts ":a:c:d:e:m:t:w:" opt; do
-    case $opt in
-        a) # Alternate List (yes/No)
-            ALT="$OPTARG"
-            ;;
-        c) # Clean Directories (Yes/no)
-            CLEAN="$OPTARG"
-            ;;
-        d) # Developer Build [Skip some steps] (yes/No)
-            DEV="$OPTARG"
-            ;;
-        e) # SOURCE_DATE_EPOCH [For reproducibility] ex. "1758309600"
-            EPOCH="$OPTARG"
-            ;;
-        m) # Mount External [U2F Backed Luks] Partition ex. "mmcblk1p1"
-            MOUNT="$OPTARG"
-            ;;
-        t) # Tag Release refs/tags/("tagname") *Required
-            TAG="$OPTARG"
-            ;;
-        w) # Cross Compile (yes/No)
-            CROSS="$OPTARG"
-            ;;
-        \?)
-            echo "Invalid option: -$opt" >&2
-            ;;
-        :)
-            echo "Option -$opt requires an argument." >&2
-            ;;
-    esac
+  case $opt in
+  a) # Alternate List (yes/No)
+    ALT="$OPTARG"
+    ;;
+  c) # Clean Directories (Yes/no)
+    CLEAN="$OPTARG"
+    ;;
+  d) # Developer Build [Skip some steps] (yes/No)
+    DEV="$OPTARG"
+    ;;
+  e) # SOURCE_DATE_EPOCH [For reproducibility] ex. "1758309600"
+    EPOCH="$OPTARG"
+    ;;
+  m) # Mount External [U2F Backed Luks] Partition ex. "mmcblk1p1"
+    MOUNT="$OPTARG"
+    ;;
+  t) # Tag Release refs/tags/("tagname") *Required
+    TAG="$OPTARG"
+    ;;
+  w) # Cross Compile (yes/No)
+    CROSS="$OPTARG"
+    ;;
+  \?)
+    echo "Invalid option: -$opt" >&2
+    ;;
+  :)
+    echo "Option -$opt requires an argument." >&2
+    ;;
+  esac
 done
 
 if [ "$CROSS" = "" ]; then
-    CROSS="no"
+  CROSS="no"
 fi
 if [ "$CLEAN" = "" ]; then
-    CLEAN="yes"
+  CLEAN="yes"
 fi
 if [ "$DEV" = "" ]; then
-    DEV="no"
+  DEV="no"
 fi
 if [ "$ALT" = "" ]; then
-    ALT="no"
+  ALT="no"
 fi
 if [ "$ALT" = "yes" ]; then
   export BUILD_LIST="PT2-rk3566:pinetab2-rk3566_defconfig"
   export LIST="PT2-rk3566"
   export ARCHS="rk3568"
+fi
+if [ "$CLEAN" = "yes" ]; then
+  ./clean.sh git.cleanup
 fi
 
 > vars.env
@@ -104,21 +107,28 @@ echo "Tag Release: $TAG"
 echo "Developer Build: $DEV"
 echo "Using Alternate List: $ALT"
 if [ "$EPOCH" != "" ]; then
-    echo "Override Source Epoch: $EPOCH"
+  echo "Override Source Epoch: $EPOCH"
 fi
 if [ "$MOUNT" != "" ]; then
-    echo "Mount: /dev/$MOUNT"
+  echo "Mount: /dev/$MOUNT"
 fi
 sleep 5
 
 chmod -R +x Buildscripts/
 chmod -R +x Configs/
-sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
-git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
-./clean.sh $CLEAN && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$DEV' '$CROSS' '$MOUNT
-echo "" && cat builder.log | grep -n "Checksum Matched! " && echo "" && cat Results/release.sha512sum && echo ""
+
+if [ "$CLEAN" = "yes" ]; then
+  ./clean.sh pre.cleanup
+  if [ "$DEV" != "yes" ]; then
+    ./clean.sh cleanup.cache
+  fi
+fi
+
+sudo apt update && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
+> builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$(($EPOCH))' '$CLEAN' '$DEV' '$CROSS' '$MOUNT
+echo "" && cat builder.log | grep -n "Checksum Matched! " && echo "" && cat Results/release.sha512sum && echo "" && cat Results/release.sha3sum && echo ""
 mv builder.log Results/builder.log && status="$(cat status.build)" && ./clean.sh cleanup && ls -la Builds/*
 read -p "$status: --> sign/commit/push"
 if [ "$DEV" = "no" ]; then
-    ./git.sh "$status" "$TAG"
+  ./git.sh "$status" "$TAG"
 fi

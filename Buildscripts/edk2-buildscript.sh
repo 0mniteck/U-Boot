@@ -2,7 +2,9 @@
 trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q $EDKP_VER.zip > /dev/null
 pushd /edk2-$EDK_VER
+  sed -i "19,20d;22,24d" BaseTools/Source/C/VfrCompile/GNUmakefile
+  sed -i "176d;179,182d" BaseTools/Source/C/Makefiles/header.makefile
   source edksetup.sh
   make -C BaseTools
-  build -n `getconf _NPROCESSORS_ONLN` -p \$ACTIVE_PLATFORM -b RELEASE -a AARCH64 -t GCC5 -D DO_X86EMU=TRUE
+  build -p $ACTIVE_PLATFORM -b RELEASE -a AARCH64 -t GCC5 -n `nproc`
 popd

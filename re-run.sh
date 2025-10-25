@@ -28,6 +28,7 @@ fi
 
 source_date="@$source_date_epoch"
 build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
+local_cache="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
 
 if [ "$5" != "" ]; then
   echo "MOUNT: /dev/$5"
@@ -43,13 +44,13 @@ fi
 if [ "$3" = "yes" ]; then
   echo "DEV_BUILD: $3"
   load() { # $1 = Name
-    export LOAD="--load $CROSS --target $1 --tag $1"
+    export LOAD="--load $CROSS $local_cache --target $1 --tag $1"
     export NAME=$1
     return
     }
 else
   load() { # $1 Name
-    export LOAD="--load --metadata-file Results/$1.meta.json $CROSS --target $1 --tag $1"
+    export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
     export BUILDX_METADATA_PROVENANCE=max
     export NAME=$1
     return
@@ -63,7 +64,6 @@ ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/release.sha512sum && echo "" >> Results/release.sha512sum && echo "Starting Build: $(date -u '+on %D at %R UTC')"
 echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum
 
-sudo apt install -y snapd
 if [ "$3" != "yes" ]; then
   snap install syft --classic
   snap install grype --classic
@@ -77,6 +77,7 @@ if [ "$5" != "" ]; then
 fi
 rm -f -r /var/snap/docker
 sleep 5
+snap enable docker
 snap remove docker --purge
 if [ "$5" != "" ]; then
   systemd-cryptsetup attach Luks-Signal /dev/$5
@@ -101,7 +102,7 @@ stop() { # $1 = Name
 
 scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
   if [ "$3" != "yes" ]; then
-    pushd Results/
+    pushd Results/$1
       if [ -f "$HOME/.grype.yaml" ]; then GRCONF="-c $HOME/.grype.yaml"; fi
       mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=$1.spdx.json
       script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp
@@ -133,6 +134,13 @@ docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --
 if [ "$4" = "yes" ]; then
   docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
 fi
+
+load base
+docker buildx build $LOAD docker buildx build $LOAD
+  --build-arg HUB=$HUB \
+  --build-arg BASE=$BASE \
+  -f Dockerfile .
+  
 if [ "$2" = "yes" ]; then
   load edk2
   docker buildx build $LOAD \
@@ -156,9 +164,9 @@ if [ "$2" = "yes" ]; then
     -e EDKP_VER=$EDKP_VER \
     -e EDK_VER=$EDK_VER \
     -e WORKSPACE=/ \
-    -e PACKAGES_PATH=/edk2-$(echo $EDK_VER):/edk2-platforms-$(echo $EDKP_VER) \
-    -e ACTIVE_PLATFORM='Platform/StandaloneMm/PlatformStandaloneMmPkg/PlatformStandaloneMmRpmb.dsc' \
-    -e GCC5_AARCH64_PREFIX=aarch64-linux-gnu- \
+    -e PACKAGES_PATH="/edk2-$(echo $EDK_VER):/edk2-platforms-$(echo $EDKP_VER)" \
+    -e ACTIVE_PLATFORM="Platform/StandaloneMm/PlatformStandaloneMmPkg/PlatformStandaloneMmRpmb.dsc" \
+    -e GCC5_AARCH64_PREFIX="aarch64-linux-gnu-" \
     $NAME
 
   docker cp $NAME:/Build/MmStandaloneRpmb/RELEASE_GCC5/FV/BL32_AP_MM.fd Builds/rk3399/BL32_AP_MM.fd
@@ -295,9 +303,9 @@ rm -f -r /var/lib/snapd/cache/*
 
 scan_using_grype ubuntu.25.04 "/ --select-catalogers debian" $3
 
-snap remove syft --purge && 
+snap remove syft --purge
 snap remove grype --purge
-rm /root/getter* -f -r && rm /root/grype* -f -r && rm /root/syft -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype* && rm -f -r /tmp/getter*
+rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/syft -f -r && rm /root/6 -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter*
 
 if [ "$3" = "no" ]; then
   for dev in $LIST

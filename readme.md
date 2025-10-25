@@ -5,10 +5,10 @@
   * [ ] Test TPM2_FTPM_TEE
     * [x] Build StandaloneMM
       * [x] Migrate from old branch
-    * [ ] Build ms-tpm-20-ref
-      * [x] Openssl use source includes v3.5.3
-        * [x] Set OPENSSL_CONFIGURED_API 30000
-      * [ ] Update optee_ftp/sub.mk to support v1.83
+    * [x] Build ms-tpm-20-ref
+      * [x] Openssl use source include current upstream
+        * [x] Set OPENSSL_CONFIGURED_API 101010
+      * [ ] Update optee_ftpm/sub.mk to support v1.83
     * [ ] TPM_PCR_ALLOCATE
     * [ ] MEASURED_BOOT
   * [ ] Check if [new patches](https://github.com/radxa-pkg/radxa-overlays/pull/385) fixed problem
@@ -38,6 +38,7 @@
     * [x] Change BOOTCMD to `efiload; reset;`
     * [x] Enable STACKPROTECTOR
     * [ ] DISABLE_CONSOLE
+* [x] Add local docker build-cache 
 * [x] Generate SBOM at buildtime
   * [x] Scan with Grype
   * [x] Display Status

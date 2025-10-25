@@ -1,6 +1,15 @@
 #!/bin/bash
 
-if [ "$1" = "yes" ]; then
+if [ "$1" = "git.cleanup" ]; then
+  git reset --hard
+  git clean -xfd
+  git branch --set-upstream-to=origin/$(git rev-parse --abbrev-ref HEAD) $(git rev-parse --abbrev-ref HEAD)
+  git pull
+  git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
+  mkdir -p .git/Cache
+fi
+
+if [ "$1" = "pre.cleanup" ]; then
   pushd Builds/
     find . ! -type d -delete
     for dev in $LIST
@@ -17,8 +26,17 @@ if [ "$1" = "yes" ]; then
   popd
   pushd Results/
     find . ! -type d -delete
-    touch tmp
+    for con in edk2 arm-trusted optee u-boot ubuntu.25.04
+      do
+        mkdir -p $con
+        touch $con/tmp
+      done
   popd
+fi
+
+if [ "$1" = "cleanup.cache" ]; then
+  rm -r -f .git/Cache
+  mkdir -p .git/Cache
 fi
 
 if [ "$1" = "cleanup" ]; then
@@ -36,7 +54,10 @@ if [ "$1" = "cleanup" ]; then
     done
   popd
   pushd Results/
-    rm -f tmp
+    for con in edk2 arm-trusted optee u-boot ubuntu.25.04
+    do
+      rm -f $con/tmp
+    done
   popd
   rm -f status.build && rm -f sys.info && rm -f vars.env
 fi
