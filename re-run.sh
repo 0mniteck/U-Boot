@@ -50,7 +50,7 @@ if [ "$3" = "yes" ]; then
     }
 else
   load() { # $1 Name
-    export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1.meta.json"
+    export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
     export BUILDX_METADATA_PROVENANCE=max
     export NAME=$1
     return
@@ -134,6 +134,13 @@ docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --
 if [ "$4" = "yes" ]; then
   docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
 fi
+
+load base
+docker buildx build $LOAD docker buildx build $LOAD
+  --build-arg HUB=$HUB \
+  --build-arg BASE=$BASE \
+  -f Dockerfile .
+  
 if [ "$2" = "yes" ]; then
   load edk2
   docker buildx build $LOAD \
