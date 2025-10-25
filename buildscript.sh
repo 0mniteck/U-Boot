@@ -113,7 +113,6 @@ sleep 5
 
 chmod -R +x Buildscripts/
 chmod -R +x Configs/
-mkdir -p Cache
 sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
 git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
 if [ "$CLEAN" = "yes" ]; then
