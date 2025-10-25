@@ -1,7 +1,5 @@
 #!/bin/bash
-
-GPG_TTY=$(tty)
-export GPG_TTY
+export GPG_TTY=$(tty)
 eval `ssh-agent -s`
 ssh-add $HOME/.ssh/id_ecdsa_s*[!.pub]
 git status && git add -A && git status
