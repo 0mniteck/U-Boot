@@ -1,8 +1,12 @@
 #!/bin/bash
 
-if [ "$1" = "pre.cleanup" ]; then
+if [ "$1" = "git.cleanup" ]; then
   git reset --hard
   git clean -xfd
+  mkdir -p .git/Cache
+fi
+
+if [ "$1" = "pre.cleanup" ]; then
   pushd Builds/
     find . ! -type d -delete
     for dev in $LIST
@@ -25,7 +29,6 @@ if [ "$1" = "pre.cleanup" ]; then
         touch $con/tmp
       done
   popd
-  mkdir -p .git/Cache
 fi
 
 if [ "$1" = "cleanup.cache" ]; then
