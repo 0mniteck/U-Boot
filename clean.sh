@@ -1,12 +1,12 @@
 #!/bin/bash
 
 if [ "$1" = "git.cleanup" ]; then
-  # git reset --hard
-  # git branch --set-upstream-to=origin/$(git rev-parse --abbrev-ref HEAD) $(git rev-parse --abbrev-ref HEAD)
+  git reset --hard
   git clean -xfd
   echo "Fetching recent changes..."
   git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
   git pull
+  git branch --set-upstream-to=origin/$(git rev-parse --abbrev-ref HEAD) $(git rev-parse --abbrev-ref HEAD)
   mkdir -p .git/Cache
 fi
 
