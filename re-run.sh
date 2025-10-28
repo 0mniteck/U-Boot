@@ -91,7 +91,6 @@ stop() { # $1 = Name
 scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
   if [ "$3" != "yes" ]; then
     pushd Results/$1
-      docker buildx imagetools inspect $1 --format "{{ json .Provenance.SLSA }}" > $1.TEST.slsa.json
       if [ -f "$HOME/.grype.yaml" ]; then GRCONF="-c $HOME/.grype.yaml"; fi
       mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=$1.spdx.json
       script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp
