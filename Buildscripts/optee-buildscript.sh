@@ -6,9 +6,9 @@ pushd /openssl-openssl-$SSL_VER/
   sed -i "1,15d" build.info
   sed -i "s'MAJOR=.'MAJOR=1'" VERSION.dat
   sed -i "s'MINOR=.'MINOR=1'" VERSION.dat
-  sed -i "s'PATCH=.'PATCH=0'" VERSION.dat
+  sed -i "s'PATCH=.'PATCH=1'" VERSION.dat
   # sed -i "s'OPENSSL_API_LEVEL > ('OPENSSL_API_LEVEL >= ('" include/openssl/macros.h
-  ./Configure --api=1.1.0 linux-aarch64 -DOPENSSL_CONFIGURED_API=10100
+  ./Configure --api=1.1.1 linux-aarch64
   make
   cp include/crypto/sm4.h include/openssl/sm4.h
 popd
