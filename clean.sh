@@ -7,7 +7,7 @@ if [ "$1" = "git.cleanup" ]; then
   if [ "$(echo "$(cat "$HOME/.ssh/config" | grep UBoot)")" != "" ]; then
     while [ "$(echo "$(lsusb | grep Yubikey)")" = "" ]; do printf "\rPlease insert yubikey...\033[K"; done
     git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
-    read -p "Origin set to SSH; Continue git pull..." && echo ""
+    echo "" && read -p "Origin set to SSH; Continue git pull..."
   fi
   git pull $(git remote -v | awk '{ print $2 }' | tail -n 1) $(git rev-parse --abbrev-ref HEAD)
   mkdir -p .git/Cache
