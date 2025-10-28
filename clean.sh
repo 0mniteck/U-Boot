@@ -45,6 +45,7 @@ if [ "$1" = "cleanup.cache" ]; then
 fi
 
 if [ "$1" = "cleanup.docker" ]; then
+  umount /snap/docker/current
   snap disable docker
   rm -f -r /var/snap/docker/*
   if [ "$2" != "" ]; then
@@ -61,7 +62,8 @@ if [ "$1" = "cleanup.docker" ]; then
   rm -f -r /var/lib/snapd/cache/*
 fi
 
-if [ "$1" = "cleanup.scanners" ]; then
+if [ "$1" = "cleanup.snaps" ]; then
+  snap remove overlay --purge
   snap remove syft --purge
   snap remove grype --purge
   rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/syft -f -r && rm /root/6 -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter*
