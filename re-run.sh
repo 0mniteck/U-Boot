@@ -292,7 +292,7 @@ stop $NAME
 
 scan_using_grype ubuntu.25.04 "/ --select-catalogers debian" $3
 
-./clean.sh cleanup.scanners
+./clean.sh cleanup.snaps
 
 if [ "$3" = "no" ]; then
   for dev in $LIST
