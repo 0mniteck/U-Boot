@@ -7,7 +7,7 @@
       * [x] Migrate from old branch
     * [x] Build ms-tpm-20-ref
       * [x] Openssl use source include current upstream
-        * [x] Set OPENSSL_CONFIGURED_API 10100
+        * [x] Set OPENSSL_API_COMPAT 10100
       * [ ] Update optee_ftpm/sub.mk to support v1.83
     * [ ] TPM_PCR_ALLOCATE
     * [ ] MEASURED_BOOT
