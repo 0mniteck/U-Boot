@@ -37,5 +37,5 @@ cd U-Boot && \
 sudo su && \
 git clone git@github.com:0mniteck/U-Boot.git -b "refs/tags/tagname" && \
 cd U-Boot && \
-./buildscript.sh
+./buildscript.sh -e ""
 ```
