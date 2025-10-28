@@ -62,8 +62,10 @@ if [ "$1" = "cleanup.docker" ]; then
 fi
 
 if [ "$1" = "cleanup.snaps" ]; then
-  snap remove syft --purge
-  snap remove grype --purge
+  if [ "$2" = "remove" ]; then
+    snap remove syft --purge
+    snap remove grype --purge
+  fi
   rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/syft -f -r && rm /root/6 -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter*
 fi
 
