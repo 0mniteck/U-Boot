@@ -29,6 +29,7 @@ if [ "$1" = "pre.cleanup" ]; then
     done
   popd
   pushd Results/
+    cp Results/release.sha512sum /tmp/release.last.sha512sum
     find . ! -type d -delete
     for con in edk2 arm-trusted optee u-boot ubuntu.25.04
       do
