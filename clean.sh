@@ -4,7 +4,10 @@ if [ "$1" = "git.cleanup" ]; then
   git reset --hard
   git clean -xfd
   echo "Fetching recent changes..."
-  git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
+  if [ "$(echo "$(cat "$HOME/.ssh/config" | grep UBoot)")" != "" ]; then
+    while [ "$(echo "$(lsusb | grep Yubikey)")" = "" ]; do printf "\rPlease insert yubikey...\033[K"; done
+    git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
+  fi
   git pull && git branch --set-upstream-to=origin/$(git rev-parse --abbrev-ref HEAD) $(git rev-parse --abbrev-ref HEAD)
   mkdir -p .git/Cache
 fi
