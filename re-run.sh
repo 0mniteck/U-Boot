@@ -137,11 +137,11 @@ if [ "$4" = "yes" ]; then
   docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
 fi
 
-#load base
-#docker buildx build $LOAD \
-#  --build-arg HUB=$HUB \
-#  --build-arg BASE=$BASE \
-#  -f Dockerfile .
+# load base
+# docker buildx build $LOAD \
+#   --build-arg HUB=$HUB \
+#   --build-arg BASE=$BASE \
+#   -f Dockerfile .
   
 if [ "$2" = "yes" ]; then
   load edk2
