@@ -66,6 +66,9 @@ fi
 if [ "$DEV" = "" ]; then
   DEV="no"
 fi
+if [ "$EPOCH" = "" ]; then
+  EPOCH="today"
+fi
 if [ "$ALT" = "" ]; then
   ALT="no"
 fi
@@ -106,7 +109,9 @@ echo "Clean Build: $CLEAN"
 echo "Tag Release: $TAG"
 echo "Developer Build: $DEV"
 echo "Using Alternate List: $ALT"
-if [ "$EPOCH" != "" ]; then
+if [ "$EPOCH" = "" ]; then
+  echo "Override Source Epoch: $(cat Results/release.sha512sum | grep Epoch | cut -d ' ' -f5)"
+else
   echo "Override Source Epoch: $EPOCH"
 fi
 if [ "$MOUNT" != "" ]; then
