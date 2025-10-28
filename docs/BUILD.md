@@ -6,9 +6,9 @@
 buildscript.sh
  -a {Alternate List: yes/No}
  -c {Clean: Yes/no}
- -d (Developer Build: yes/No)
- -e {Date: source_date_epoch}
- -m (Mount: mmcblk1p1)
+ -d {Developer Build: yes/No}
+ -e {Date: source_date_epoch/"today"/""}
+ -m {Mount: mmcblk1p1}
  -t {release-Tag: tagname}
  -w {Cross Compile: yes/No}
 ```
