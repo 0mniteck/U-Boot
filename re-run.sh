@@ -49,7 +49,7 @@ if [ "$3" = "yes" ]; then
     }
 else
   load() { # $1 Name
-    export LOAD="--load $CROSS --target $1 --tag $1 --provenance=mode=max --metadata-file Results/$1/$1.meta.json"
+    export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
     export BUILDX_METADATA_PROVENANCE=max
     export NAME=$1
     return
@@ -63,7 +63,6 @@ ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/release.sha512sum && echo "" >> Results/release.sha512sum && echo "Starting Build: $(date -u '+on %D at %R UTC')"
 echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum
 
-snap install overlay
 if [ "$3" != "yes" ]; then
   snap install syft --classic
   snap install grype --classic
@@ -84,18 +83,6 @@ else
   snap install docker --revision=3267 && systemctl stop snap.docker.nvidia-container-toolkit
   systemctl disable snap.docker.nvidia-container-toolkit
 fi
-/snap/overlay/current/overlay /snap/docker/current
-cat <<EOF >/snap/docker/current/config/daemon.json
-{
-  "features": {
-    "containerd-snapshotter": true
-  }
-},
-{
-    "log-level":        "error"
-}
-EOF
-snap restart docker
 
 stop() { # $1 = Name
   docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
