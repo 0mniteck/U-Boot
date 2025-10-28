@@ -68,26 +68,15 @@ if [ "$3" != "yes" ]; then
   snap install syft --classic
   snap install grype --classic
 fi
-snap disable docker
-rm -f -r /var/snap/docker/*
-if [ "$5" != "" ]; then
-  umount -f /dev/mapper/Luks-Signal
-  sleep 5
-  systemd-cryptsetup detach Luks-Signal
-fi
-rm -f -r /var/snap/docker
-sleep 5
-snap enable docker
-snap remove docker --purge
+./clean.sh cleanup.docker $5
 if [ "$5" != "" ]; then
   systemd-cryptsetup attach Luks-Signal /dev/$5
 fi
-mkdir /var/snap/docker
+mkdir -p /var/snap/docker
 if [ "$5" != "" ]; then
   mount /dev/mapper/Luks-Signal /var/snap/docker
   rm -f -r /var/snap/docker/*
 fi
-rm -f -r /var/lib/snapd/cache/*
 chown root:root /var/snap/docker
 if [ "$4" = "yes" ]; then
   snap install docker --revision=3265
@@ -289,25 +278,11 @@ done
 docker cp $NAME:/sys.info sys.info
 stop $NAME
 
-snap disable docker
-rm -f -r /var/snap/docker/*
-if [ "$5" != "" ]; then
-  umount -f /dev/mapper/Luks-Signal
-  sleep 5
-  systemd-cryptsetup detach Luks-Signal
-fi
-rm -f -r /var/snap/docker
-sleep 5
-snap remove docker --purge
-snap remove docker --purge
-networkctl delete docker0
-rm -f -r /var/lib/snapd/cache/*
+./clean.sh cleanup.docker $5
 
 scan_using_grype ubuntu.25.04 "/ --select-catalogers debian" $3
 
-snap remove syft --purge
-snap remove grype --purge
-rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/syft -f -r && rm /root/6 -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter*
+./clean.sh cleanup.scanners
 
 if [ "$3" = "no" ]; then
   for dev in $LIST
