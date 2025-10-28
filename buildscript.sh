@@ -36,7 +36,7 @@ while getopts ":a:c:d:e:m:t:w:" opt; do
   d) # Developer Build [Skip some steps] (yes/No)
     DEV="$OPTARG"
     ;;
-  e) # SOURCE_DATE_EPOCH [For reproducibility] ex. "1758309600"
+  e) # SOURCE_DATE_EPOCH [For reproducibility] (source_date_epoch/"today"/"")
     EPOCH="$OPTARG"
     ;;
   m) # Mount External [U2F Backed Luks] Partition ex. "mmcblk1p1"
