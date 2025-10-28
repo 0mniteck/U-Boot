@@ -43,6 +43,28 @@ if [ "$1" = "cleanup.cache" ]; then
   mkdir -p .git/Cache
 fi
 
+if [ "$1" = "cleanup.docker" ]; then
+  snap disable docker
+  rm -f -r /var/snap/docker/*
+  if [ "$2" != "" ]; then
+    umount -f /dev/mapper/Luks-Signal
+    sleep 5
+    systemd-cryptsetup detach Luks-Signal
+  fi
+  rm -f -r /var/snap/docker
+  sleep 5
+  snap remove docker --purge
+  snap remove docker --purge
+  networkctl delete docker0
+  rm -f -r /var/lib/snapd/cache/*
+fi
+
+if [ "$1" = "cleanup.scanners" ]; then
+  snap remove syft --purge
+  snap remove grype --purge
+  rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/syft -f -r && rm /root/6 -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter*
+fi
+
 if [ "$1" = "cleanup" ]; then
   pushd Builds/
     for dev in $LIST
