@@ -51,6 +51,7 @@ else
   load() { # $1 Name
     export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
     export BUILDX_METADATA_PROVENANCE=max
+    export SIGNING=1
     export NAME=$1
     return
     }
