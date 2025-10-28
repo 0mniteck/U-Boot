@@ -282,6 +282,7 @@ scan_using_grype ubuntu.25.04 "/ --select-catalogers debian" $3
 ./clean.sh cleanup.snaps
 
 if [ "$3" = "no" ]; then
+  ./clean.sh cleanup.snaps remove
   for dev in $LIST
   do
     for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
