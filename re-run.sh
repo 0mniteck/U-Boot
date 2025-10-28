@@ -83,6 +83,17 @@ else
   snap install docker --revision=3267 && systemctl stop snap.docker.nvidia-container-toolkit
   systemctl disable snap.docker.nvidia-container-toolkit
 fi
+cat <<EOF >/snap/docker/current/config/daemon.json
+{
+  "features": {
+    "containerd-snapshotter": true
+  }
+},
+{
+    "log-level":        "error"
+}
+EOF
+snap restart docker
 
 stop() { # $1 = Name
   docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
