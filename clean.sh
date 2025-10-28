@@ -9,7 +9,7 @@ if [ "$1" = "git.cleanup" ]; then
     git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
     read -p "Origin set to SSH; Continue git pull..."
   fi
-  git pull && git branch --set-upstream-to=origin/$(git rev-parse --abbrev-ref HEAD) $(git rev-parse --abbrev-ref HEAD)
+  git pull git@UBoot:0mniteck/U-Boot.git $(git rev-parse --abbrev-ref HEAD)
   mkdir -p .git/Cache
 fi
 
