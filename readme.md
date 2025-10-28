@@ -57,3 +57,5 @@
 --> [FLASHING AND INSTALLING](https://github.com/0mniteck/U-Boot/blob/Docs/docs/FLASH.md)  --> [FLASHING DEMO](https://u-boot.omniteck.com/#content)
 
 --> [SIGNING YOUR OWN](https://github.com/0mniteck/U-Boot/blob/Docs/docs/SIGN.md)
+
+--> [The Sovereignty Ephemerality Reproducibility (SER) framework](https://omniteck.com/?p=1104)
