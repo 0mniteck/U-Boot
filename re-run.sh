@@ -1,6 +1,30 @@
 #!/bin/bash
 
 source_date_epoch=1;
+if [ "$1" = "today" ]; then
+  timestamp=$(date -d $(date +%D) +%s);
+  if [ "${timestamp}" != "" ]; then
+    echo "Setting SOURCE_DATE_EPOCH from today's date: $(date +%D) = @$timestamp";
+    source_date_epoch=$((timestamp));
+  else
+    echo "Can't get timestamp. Defaulting to 1.";
+    source_date_epoch=1;
+  fi
+elif [ "$1" != 0 ]; then
+  echo "Using override timestamp for SOURCE_DATE_EPOCH."
+  source_date_epoch=$(($1))
+else
+  timestamp=$(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)
+  if [ "${timestamp}" != "" ]; then
+    echo "Setting SOURCE_DATE_EPOCH from release.sha512sum: $(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)"
+    source_date_epoch=$((timestamp))
+    check_file=1
+  else
+    echo "Can't get latest commit timestamp. Defaulting to 1."
+    source_date_epoch=1
+  fi
+fi
+
 if [ "$1" != 0 ]; then
   echo 'Using override timestamp for SOURCE_DATE_EPOCH: $(date -d @$(($1)) = $1';
   source_date_epoch=$(($1));
