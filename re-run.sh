@@ -63,6 +63,7 @@ ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/release.sha512sum && echo "" >> Results/release.sha512sum && echo "Starting Build: $(date -u '+on %D at %R UTC')"
 echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum
 
+snap install overlay
 if [ "$3" != "yes" ]; then
   snap install syft --classic
   snap install grype --classic
@@ -83,6 +84,7 @@ else
   snap install docker --revision=3267 && systemctl stop snap.docker.nvidia-container-toolkit
   systemctl disable snap.docker.nvidia-container-toolkit
 fi
+/snap/overlay/current/overlay /snap/docker/currentumount /snap/docker/current
 cat <<EOF >/snap/docker/current/config/daemon.json
 {
   "features": {
@@ -92,7 +94,7 @@ cat <<EOF >/snap/docker/current/config/daemon.json
 {
     "log-level":        "error"
 }
-EOF
+EOFscanners
 snap restart docker
 
 stop() { # $1 = Name
