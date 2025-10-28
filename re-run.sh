@@ -50,7 +50,7 @@ if [ "$3" = "yes" ]; then
     }
 else
   load() { # $1 Name
-    export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
+    export LOAD="--load $CROSS --target $1 --tag $1 --sbom=true --provenance=mode=max --metadata-file Results/$1/$1.meta.json"
     export BUILDX_METADATA_PROVENANCE=max
     export NAME=$1
     return
@@ -103,6 +103,7 @@ stop() { # $1 = Name
 scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
   if [ "$3" != "yes" ]; then
     pushd Results/$1
+      docker buildx imagetools inspect $1 --format "{{ json .SBOM.SPDX }}" > $1.TEST.spdx.json
       if [ -f "$HOME/.grype.yaml" ]; then GRCONF="-c $HOME/.grype.yaml"; fi
       mkdir -p "$HOME/syft" && TMPDIR="$HOME/syft" syft scan $2 -o spdx-json=$1.spdx.json
       script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp
