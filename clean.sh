@@ -53,6 +53,7 @@ if [ "$1" = "cleanup.docker" ]; then
   fi
   rm -f -r /var/snap/docker
   sleep 5
+  snap enable docker
   snap remove docker --purge
   snap remove docker --purge
   networkctl delete docker0
