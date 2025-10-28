@@ -45,7 +45,6 @@ if [ "$1" = "cleanup.cache" ]; then
 fi
 
 if [ "$1" = "cleanup.docker" ]; then
-  umount /snap/docker/current
   snap disable docker
   rm -f -r /var/snap/docker/*
   if [ "$2" != "" ]; then
