@@ -25,7 +25,6 @@ do
     sed -i "27d" out/arm-plat-rockchip/export-ta_arm64/include/limits.h
   popd
   pushd /$plat/TPM/TPMCmd/
-    sed -i "18,20d;22d" tpm/cryptolibs/Ossl/include/Ossl/TpmToOsslSym.h
     sed -i "5d;7d" Platform/include/Platform.h
     sed -i "s'XYZ 'OMTK'" Platform/src/VendorInfo.c
     sed -i "s'xCG 'xTCG'" Platform/src/VendorInfo.c
@@ -50,6 +49,7 @@ do
     sed -i '82i\            break;' Platform/src/NVMem.c
     sed -i '3i#include "Memory_fp.h"' tpm/include/public/endian_swap.h
     sed -i '5i#include "TpmEcc_Util_fp.h"' tpm/src/crypt/ecc/TpmEcc_Util.c
+    sed -i "18,20d;22d" tpm/cryptolibs/Ossl/include/Ossl/TpmToOsslSym.h
     sed -i "65d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
     sed -i "44d;48d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
     echo "
