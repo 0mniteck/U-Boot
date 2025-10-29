@@ -163,81 +163,81 @@ if [ "$2" = "yes" ]; then
   sha512sum Builds/rk3399/BL32_AP_MM.fd && sha512sum Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha512sum
   openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd && openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha3sum
   stop $NAME
-  
-  load optee
-  docker buildx build $LOAD \
-    --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
-    --build-arg OPT_VER=$OPT_VER \
-    --build-arg OPT_SUM=$OPT_SUM \
-    --build-arg OPT_SUM2=$OPT_SUM2 \
-    --build-arg TPM_SUM=$TPM_SUM \
-    --build-arg SSL_VER=$SSL_VER \
-    --build-arg SSL_SUM=$SSL_SUM \
-    --build-arg ROT_SUM=$ROT_SUM \
-    --build-arg HUB=$HUB \
-    --build-arg BASE=$BASE \
-    --build-arg BASE_EXTRA=$BASE_EXTRA \
-    --build-arg ENTRYPOINT=$NAME \
-    -f Dockerfile .
-
-  scan_using_grype $NAME docker:$NAME $3
-
-  docker run -it --cpus=$(nproc) \
-    --name $NAME $CROSS \
-    --user "$(id -u):$(id -g)" \
-    --entrypoint /$NAME-buildscript.sh \
-    -e SOURCE_DATE_EPOCH=$source_date_epoch \
-    -e SSL_VER=$SSL_VER \
-    -e OPT_VER=$OPT_VER \
-    -e ARCHS="$ARCHS" \
-    $NAME
-
-  for arch in $ARCHS
-  do
-    for tpm in ":-tpm" "/NOTPM:"
-    do
-      tpm=$(echo $tpm | cut -d':' -f2)
-      docker cp $NAME:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
-      sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
-      openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
-    done
-  done
-  stop $NAME
-
-  load arm-trusted
-  docker buildx build $LOAD \
-    --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
-    --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
-    --build-arg ATF_VER=$ATF_VER \
-    --build-arg ATF_SUM=$ATF_SUM \
-    --build-arg MTLS_VER=$MTLS_VER \
-    --build-arg MTLS_SUM=$MTLS_SUM \
-    --build-arg HUB=$HUB \
-    --build-arg BASE=$BASE \
-    --build-arg BASE_EXTRA=$BASE_EXTRA \
-    --build-arg ENTRYPOINT=$NAME \
-    -f Dockerfile .
-
-  scan_using_grype $NAME docker:$NAME $3
-
-  docker run -it --cpus=$(nproc) \
-    --name $NAME $CROSS \
-    --user "$(id -u):$(id -g)" \
-    --entrypoint /$NAME-buildscript.sh \
-    -e SOURCE_DATE_EPOCH=$source_date_epoch \
-    -e BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
-    -e ATF_VER=$ATF_VER \
-    -e ARCHS="$ARCHS" \
-    $NAME
-
-  for arch in $ARCHS
-  do
-    docker cp $NAME:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
-    sha512sum Builds/$arch/bl31.elf && sha512sum Builds/$arch/bl31.elf >> Results/release.sha512sum
-    openssl dgst -SHA3-256 Builds/$arch/bl31.elf && openssl dgst -SHA3-256 Builds/$arch/bl31.elf >> Results/release.sha3sum
-  done
-  stop $NAME
 fi
+
+load optee
+docker buildx build $LOAD \
+  --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+  --build-arg OPT_VER=$OPT_VER \
+  --build-arg OPT_SUM=$OPT_SUM \
+  --build-arg OPT_SUM2=$OPT_SUM2 \
+  --build-arg TPM_SUM=$TPM_SUM \
+  --build-arg SSL_VER=$SSL_VER \
+  --build-arg SSL_SUM=$SSL_SUM \
+  --build-arg ROT_SUM=$ROT_SUM \
+  --build-arg HUB=$HUB \
+  --build-arg BASE=$BASE \
+  --build-arg BASE_EXTRA=$BASE_EXTRA \
+  --build-arg ENTRYPOINT=$NAME \
+  -f Dockerfile .
+
+scan_using_grype $NAME docker:$NAME $3
+
+docker run -it --cpus=$(nproc) \
+  --name $NAME $CROSS \
+  --user "$(id -u):$(id -g)" \
+  --entrypoint /$NAME-buildscript.sh \
+  -e SOURCE_DATE_EPOCH=$source_date_epoch \
+  -e SSL_VER=$SSL_VER \
+  -e OPT_VER=$OPT_VER \
+  -e ARCHS="$ARCHS" \
+  $NAME
+
+for arch in $ARCHS
+do
+  for tpm in ":-tpm" "/NOTPM:"
+  do
+    tpm=$(echo $tpm | cut -d':' -f2)
+    docker cp $NAME:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
+    sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
+  done
+done
+stop $NAME
+
+load arm-trusted
+docker buildx build $LOAD \
+  --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+  --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
+  --build-arg ATF_VER=$ATF_VER \
+  --build-arg ATF_SUM=$ATF_SUM \
+  --build-arg MTLS_VER=$MTLS_VER \
+  --build-arg MTLS_SUM=$MTLS_SUM \
+  --build-arg HUB=$HUB \
+  --build-arg BASE=$BASE \
+  --build-arg BASE_EXTRA=$BASE_EXTRA \
+  --build-arg ENTRYPOINT=$NAME \
+  -f Dockerfile .
+
+scan_using_grype $NAME docker:$NAME $3
+
+docker run -it --cpus=$(nproc) \
+  --name $NAME $CROSS \
+  --user "$(id -u):$(id -g)" \
+  --entrypoint /$NAME-buildscript.sh \
+  -e SOURCE_DATE_EPOCH=$source_date_epoch \
+  -e BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
+  -e ATF_VER=$ATF_VER \
+  -e ARCHS="$ARCHS" \
+  $NAME
+
+for arch in $ARCHS
+do
+  docker cp $NAME:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
+  sha512sum Builds/$arch/bl31.elf && sha512sum Builds/$arch/bl31.elf >> Results/release.sha512sum
+  openssl dgst -SHA3-256 Builds/$arch/bl31.elf && openssl dgst -SHA3-256 Builds/$arch/bl31.elf >> Results/release.sha3sum
+done
+stop $NAME
 
 load u-boot
 docker buildx build $LOAD \
