@@ -49,7 +49,7 @@ do
     sed -i '82i\            break;' Platform/src/NVMem.c
     sed -i '3i#include "Memory_fp.h"' tpm/include/public/endian_swap.h
     sed -i '5i#include "TpmEcc_Util_fp.h"' tpm/src/crypt/ecc/TpmEcc_Util.c
-    sed -i "18,20d;22d" tpm/cryptolibs/Ossl/include/Ossl/TpmToOsslSym.h
+    sed -i "18,20d;22,36d" tpm/cryptolibs/Ossl/include/Ossl/TpmToOsslSym.h
     sed -i "65d;126d;207d" TpmConfiguration/TpmConfiguration/TpmBuildSwitches.h
     sed -i "44d;48d;149d" TpmConfiguration/TpmConfiguration/TpmProfile_Common.h
     echo "
