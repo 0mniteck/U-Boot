@@ -80,7 +80,7 @@ if [ "$5" != "" ]; then
 fi
 chown root:root /var/snap/docker
 if [ "$4" = "yes" ]; then
-  snap install docker --revision=3265
+  snap install docker --revision=3377
 else
   snap install docker --revision=3267 && systemctl stop snap.docker.nvidia-container-toolkit
   systemctl disable snap.docker.nvidia-container-toolkit
