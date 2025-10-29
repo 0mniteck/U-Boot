@@ -65,6 +65,7 @@ echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/release.sha512
 echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum
 
 if [ "$3" != "yes" ]; then
+  snap refresh
   snap install syft --classic
   snap install grype --classic
 fi
