@@ -25,6 +25,7 @@ do
     sed -i "27d" out/arm-plat-rockchip/export-ta_arm64/include/limits.h
   popd
   pushd /$plat/TPM/TPMCmd/
+    sed -i "18,20d;22d" tpm/cryptolibs/Ossl/include/Ossl/TpmToOsslSym.h
     sed -i "5d;7d" Platform/include/Platform.h
     sed -i "s'XYZ 'OMTK'" Platform/src/VendorInfo.c
     sed -i "s'xCG 'xTCG'" Platform/src/VendorInfo.c
