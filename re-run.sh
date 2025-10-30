@@ -279,7 +279,7 @@ stop $NAME
 
 ./clean.sh cleanup.docker $5
 
-scan_using_grype ubuntu.25.04 "/ --select-catalogers debian" $3
+scan_using_grype ubuntu "/ --select-catalogers debian" $3
 
 ./clean.sh cleanup.snaps
 
