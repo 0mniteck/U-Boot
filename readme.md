@@ -47,6 +47,7 @@
   * [x] Convert to docker build
     * [x] Build variants in one branch
     * [x] Make reproducible debian docker images
+      * [ ] Sign base images with cosign & verify at buildtime
 
 ## 
 
