@@ -69,6 +69,7 @@ if [ "$3" != "yes" ]; then
   snap install syft --classic
   snap install grype --classic
 fi
+./clean.sh cleanup.snaps
 ./clean.sh cleanup.docker $5
 if [ "$5" != "" ]; then
   systemd-cryptsetup attach Luks-Signal /dev/$5
