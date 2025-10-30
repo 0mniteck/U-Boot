@@ -25,6 +25,7 @@ do
     sed -i "178d" out/arm-plat-rockchip/export-ta_arm64/include/util.h
     sed -i "27d" out/arm-plat-rockchip/export-ta_arm64/include/limits.h
     cat ta/link.mk
+    cat out/arm-plat-rockchip/export-ta_arm64/mk/link.mk
   popd
   pushd /$plat/TPM/TPMCmd/
     sed -i "5d;7d" Platform/include/Platform.h
