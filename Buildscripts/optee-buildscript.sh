@@ -116,7 +116,10 @@ BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     sed -i "24iglobal-incdirs-y += platform/include/prototypes" sub.mk
     sed -i "44icflags-y += -Wno-strict-aliasing" sub.mk
     sed -i "44icflags-y += -Wno-redundant-decls" sub.mk
-    sed -i "61i \\
+    sed -i "44icflags-y += -Wno-cast-function-type" sub.mk
+    sed -i "44icflags-y += -Wno-cast-align" sub.mk
+    sed -i "44icflags-y += -Wno-switch-default" sub.mk
+    sed -i "64i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
