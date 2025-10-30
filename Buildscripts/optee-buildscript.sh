@@ -21,10 +21,12 @@ do
   mv /$plat/ms-tpm-20-ref-1.83r1 /$plat/TPM
   pushd /$plat/optee_os-$OPT_VER
     sed -i "61d;67d" ta/link.mk
+    sed -i "32ilibgcc\$(sm)	:= \$(shell \$(CC\$(sm)) \$(CFLAGS\$(arch-bits-\$(sm))) -rtlib=compiler-rt -print-libgcc-file-name 2> /dev/null)" mk/clang.mk
     make -j $(nproc) PLATFORM=rockchip-$plat CFG_ARM64_core=y CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_core=aarch64-linux-gnu- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- CFG_USER_TA_TARGETS=ta_arm64 CFG_EARLY_CONSOLE_BAUDRATE=115200 EARLY_TA_PATHS=/$plat/optee_ftpm-$OPT_VER/out/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf ta_dev_kit
     sed -i "178d" out/arm-plat-rockchip/export-ta_arm64/include/util.h
     sed -i "27d" out/arm-plat-rockchip/export-ta_arm64/include/limits.h
     cat ta/link.mk
+    cat mk/clang.mk
     cat out/arm-plat-rockchip/export-ta_arm64/mk/link.mk
   popd
   pushd /$plat/TPM/TPMCmd/
