@@ -22,7 +22,7 @@
     * [ ] 2025 Q4 signing
       * [ ] Debian from trixie ISO shimaa64efi/bootaa64.efi
       * [ ] Ubuntu from 25.10 ISO shimaa64.efi/bootaa64.efi
-        * [ ] Update autoinstall to plucky release
+        * [ ] Update autoinstall to Questing release
   * [ ] Try higher bit RSA/ECDSA keys to protect against [Quantum Attacks](https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqbENJQmx3b3pWV2F0YU9tMG8yRGxTb1c1cElQUXxBQ3Jtc0ttRTJtRFlmMGE4cnQxa2Q0WE54VTNnM05BSGlGdVExMkJicWszTlBHRE0tNk4xUDBhQU1EMVY4Zm8ySVNfa0pIbDVockhiUzBjLWs0YnZiRlJPRkFaV3BvUFc1T0t1VWR3RFV1VW1KNV9xdGdZOEYtYw&q=https%3A%2F%2Fwww.csoonline.com%2Farticle%2F3562701%2Fchinese-researchers-break-rsa-encryption-with-a-quantum-computer.html&v=_iSih4KI_qQ)
     * [x] 4096 bit Fails on 5.7.1 Yubikey
     * [ ] Test 3072 bit RSA
