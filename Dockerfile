@@ -34,7 +34,7 @@ ARG ARCHS
 ENV ARCHS=$ARCHS
 ENV OPT_VER=$OPT_VER
 ENV SSL_VER=$SSL_VER
-RUN apt install libclang-rt-dev -y
+# RUN apt install libclang-rt-dev -y
 ADD https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /$OPT_VER.zip
 ADD https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_$OPT_VER.zip
 ADD https://github.com/microsoft/ms-tpm-20-ref/archive/refs/tags/v1.83r1.zip /TPM.zip
