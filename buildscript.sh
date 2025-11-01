@@ -113,7 +113,7 @@ do
   elif [ $lis1 = VARIANTS ]; then
     printf "\"" >> vars.env
     echo "" >> vars.env
-    printf "setenv $lis1 \" \$'\\\\0' " >> vars.env
+    printf "setenv $lis1 \" $'\0' " >> vars.env
   fi
   printf -- "$lis2 " >> vars.env
 done
