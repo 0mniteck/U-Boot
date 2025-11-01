@@ -72,6 +72,7 @@ fi
 ./clean.sh cleanup.snaps
 ./clean.sh cleanup.docker $5
 if [ "$5" != "" ]; then
+  ./git.sh check
   systemd-cryptsetup attach Luks-Signal /dev/$5
 fi
 mkdir -p /var/snap/docker
