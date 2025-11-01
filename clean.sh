@@ -47,7 +47,7 @@ if [ "$1" = "dir.cleanup" ]; then
   pushd Results/
     cp release.sha512sum /tmp/release.last.sha512sum
     find . ! -type d -delete
-    rm -f builder.* && rm -f release.*
+    rm -f builder.* && rm -f build.* && rm -f release.*
     for con in $TARGETS
       do
         mkdir -p $con
