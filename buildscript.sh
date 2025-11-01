@@ -106,12 +106,16 @@ for lis in BUILD_LIST^$BUILD_LIST LIST^$LIST ARCHS^$ARCHS VARIANTS^$VARIANTS TAR
 do
   lis1=$(echo $lis | cut -d'^' -f1)
   lis2=$(echo $lis | cut -d'^' -f2)
-  if [ $lis1 = BUILD_LIST ] || [ $lis1 = LIST ] || [ $lis1 = ARCHS ] || [ $lis1 = VARIANTS ] || [ $lis1 = TARGETS ]; then
+  if [ $lis1 = BUILD_LIST ] || [ $lis1 = LIST ] || [ $lis1 = ARCHS ] || [ $lis1 = TARGETS ]; then
     printf "\"" >> vars.env
     echo "" >> vars.env
     printf "setenv $lis1 \"" >> vars.env
+  elif [ $lis1 = VARIANTS ]; then
+    printf "\"" >> vars.env
+    echo "" >> vars.env
+    printf "setenv $lis1 $'\0' \"" >> vars.env
   fi
-  printf "$'\0' $lis2 " >> vars.env
+  printf "$lis2 " >> vars.env
 done
 echo "$lis1 \"" >> vars.env
 
