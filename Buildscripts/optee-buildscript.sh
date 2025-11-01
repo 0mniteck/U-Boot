@@ -11,6 +11,8 @@ pushd /CROSS
   CT_CC_GCC_CORE_EXTRA_CONFIG_ARRAY="--enable-standard-branch-protection"
   _EOF_
   ./ct-ng build.$(nproc)
+  ls -la x-tools/
+  ls -la x-tools/aarch64-unknown-linux-gnu/bin
 popd
 mv /openssl-openssl-$SSL_VER /SSL
 rm -f -r /usr/include/openssl
