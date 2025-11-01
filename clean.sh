@@ -6,7 +6,7 @@
 # dir.cleanup
 # cleanup.docker
 # cleanup.docker.(unmount)
-# cleanup.docker.(remove) + (unmount)
+# cleanup.docker.(remove)...(unmount)
 # cleanup.snaps
 # cleanup.snaps.(remove)
 # tmp.cleanup
