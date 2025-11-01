@@ -1,7 +1,9 @@
 #!/bin/bash
-export GPG_TTY=$(tty)
-eval `ssh-agent -s`
-ssh-add $HOME/.ssh/id_ecdsa_s*[!.pub]
+if [ "$(echo "$(cat "$HOME/.ssh/config" | grep UBoot)")" != "" ]; then
+  export GPG_TTY=$(tty)
+  eval `ssh-agent -s`
+  ssh-add $HOME/.ssh/id_ecdsa_s*[!.pub]
+fi
 git status && git add -A && git status
 if [ "$(echo "$(cat "$HOME/.ssh/config" | grep UBoot)")" != "" ]; then while [ "$(echo "$(lsusb | grep Yubikey)")" = "" ]; do printf "\rPlease insert yubikey...\033[K"; done; fi
 git commit -a -S -m "$1" && sleep 5 && git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD):Docker
