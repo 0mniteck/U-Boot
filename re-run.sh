@@ -70,7 +70,7 @@ if [ "$3" != "yes" ]; then
   snap install grype --classic
 fi
 ./clean.sh cleanup.snaps
-./clean.sh cleanup.docker $5
+./clean.sh cleanup.docker.unmount
 if [ "$5" != "" ]; then
   ./git.sh check
   systemd-cryptsetup attach Luks-Signal /dev/$5
@@ -295,16 +295,21 @@ if [[ "$6" == *$NAME* ]]; then
   stop $NAME
 fi
 
-./clean.sh cleanup.docker $5
+if [ "$3" = "no" ]; then
+  ./clean.sh cleanup.docker.remove
+else
+  ./clean.sh cleanup.docker
+fi
 
 load ubuntu
 if [[ "$6" == *$NAME* ]]; then
   scan_using_grype ubuntu "/ --select-catalogers debian" $3
 fi
 
-./clean.sh cleanup.snaps
 if [ "$3" = "no" ]; then
-  ./clean.sh cleanup.snaps remove
+  ./clean.sh cleanup.snaps.remove
+else
+  ./clean.sh cleanup.snaps
 fi
 
 load u-boot
