@@ -22,6 +22,7 @@ if [ "$1" = "pre.cleanup" ]; then
       do
         touch $dev$loc/tmp
       done
+        touch $dev/tmp
     done
     for arch in $ARCHS
     do
@@ -77,6 +78,7 @@ if [ "$1" = "cleanup" ]; then
       do
         rm -f $dev$loc/tmp
       done
+      rm -f $dev/tmp
     done
     for arch in $ARCHS
     do
