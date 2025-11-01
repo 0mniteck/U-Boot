@@ -11,6 +11,7 @@ buildscript.sh
  -m {Mount: mmcblk1p1}
  -t {release-Tag: tagname}
  -w {Cross Compile: yes/No}
+ -z {Build Targets: "target1,target2"/"all"}
 ```
 
 #### To compile current release run:
