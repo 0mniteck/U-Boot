@@ -91,6 +91,7 @@ if [[ "$TARGET" = "" || "$TARGET" = "all" ]]; then
 elif [[ "$TARGET" = "edk2" || "$TARGET" = "arm-trusted"  || "$TARGET" = "optee"  || "$TARGET" = "u-boot" ]]; then
   export TARGETS="$TARGET"
 elif [[ "$TARGET" != "" ]]; then
+  echo "INVALID TARGET!"
   exit 1
 fi
 
