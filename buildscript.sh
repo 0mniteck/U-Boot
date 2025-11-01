@@ -27,7 +27,7 @@ export BUILD_LIST="R5B-rk3588:rock5b-rk3588_defconfig RP64-rk3399:rockpro64-rk33
 export LIST="R5B-rk3588 RP64-rk3399 PBP-rk3399"
 export ARCHS="rk3588 rk3399"
 
-export VARIANTS="\$'\\\\0' -SB -TPM-SB -MU-SB"
+export VARIANTS="-SB -TPM-SB -MU-SB"
 export TARGETS="edk2 arm-trusted optee u-boot ubuntu"
 
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
@@ -113,7 +113,7 @@ do
   elif [ $lis1 = VARIANTS ]; then
     printf "\"" >> vars.env
     echo "" >> vars.env
-    printf "setenv $lis1 \"" >> vars.env
+    printf "setenv $lis1 \" \$'\\\\0' " >> vars.env
   fi
   printf -- "$lis2 " >> vars.env
 done
