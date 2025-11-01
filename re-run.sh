@@ -126,13 +126,15 @@ if [ "$4" = "yes" ]; then
   docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
 fi
 
-# load base
-# docker buildx build $LOAD \
-#   --build-arg HUB=$HUB \
-#   --build-arg BASE=$BASE \
-#   -f Dockerfile .
-  
-if [ "$2" = "yes" ]; then
+if [[ "$6" == "base" ]]; then
+  load base
+  docker buildx build $LOAD \
+    --build-arg HUB=$HUB \
+    --build-arg BASE=$BASE \
+    -f Dockerfile .
+fi
+
+if [[ "$6" == "edk2" ]]; then
   load edk2
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -166,150 +168,165 @@ if [ "$2" = "yes" ]; then
   stop $NAME
 fi
 
-load optee
-docker buildx build $LOAD \
-  --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
-  --build-arg OPT_VER=$OPT_VER \
-  --build-arg OPT_SUM=$OPT_SUM \
-  --build-arg OPT_SUM2=$OPT_SUM2 \
-  --build-arg TPM_SUM=$TPM_SUM \
-  --build-arg SSL_VER=$SSL_VER \
-  --build-arg SSL_SUM=$SSL_SUM \
-  --build-arg ROT_SUM=$ROT_SUM \
-  --build-arg HUB=$HUB \
-  --build-arg BASE=$BASE \
-  --build-arg BASE_EXTRA=$BASE_EXTRA \
-  --build-arg ENTRYPOINT=$NAME \
-  -f Dockerfile .
-
-scan_using_grype $NAME docker:$NAME $3
-
-docker run -it --cpus=$(nproc) \
-  --name $NAME $CROSS \
-  --user "$(id -u):$(id -g)" \
-  --entrypoint /$NAME-buildscript.sh \
-  -e SOURCE_DATE_EPOCH=$source_date_epoch \
-  -e SSL_VER=$SSL_VER \
-  -e OPT_VER=$OPT_VER \
-  -e ARCHS="$ARCHS" \
-  $NAME
-
-for arch in $ARCHS
-do
-  for tpm in ":-tpm" "/NOTPM:"
+if [[ "$6" == "optee" ]]; then
+  load optee
+  docker buildx build $LOAD \
+    --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+    --build-arg OPT_VER=$OPT_VER \
+    --build-arg OPT_SUM=$OPT_SUM \
+    --build-arg OPT_SUM2=$OPT_SUM2 \
+    --build-arg TPM_SUM=$TPM_SUM \
+    --build-arg SSL_VER=$SSL_VER \
+    --build-arg SSL_SUM=$SSL_SUM \
+    --build-arg CROSS_VER=$CROSS_VER \
+    --build-arg CROSS_SUM=$CROSS_SUM \
+    --build-arg ROT_SUM=$ROT_SUM \
+    --build-arg HUB=$HUB \
+    --build-arg BASE=$BASE \
+    --build-arg BASE_EXTRA=$BASE_EXTRA \
+    --build-arg ENTRYPOINT=$NAME \
+    -f Dockerfile .
+  
+  scan_using_grype $NAME docker:$NAME $3
+  
+  docker run -it --cpus=$(nproc) \
+    --name $NAME $CROSS \
+    --user "$(id -u):$(id -g)" \
+    --entrypoint /$NAME-buildscript.sh \
+    -e SOURCE_DATE_EPOCH=$source_date_epoch \
+    -e OPT_VER=$OPT_VER \
+    -e SSL_VER=$SSL_VER \
+    -e CROSS_VER=$CROSS_VER \
+    -e ARCHS="$ARCHS" \
+    $NAME
+  
+  for arch in $ARCHS
   do
-    tpm=$(echo $tpm | cut -d':' -f2)
-    docker cp $NAME:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
-    sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
-    openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
+    for tpm in ":-tpm" "/NOTPM:"
+    do
+      tpm=$(echo $tpm | cut -d':' -f2)
+      docker cp $NAME:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
+      sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
+      openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
+    done
   done
-done
-stop $NAME
+  stop $NAME
+fi
 
-load arm-trusted
-docker buildx build $LOAD \
-  --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
-  --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
-  --build-arg ATF_VER=$ATF_VER \
-  --build-arg ATF_SUM=$ATF_SUM \
-  --build-arg MTLS_VER=$MTLS_VER \
-  --build-arg MTLS_SUM=$MTLS_SUM \
-  --build-arg HUB=$HUB \
-  --build-arg BASE=$BASE \
-  --build-arg BASE_EXTRA=$BASE_EXTRA \
-  --build-arg ENTRYPOINT=$NAME \
-  -f Dockerfile .
-
-scan_using_grype $NAME docker:$NAME $3
-
-docker run -it --cpus=$(nproc) \
-  --name $NAME $CROSS \
-  --user "$(id -u):$(id -g)" \
-  --entrypoint /$NAME-buildscript.sh \
-  -e SOURCE_DATE_EPOCH=$source_date_epoch \
-  -e BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
-  -e ATF_VER=$ATF_VER \
-  -e ARCHS="$ARCHS" \
-  $NAME
-
-for arch in $ARCHS
-do
-  docker cp $NAME:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
-  sha512sum Builds/$arch/bl31.elf && sha512sum Builds/$arch/bl31.elf >> Results/release.sha512sum
-  openssl dgst -SHA3-256 Builds/$arch/bl31.elf && openssl dgst -SHA3-256 Builds/$arch/bl31.elf >> Results/release.sha3sum
-done
-stop $NAME
-
-load u-boot
-docker buildx build $LOAD \
-  --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
-  --build-arg UB_VER=$UB_VER \
-  --build-arg UB_SUM=$UB_SUM \
-  --build-arg HUB=$HUB \
-  --build-arg BASE=$BASE \
-  --build-arg BASE_EXTRA=$BASE_EXTRA \
-  --build-arg ENTRYPOINT=$NAME \
-  -f Dockerfile .
-
-scan_using_grype $NAME docker:$NAME $3
-
-docker run -it --cpus=$(nproc) \
-  --name $NAME $CROSS \
-  --user "$(id -u):$(id -g)" \
-  --entrypoint /$NAME-buildscript.sh \
-  -e SOURCE_DATE_EPOCH=$source_date_epoch \
-  -e SOURCE_DATE=$source_date \
-  -e UB_VER=$UB_VER \
-  -e BUILD_LIST="$BUILD_LIST" \
-  -e DEV_BUILD=$3 \
-  $NAME
-
-for dev in $LIST
-do
-  for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
+if [[ "$6" == "arm-trusted" ]]; then
+  load arm-trusted
+  docker buildx build $LOAD \
+    --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+    --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
+    --build-arg ATF_VER=$ATF_VER \
+    --build-arg ATF_SUM=$ATF_SUM \
+    --build-arg MTLS_VER=$MTLS_VER \
+    --build-arg MTLS_SUM=$MTLS_SUM \
+    --build-arg HUB=$HUB \
+    --build-arg BASE=$BASE \
+    --build-arg BASE_EXTRA=$BASE_EXTRA \
+    --build-arg ENTRYPOINT=$NAME \
+    -f Dockerfile .
+  
+  scan_using_grype $NAME docker:$NAME $3
+  
+  docker run -it --cpus=$(nproc) \
+    --name $NAME $CROSS \
+    --user "$(id -u):$(id -g)" \
+    --entrypoint /$NAME-buildscript.sh \
+    -e SOURCE_DATE_EPOCH=$source_date_epoch \
+    -e BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
+    -e ATF_VER=$ATF_VER \
+    -e ARCHS="$ARCHS" \
+    $NAME
+  
+  for arch in $ARCHS
   do
-    docker cp $NAME:/$loc/ Builds
-    sha512sum Builds/$loc/u-boot-rockchip.bin && sha512sum Builds/$loc/u-boot-rockchip.bin >> Results/release.sha512sum
-    openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin >> Results/release.sha3sum
-    sha512sum Builds/$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
-    openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
+    docker cp $NAME:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
+    sha512sum Builds/$arch/bl31.elf && sha512sum Builds/$arch/bl31.elf >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/$arch/bl31.elf && openssl dgst -SHA3-256 Builds/$arch/bl31.elf >> Results/release.sha3sum
   done
-done
-docker cp $NAME:/sys.info sys.info
-stop $NAME
+  stop $NAME
+fi
 
-./clean.sh cleanup.docker $5
-
-scan_using_grype ubuntu "/ --select-catalogers debian" $3
-
-./clean.sh cleanup.snaps
-
-if [ "$3" = "no" ]; then
-  ./clean.sh cleanup.snaps remove
+if [[ "$6" == "u-boot" ]]; then
+  load u-boot
+  docker buildx build $LOAD \
+    --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+    --build-arg UB_VER=$UB_VER \
+    --build-arg UB_SUM=$UB_SUM \
+    --build-arg HUB=$HUB \
+    --build-arg BASE=$BASE \
+    --build-arg BASE_EXTRA=$BASE_EXTRA \
+    --build-arg ENTRYPOINT=$NAME \
+    -f Dockerfile .
+  
+  scan_using_grype $NAME docker:$NAME $3
+  
+  docker run -it --cpus=$(nproc) \
+    --name $NAME $CROSS \
+    --user "$(id -u):$(id -g)" \
+    --entrypoint /$NAME-buildscript.sh \
+    -e SOURCE_DATE_EPOCH=$source_date_epoch \
+    -e SOURCE_DATE=$source_date \
+    -e UB_VER=$UB_VER \
+    -e BUILD_LIST="$BUILD_LIST" \
+    -e DEV_BUILD=$3 \
+    $NAME
+  
   for dev in $LIST
   do
     for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
     do
-      pushd Builds/$loc/
-      dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
-      parted /dev/mmcblk1 mktable gpt mkpart P1 fat32 15MB 34MB -s && sleep 3
-      mkfs.fat -i 00000000 -n "U-BOOT" /dev/mmcblk1p1 && mount /dev/mmcblk1p1 /mnt
-      cp u-boot-rockchip.bin /mnt/u-boot-rockchip.bin
-      cp u-boot-rockchip-spi.bin /mnt/u-boot-rockchip-spi.bin
-      touch -c -d "$(date -R -d $source_date)" /mnt/*
-      touch -c -d "$(date -R -d $source_date)" /mnt/
-      dd if=/mnt/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
-      sync && umount /mnt && dd if=/dev/mmcblk1 of=sdcard.img bs=1M count=35 status=progress
-      touch -c -d "$(date -R -d $source_date)" sdcard.img
-      popd
-      sha512sum Builds/$loc/sdcard.img >> Results/release.sha512sum
+      docker cp $NAME:/$loc/ Builds
+      sha512sum Builds/$loc/u-boot-rockchip.bin && sha512sum Builds/$loc/u-boot-rockchip.bin >> Results/release.sha512sum
+      openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin >> Results/release.sha3sum
+      sha512sum Builds/$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
+      openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
     done
   done
-  dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
-  dd if=Builds/RP64-rk3399-TPM-SB/sdcard.img of=/dev/mmcblk1 conv=notrunc status=progress
-else
-  dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
-  dd if=Builds/RP64-rk3399-TPM-SB/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
+  docker cp $NAME:/sys.info sys.info
+  stop $NAME
+fi
+
+./clean.sh cleanup.docker $5
+
+if [[ "$6" == "ubuntu" ]]; then
+  scan_using_grype ubuntu "/ --select-catalogers debian" $3
+fi
+
+./clean.sh cleanup.snaps
+if [ "$3" = "no" ]; then
+  ./clean.sh cleanup.snaps remove
+fi
+
+if [[ "$6" == "u-boot" ]]; then
+  if [ "$3" = "no" ]; then
+    for dev in $LIST
+    do
+      for loc in $VARIANTS
+      do
+        pushd Builds/$loc/
+        dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
+        parted /dev/mmcblk1 mktable gpt mkpart P1 fat32 15MB 34MB -s && sleep 3
+        mkfs.fat -i 00000000 -n "U-BOOT" /dev/mmcblk1p1 && mount /dev/mmcblk1p1 /mnt
+        cp u-boot-rockchip.bin /mnt/u-boot-rockchip.bin
+        cp u-boot-rockchip-spi.bin /mnt/u-boot-rockchip-spi.bin
+        touch -c -d "$(date -R -d $source_date)" /mnt/*
+        touch -c -d "$(date -R -d $source_date)" /mnt/
+        dd if=/mnt/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
+        sync && umount /mnt && dd if=/dev/mmcblk1 of=sdcard.img bs=1M count=35 status=progress
+        touch -c -d "$(date -R -d $source_date)" sdcard.img
+        popd
+        sha512sum Builds/$loc/sdcard.img >> Results/release.sha512sum
+      done
+    done
+    dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
+    dd if=Builds/RP64-rk3399-TPM-SB/sdcard.img of=/dev/mmcblk1 conv=notrunc status=progress
+  else
+    dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
+    dd if=Builds/RP64-rk3399-TPM-SB/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
+  fi
 fi
 pushd Results/
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
