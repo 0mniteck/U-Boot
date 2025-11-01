@@ -111,7 +111,7 @@ do
     echo "" >> vars.env
     printf "setenv $lis1 \"" >> vars.env
   fi
-  printf "$lis2 " >> vars.env
+  printf -- "$lis2 " >> vars.env
 done
 echo "$lis1 \"" >> vars.env
 
