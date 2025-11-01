@@ -1,21 +1,7 @@
 #!/bin/bash
 
 source_date_epoch=1;
-if [ "$1" != 0 ]; then
-  echo 'Using override timestamp for SOURCE_DATE_EPOCH: $(date -d @$(($1)) = $1';
-  source_date_epoch=$(($1));
-elif [ "$3" = no ]; then
-  timestamp=$(cat Results/release.sha512sum | grep Epoch | cut -d ' ' -f5)
-  if [ "${timestamp}" != "" ]; then
-    echo "Setting SOURCE_DATE_EPOCH from release.sha512sum: $(cat Results/release.sha512sum | grep Epoch | cut -d ' ' -f5)"
-    source_date_epoch=$((timestamp))
-    check_file=1
-    cp Results/release.sha512sum /tmp/release.last.sha512sum
-  else
-    echo "Can't get latest commit timestamp. Defaulting to 1."
-    source_date_epoch=1
-  fi
-else
+if [ "$1" = "today" ]; then
   timestamp=$(date -d $(date +%D) +%s);
   if [ "${timestamp}" != "" ]; then
     echo "Setting SOURCE_DATE_EPOCH from today's date: $(date +%D) = @$timestamp";
@@ -23,6 +9,19 @@ else
   else
     echo "Can't get timestamp. Defaulting to 1.";
     source_date_epoch=1;
+  fi
+elif [ "$1" != 0 ]; then
+  echo "Using override timestamp for SOURCE_DATE_EPOCH."
+  source_date_epoch=$(($1))
+else
+  timestamp=$(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)
+  if [ "${timestamp}" != "" ]; then
+    echo "Setting SOURCE_DATE_EPOCH from release.sha512sum: $(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)"
+    source_date_epoch=$((timestamp))
+    check_file=1
+  else
+    echo "Can't get latest commit timestamp. Defaulting to 1."
+    source_date_epoch=1
   fi
 fi
 
@@ -52,6 +51,7 @@ else
   load() { # $1 Name
     export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
     export BUILDX_METADATA_PROVENANCE=max
+    export SIGNING=1
     export NAME=$1
     return
     }
@@ -65,34 +65,25 @@ echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/release.sha512
 echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum
 
 if [ "$3" != "yes" ]; then
+  snap refresh
   snap install syft --classic
   snap install grype --classic
 fi
-snap disable docker
-rm -f -r /var/snap/docker/*
-if [ "$5" != "" ]; then
-  umount -f /dev/mapper/Luks-Signal
-  sleep 5
-  systemd-cryptsetup detach Luks-Signal
-fi
-rm -f -r /var/snap/docker
-sleep 5
-snap enable docker
-snap remove docker --purge
+./clean.sh cleanup.snaps
+./clean.sh cleanup.docker $5
 if [ "$5" != "" ]; then
   systemd-cryptsetup attach Luks-Signal /dev/$5
 fi
-mkdir /var/snap/docker
+mkdir -p /var/snap/docker
 if [ "$5" != "" ]; then
   mount /dev/mapper/Luks-Signal /var/snap/docker
   rm -f -r /var/snap/docker/*
 fi
-rm -f -r /var/lib/snapd/cache/*
 chown root:root /var/snap/docker
 if [ "$4" = "yes" ]; then
-  snap install docker --revision=3265
+  snap install docker --revision=3377
 else
-  snap install docker --revision=3267 && systemctl stop snap.docker.nvidia-container-toolkit
+  snap install docker --revision=3380 && systemctl stop snap.docker.nvidia-container-toolkit
   systemctl disable snap.docker.nvidia-container-toolkit
 fi
 
@@ -135,13 +126,15 @@ if [ "$4" = "yes" ]; then
   docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
 fi
 
-load base
-docker buildx build $LOAD docker buildx build $LOAD
-  --build-arg HUB=$HUB \
-  --build-arg BASE=$BASE \
-  -f Dockerfile .
-  
-if [ "$2" = "yes" ]; then
+if [[ "$6" == "base" ]]; then
+  load base
+  docker buildx build $LOAD \
+    --build-arg HUB=$HUB \
+    --build-arg BASE=$BASE \
+    -f Dockerfile .
+fi
+
+if [[ "$6" == "edk2" ]]; then
   load edk2
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -173,7 +166,9 @@ if [ "$2" = "yes" ]; then
   sha512sum Builds/rk3399/BL32_AP_MM.fd && sha512sum Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha512sum
   openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd && openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha3sum
   stop $NAME
-  
+fi
+
+if [[ "$6" == "optee" ]]; then
   load optee
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -183,25 +178,28 @@ if [ "$2" = "yes" ]; then
     --build-arg TPM_SUM=$TPM_SUM \
     --build-arg SSL_VER=$SSL_VER \
     --build-arg SSL_SUM=$SSL_SUM \
+    --build-arg CROSS_VER=$CROSS_VER \
+    --build-arg CROSS_SUM=$CROSS_SUM \
     --build-arg ROT_SUM=$ROT_SUM \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
     --build-arg BASE_EXTRA=$BASE_EXTRA \
     --build-arg ENTRYPOINT=$NAME \
     -f Dockerfile .
-
+  
   scan_using_grype $NAME docker:$NAME $3
-
+  
   docker run -it --cpus=$(nproc) \
     --name $NAME $CROSS \
     --user "$(id -u):$(id -g)" \
     --entrypoint /$NAME-buildscript.sh \
     -e SOURCE_DATE_EPOCH=$source_date_epoch \
-    -e SSL_VER=$SSL_VER \
     -e OPT_VER=$OPT_VER \
+    -e SSL_VER=$SSL_VER \
+    -e CROSS_VER=$CROSS_VER \
     -e ARCHS="$ARCHS" \
     $NAME
-
+  
   for arch in $ARCHS
   do
     for tpm in ":-tpm" "/NOTPM:"
@@ -213,7 +211,9 @@ if [ "$2" = "yes" ]; then
     done
   done
   stop $NAME
+fi
 
+if [[ "$6" == "arm-trusted" ]]; then
   load arm-trusted
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -227,9 +227,9 @@ if [ "$2" = "yes" ]; then
     --build-arg BASE_EXTRA=$BASE_EXTRA \
     --build-arg ENTRYPOINT=$NAME \
     -f Dockerfile .
-
+  
   scan_using_grype $NAME docker:$NAME $3
-
+  
   docker run -it --cpus=$(nproc) \
     --name $NAME $CROSS \
     --user "$(id -u):$(id -g)" \
@@ -239,7 +239,7 @@ if [ "$2" = "yes" ]; then
     -e ATF_VER=$ATF_VER \
     -e ARCHS="$ARCHS" \
     $NAME
-
+  
   for arch in $ARCHS
   do
     docker cp $NAME:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
@@ -249,89 +249,84 @@ if [ "$2" = "yes" ]; then
   stop $NAME
 fi
 
-load u-boot
-docker buildx build $LOAD \
-  --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
-  --build-arg UB_VER=$UB_VER \
-  --build-arg UB_SUM=$UB_SUM \
-  --build-arg HUB=$HUB \
-  --build-arg BASE=$BASE \
-  --build-arg BASE_EXTRA=$BASE_EXTRA \
-  --build-arg ENTRYPOINT=$NAME \
-  -f Dockerfile .
-
-scan_using_grype $NAME docker:$NAME $3
-
-docker run -it --cpus=$(nproc) \
-  --name $NAME $CROSS \
-  --user "$(id -u):$(id -g)" \
-  --entrypoint /$NAME-buildscript.sh \
-  -e SOURCE_DATE_EPOCH=$source_date_epoch \
-  -e SOURCE_DATE=$source_date \
-  -e UB_VER=$UB_VER \
-  -e BUILD_LIST="$BUILD_LIST" \
-  -e DEV_BUILD=$3 \
-  $NAME
-
-for dev in $LIST
-do
-  for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
-  do
-    docker cp $NAME:/$loc/ Builds
-    sha512sum Builds/$loc/u-boot-rockchip.bin && sha512sum Builds/$loc/u-boot-rockchip.bin >> Results/release.sha512sum
-    openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin >> Results/release.sha3sum
-    sha512sum Builds/$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
-    openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
-  done
-done
-docker cp $NAME:/sys.info sys.info
-stop $NAME
-
-snap disable docker
-rm -f -r /var/snap/docker/*
-if [ "$5" != "" ]; then
-  umount -f /dev/mapper/Luks-Signal
-  sleep 5
-  systemd-cryptsetup detach Luks-Signal
-fi
-rm -f -r /var/snap/docker
-sleep 5
-snap remove docker --purge
-snap remove docker --purge
-networkctl delete docker0
-rm -f -r /var/lib/snapd/cache/*
-
-scan_using_grype ubuntu.25.04 "/ --select-catalogers debian" $3
-
-snap remove syft --purge
-snap remove grype --purge
-rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/syft -f -r && rm /root/6 -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter*
-
-if [ "$3" = "no" ]; then
+if [[ "$6" == "u-boot" ]]; then
+  load u-boot
+  docker buildx build $LOAD \
+    --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+    --build-arg UB_VER=$UB_VER \
+    --build-arg UB_SUM=$UB_SUM \
+    --build-arg HUB=$HUB \
+    --build-arg BASE=$BASE \
+    --build-arg BASE_EXTRA=$BASE_EXTRA \
+    --build-arg ENTRYPOINT=$NAME \
+    -f Dockerfile .
+  
+  scan_using_grype $NAME docker:$NAME $3
+  
+  docker run -it --cpus=$(nproc) \
+    --name $NAME $CROSS \
+    --user "$(id -u):$(id -g)" \
+    --entrypoint /$NAME-buildscript.sh \
+    -e SOURCE_DATE_EPOCH=$source_date_epoch \
+    -e SOURCE_DATE=$source_date \
+    -e UB_VER=$UB_VER \
+    -e BUILD_LIST="$BUILD_LIST" \
+    -e DEV_BUILD=$3 \
+    $NAME
+  
   for dev in $LIST
   do
     for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
     do
-      pushd Builds/$loc/
-      dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
-      parted /dev/mmcblk1 mktable gpt mkpart P1 fat32 15MB 34MB -s && sleep 3
-      mkfs.fat -i 00000000 -n "U-BOOT" /dev/mmcblk1p1 && mount /dev/mmcblk1p1 /mnt
-      cp u-boot-rockchip.bin /mnt/u-boot-rockchip.bin
-      cp u-boot-rockchip-spi.bin /mnt/u-boot-rockchip-spi.bin
-      touch -c -d "$(date -R -d $source_date)" /mnt/*
-      touch -c -d "$(date -R -d $source_date)" /mnt/
-      dd if=/mnt/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
-      sync && umount /mnt && dd if=/dev/mmcblk1 of=sdcard.img bs=1M count=35 status=progress
-      touch -c -d "$(date -R -d $source_date)" sdcard.img
-      popd
-      sha512sum Builds/$loc/sdcard.img >> Results/release.sha512sum
+      docker cp $NAME:/$loc/ Builds
+      sha512sum Builds/$loc/u-boot-rockchip.bin && sha512sum Builds/$loc/u-boot-rockchip.bin >> Results/release.sha512sum
+      openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin >> Results/release.sha3sum
+      sha512sum Builds/$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
+      openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
     done
   done
-  dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
-  dd if=Builds/RP64-rk3399-TPM-SB/sdcard.img of=/dev/mmcblk1 conv=notrunc status=progress
-else
-  dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
-  dd if=Builds/RP64-rk3399-TPM-SB/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
+  docker cp $NAME:/sys.info sys.info
+  stop $NAME
+fi
+
+./clean.sh cleanup.docker $5
+
+if [[ "$6" == "ubuntu" ]]; then
+  scan_using_grype ubuntu "/ --select-catalogers debian" $3
+fi
+
+./clean.sh cleanup.snaps
+if [ "$3" = "no" ]; then
+  ./clean.sh cleanup.snaps remove
+fi
+
+if [[ "$6" == "u-boot" ]]; then
+  if [ "$3" = "no" ]; then
+    for dev in $LIST
+    do
+      for loc in $VARIANTS
+      do
+        pushd Builds/$loc/
+        dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
+        parted /dev/mmcblk1 mktable gpt mkpart P1 fat32 15MB 34MB -s && sleep 3
+        mkfs.fat -i 00000000 -n "U-BOOT" /dev/mmcblk1p1 && mount /dev/mmcblk1p1 /mnt
+        cp u-boot-rockchip.bin /mnt/u-boot-rockchip.bin
+        cp u-boot-rockchip-spi.bin /mnt/u-boot-rockchip-spi.bin
+        touch -c -d "$(date -R -d $source_date)" /mnt/*
+        touch -c -d "$(date -R -d $source_date)" /mnt/
+        dd if=/mnt/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
+        sync && umount /mnt && dd if=/dev/mmcblk1 of=sdcard.img bs=1M count=35 status=progress
+        touch -c -d "$(date -R -d $source_date)" sdcard.img
+        popd
+        sha512sum Builds/$loc/sdcard.img >> Results/release.sha512sum
+      done
+    done
+    dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
+    dd if=Builds/RP64-rk3399-TPM-SB/sdcard.img of=/dev/mmcblk1 conv=notrunc status=progress
+  else
+    dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
+    dd if=Builds/RP64-rk3399-TPM-SB/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
+  fi
 fi
 pushd Results/
   sed -i 's/Builds/..\/Builds/g' release.sha512sum

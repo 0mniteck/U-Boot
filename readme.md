@@ -7,7 +7,7 @@
       * [x] Migrate from old branch
     * [x] Build ms-tpm-20-ref
       * [x] Openssl use source include current upstream
-        * [x] Set OPENSSL_CONFIGURED_API 101010
+        * [x] Set OPENSSL_API_COMPAT 10100
       * [ ] Update optee_ftpm/sub.mk to support v1.83
     * [ ] TPM_PCR_ALLOCATE
     * [ ] MEASURED_BOOT
@@ -21,8 +21,8 @@
   * [ ] Use-once model for next secure boot signing (Reset Yubikey after initial signing)
     * [ ] 2025 Q4 signing
       * [ ] Debian from trixie ISO shimaa64efi/bootaa64.efi
-      * [ ] Ubuntu from 25.04 ISO shimaa64.efi/bootaa64.efi
-        * [ ] Update autoinstall to plucky release
+      * [ ] Ubuntu from 25.10 ISO shimaa64.efi/bootaa64.efi
+        * [ ] Update autoinstall to Questing release
   * [ ] Try higher bit RSA/ECDSA keys to protect against [Quantum Attacks](https://www.youtube.com/redirect?event=video_description&redir_token=QUFFLUhqbENJQmx3b3pWV2F0YU9tMG8yRGxTb1c1cElQUXxBQ3Jtc0ttRTJtRFlmMGE4cnQxa2Q0WE54VTNnM05BSGlGdVExMkJicWszTlBHRE0tNk4xUDBhQU1EMVY4Zm8ySVNfa0pIbDVockhiUzBjLWs0YnZiRlJPRkFaV3BvUFc1T0t1VWR3RFV1VW1KNV9xdGdZOEYtYw&q=https%3A%2F%2Fwww.csoonline.com%2Farticle%2F3562701%2Fchinese-researchers-break-rsa-encryption-with-a-quantum-computer.html&v=_iSih4KI_qQ)
     * [x] 4096 bit Fails on 5.7.1 Yubikey
     * [ ] Test 3072 bit RSA
@@ -47,6 +47,7 @@
   * [x] Convert to docker build
     * [x] Build variants in one branch
     * [x] Make reproducible debian docker images
+      * [ ] Sign base images with cosign & verify at buildtime
 
 ## 
 
@@ -57,3 +58,5 @@
 --> [FLASHING AND INSTALLING](https://github.com/0mniteck/U-Boot/blob/Docs/docs/FLASH.md)  --> [FLASHING DEMO](https://u-boot.omniteck.com/#content)
 
 --> [SIGNING YOUR OWN](https://github.com/0mniteck/U-Boot/blob/Docs/docs/SIGN.md)
+
+--> [The Sovereignty Ephemerality Reproducibility (SER) framework](https://omniteck.com/?p=1104)
