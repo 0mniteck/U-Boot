@@ -1,17 +1,31 @@
 #!/bin/bash
 
+## Available Commands:
+# git.cleanup
+# git.cleanup.(cache)
+# dir.cleanup
+# cleanup.docker
+# cleanup.docker.(unmount)
+# cleanup.docker.(remove) + (unmount)
+# cleanup.snaps
+# cleanup.snaps.(remove)
+# tmp.cleanup
+
 do_update() {
   ./git.sh update
 }
 
-if [ "$1" = "git.cleanup" ]; then
+if [[ "$1" == *git.cleanup* ]]; then
   git reset --hard
   git clean -xfd
   do_update
+  if [[ "$1" == *git.cleanup.cache* ]]; then
+    rm -r -f .git/Cache
+  fi
   mkdir -p .git/Cache
 fi
 
-if [ "$1" = "pre.cleanup" ]; then
+if [ "$1" = "dir.cleanup" ]; then
   pushd Builds/
     for dev in $LIST
     do
@@ -42,15 +56,13 @@ if [ "$1" = "pre.cleanup" ]; then
   popd
 fi
 
-if [ "$1" = "cleanup.cache" ]; then
-  rm -r -f .git/Cache
-  mkdir -p .git/Cache
-fi
-
-if [ "$1" = "cleanup.docker" ]; then
+if [[ "$1" == *cleanup.docker* ]]; then
   snap disable docker
-  rm -f -r /var/snap/docker/*
-  if [ "$2" != "" ]; then
+  if [[ "$1" == *cleanup.docker.remove* ]]; then
+    rm -f -r /var/snap/docker/*
+    $1=cleanup.docker.unmount
+  fi
+  if [[ "$1" == *cleanup.docker.unmount* ]; then
     umount -f /dev/mapper/Luks-Signal
     sleep 5
     systemd-cryptsetup detach Luks-Signal
@@ -64,15 +76,15 @@ if [ "$1" = "cleanup.docker" ]; then
   rm -f -r /var/lib/snapd/cache/*
 fi
 
-if [ "$1" = "cleanup.snaps" ]; then
-  if [ "$2" = "remove" ]; then
+if [[ "$1" == *cleanup.snaps* ]]; then
+  if [[ "$1" == *cleanup.snaps.remove* ]]; then
     snap remove syft --purge
     snap remove grype --purge
   fi
   rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/syft -f -r && rm /root/6 -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter*
 fi
 
-if [ "$1" = "cleanup" ]; then
+if [ "$1" = "tmp.cleanup" ]; then
   pushd Builds/
     for dev in $LIST
     do
@@ -96,4 +108,4 @@ if [ "$1" = "cleanup" ]; then
   rm -f status.build && rm -f sys.info && rm -f vars.env
   do_update
 fi
-exit
+exit 0
