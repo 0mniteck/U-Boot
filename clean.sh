@@ -18,7 +18,7 @@ if [ "$1" = "pre.cleanup" ]; then
     find . ! -type d -delete
     for dev in $LIST
     do
-      for loc in $(echo $VARIANTS)
+      for loc in $VARIANTS
       do
         touch $loc/tmp
       done
