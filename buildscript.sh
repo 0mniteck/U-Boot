@@ -28,7 +28,6 @@ export LIST="R5B-rk3588 RP64-rk3399 PBP-rk3399"
 export ARCHS="rk3588 rk3399"
 
 export VARIANTS="-SB -TPM-SB -MU-SB"
-export TARGETS="edk2 arm-trusted optee u-boot ubuntu"
 
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
   case $opt in
@@ -85,9 +84,16 @@ if [ "$ALT" = "yes" ]; then
   export LIST="PT2-rk3566"
   export ARCHS="rk3568"
 fi
+
+export TARGETS="edk2 arm-trusted optee u-boot ubuntu"
 if [[ "$TARGET" = "" || "$TARGET" = "all" ]]; then
   TARGET="$TARGETS"
+elif [[ "$TARGET" = "edk2" || "$TARGET" = "arm-trusted"  || "$TARGET" = "optee"  || "$TARGET" = "u-boot" ]]; then
+  export TARGETS="$TARGET"
+elif [[ "$TARGET" != "" ]]; then
+  exit 1
 fi
+
 if [ "$CLEAN" = "yes" ]; then
   ./clean.sh git.cleanup
 fi
