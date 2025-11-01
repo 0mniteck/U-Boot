@@ -126,7 +126,7 @@ if [ "$4" = "yes" ]; then
   docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
 fi
 
-if [[ "$6" == "base" ]]; then
+if [[ $(echo "$6" | grep "base") != "" ]]; then
   load base
   docker buildx build $LOAD \
     --build-arg HUB=$HUB \
@@ -134,7 +134,7 @@ if [[ "$6" == "base" ]]; then
     -f Dockerfile .
 fi
 
-if [[ "$6" == "edk2" ]]; then
+if [[ $(echo "$6" | grep "edk2") != "" ]]; then
   load edk2
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -168,7 +168,7 @@ if [[ "$6" == "edk2" ]]; then
   stop $NAME
 fi
 
-if [[ "$6" == "optee" ]]; then
+if [[ $(echo "$6" | grep "optee") != "" ]]; then
   load optee
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -213,7 +213,7 @@ if [[ "$6" == "optee" ]]; then
   stop $NAME
 fi
 
-if [[ "$6" == "arm-trusted" ]]; then
+if [[ $(echo "$6" | grep "arm-trusted") != "" ]]; then
   load arm-trusted
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -249,7 +249,7 @@ if [[ "$6" == "arm-trusted" ]]; then
   stop $NAME
 fi
 
-if [[ "$6" == "u-boot" ]]; then
+if [[ $(echo "$6" | grep "u-boot") != "" ]]; then
   load u-boot
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -296,7 +296,7 @@ fi
 
 ./clean.sh cleanup.docker $5
 
-if [[ "$6" == "ubuntu" ]]; then
+if [[ $(echo "$6" | grep "ubuntu") != "" ]]; then
   scan_using_grype ubuntu "/ --select-catalogers debian" $3
 fi
 
@@ -305,7 +305,7 @@ if [ "$3" = "no" ]; then
   ./clean.sh cleanup.snaps remove
 fi
 
-if [[ "$6" == "u-boot" ]]; then
+if [[ $(echo "$6" | grep "u-boot") != "" ]]; then
   if [ "$3" = "no" ]; then
     for dev in $LIST
     do
