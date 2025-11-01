@@ -21,6 +21,8 @@ do
   mv /$plat/ms-tpm-20-ref-1.83r1 /$plat/TPM
   pushd /$plat/optee_os-$OPT_VER
     sed -i "61d;67d" ta/link.mk
+    sed -i '39d' mk/compile.mk
+    sed -i "s'length \\\\'length'" mk/compile.mk
     # sed -i "35ilibgcc\$(sm)	:= \$(shell \$(CC\$(sm)) \$(CFLAGS\$(arch-bits-\$(sm))) -rtlib=compiler-rt -print-libgcc-file-name 2> /dev/null)" mk/clang.mk
     make -j $(nproc) PLATFORM=rockchip-$plat CFG_ARM64_core=y CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_core=aarch64-linux-gnu- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- CFG_USER_TA_TARGETS=ta_arm64 CFG_EARLY_CONSOLE_BAUDRATE=115200 EARLY_TA_PATHS=/$plat/optee_ftpm-$OPT_VER/out/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf ta_dev_kit
     sed -i "178d" out/arm-plat-rockchip/export-ta_arm64/include/util.h
@@ -117,13 +119,16 @@ BOOL  s_physicalPresence;" >> Platform/src/PlatformData.c
     sed -i "25iglobal-incdirs_ext-y += /usr/include/openssl" sub.mk
     sed -i "25iglobal-incdirs_ext-y += /usr/include" sub.mk
     sed -i "24iglobal-incdirs-y += platform/include/prototypes" sub.mk
-    sed -i "44icflags-y += -Wno-strict-aliasing" sub.mk
-    sed -i "44icflags-y += -Wno-redundant-decls" sub.mk
-    sed -i "44icflags-y += -Wno-cast-function-type" sub.mk
     sed -i "44icflags-y += -Wno-cast-align" sub.mk
+    sed -i "44icflags-y += -Wno-implicit-fallthrough" sub.mk
+    sed -i "44icflags-y += -Wno-cast-function-type" sub.mk
+    sed -i "44icflags-y += -Wno-suggest-attribute=noreturn" sub.mk
     sed -i "44icflags-y += -Wno-switch-default" sub.mk
     sed -i "44icflags-y += -Wno-redundant-decls" sub.mk
-    sed -i "65i \\
+    sed -i "44icflags-y += -Wno-strict-aliasing" sub.mk
+    ## cflags-y += -Wno-strict-prototypes
+    ## cflags-y += -Wno-undef
+    sed -i "66i \\
 srcs-y += platform/Cancel.c\\
 srcs-y += platform/Clock.c\\
 srcs-y += platform/DebugHelpers.c\\
@@ -357,8 +362,9 @@ srcs_ext-y += support/TableMarshalData.c
 srcs_ext-y += support/TpmFail.c
 srcs_ext-y += support/TpmSizeChecks.c" >> sub.mk
     cat sub.mk
+    ls -la /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64
     # CFG_CORE_DYN_SHM=y CFG_SCTLR_ALIGNMENT_CHECK=n
-    make -j $(nproc) VERBOSE=1 TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_USER_TA_TARGETS=ta_arm64 CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y CFG_CORE_BTI=y CFG_TA_BTI=n CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- O=out
+    make -j $(nproc) VERBOSE=1 V=1 TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_USER_TA_TARGETS=ta_arm64 CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y CFG_CORE_BTI=y CFG_TA_BTI=n CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- EARLY_TA_PATHS=/$plat/optee_ftpm-$OPT_VER/out/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf O=out
     read -p "Waiting for user..."
   popd
   pushd /$plat/optee_os-$OPT_VER
