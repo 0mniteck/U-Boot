@@ -27,7 +27,7 @@ export BUILD_LIST="R5B-rk3588:rock5b-rk3588_defconfig RP64-rk3399:rockpro64-rk33
 export LIST="R5B-rk3588 RP64-rk3399 PBP-rk3399"
 export ARCHS="rk3588 rk3399"
 
-export VARIANTS="'' -SB -TPM-SB -MU-SB"
+export VARIANTS="-SB -TPM-SB -MU-SB"
 export TARGETS="edk2 arm-trusted optee u-boot ubuntu"
 
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
@@ -107,7 +107,7 @@ do
   lis1=$(echo $lis | cut -d'^' -f1)
   lis2=$(echo $lis | cut -d'^' -f2)
   if [ $lis1 = BUILD_LIST ] || [ $lis1 = LIST ] || [ $lis1 = ARCHS ] || [ $lis1 = VARIANTS ] || [ $lis1 = TARGETS ]; then
-    printf " \"" >> vars.env
+    printf "\"" >> vars.env
     echo "" >> vars.env
     printf "setenv $lis1 \"" >> vars.env
   fi
