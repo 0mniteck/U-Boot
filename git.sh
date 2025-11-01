@@ -16,7 +16,7 @@ do_update() {
 
 if [ "$1" = "check" ]; then
 yubi_check
-return 0
+exit 0
 fi
 
 if [ "$1" = "update" ]; then
