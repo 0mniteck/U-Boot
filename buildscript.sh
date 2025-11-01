@@ -86,11 +86,11 @@ if [ "$ALT" = "yes" ]; then
   export ARCHS="rk3568"
 fi
 
-if [[ "$TARGET" = "" || "$TARGET" = "all" ]]; then
+if [[ "$TARGET" = "" || "$TARGET" == *all* ]]; then
   TARGET="$TARGETS"
-elif [[ $(echo "$TARGET" | grep "edk2") != "" || $(echo "$TARGET" | grep "arm-trusted") != "" || $(echo "$TARGET" | grep "optee") != "" || $(echo "$TARGET" | grep "u-boot") != "" ]]; then
+elif [[ "$TARGET" == *edk2* || "$TARGET" == *arm-trusted* || "$TARGET" == *optee* || "$TARGET" == *u-boot* ]]; then
   export TARGETS="$TARGET"
-elif [[ "$TARGET" != "" ]]; then
+else
   echo "INVALID TARGET: $TARGET"
   exit 1
 fi
