@@ -23,6 +23,7 @@ if [[ "$1" == *git.cleanup* ]]; then
     rm -r -f .git/Cache
   fi
   mkdir -p .git/Cache
+  echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum
 fi
 
 if [ "$1" = "dir.cleanup" ]; then
