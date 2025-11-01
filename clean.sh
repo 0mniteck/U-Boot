@@ -72,6 +72,7 @@ if [[ "$1" == *cleanup.docker* ]]; then
   snap enable docker
   snap remove docker --purge
   snap remove docker --purge
+  snap remove core24 --purge
   networkctl delete docker0
   rm -f -r /var/lib/snapd/cache/*
 fi
