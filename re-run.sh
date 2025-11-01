@@ -276,13 +276,13 @@ if [[ "$6" == "u-boot" ]]; then
   
   for dev in $LIST
   do
-    for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
+    for loc in $VARIANTS
     do
-      docker cp $NAME:/$loc/ Builds
-      sha512sum Builds/$loc/u-boot-rockchip.bin && sha512sum Builds/$loc/u-boot-rockchip.bin >> Results/release.sha512sum
-      openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip.bin >> Results/release.sha3sum
-      sha512sum Builds/$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
-      openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
+      docker cp $NAME:/$dev$loc/ Builds
+      sha512sum Builds/$dev$loc/u-boot-rockchip.bin && sha512sum Builds/$dev$loc/u-boot-rockchip.bin >> Results/release.sha512sum
+      openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip.bin >> Results/release.sha3sum
+      sha512sum Builds/$dev$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$dev$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
+      openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
     done
   done
   docker cp $NAME:/sys.info sys.info
@@ -306,7 +306,7 @@ if [[ "$6" == "u-boot" ]]; then
     do
       for loc in $VARIANTS
       do
-        pushd Builds/$loc/
+        pushd Builds/$dev$loc/
         dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
         parted /dev/mmcblk1 mktable gpt mkpart P1 fat32 15MB 34MB -s && sleep 3
         mkfs.fat -i 00000000 -n "U-BOOT" /dev/mmcblk1p1 && mount /dev/mmcblk1p1 /mnt
@@ -318,7 +318,7 @@ if [[ "$6" == "u-boot" ]]; then
         sync && umount /mnt && dd if=/dev/mmcblk1 of=sdcard.img bs=1M count=35 status=progress
         touch -c -d "$(date -R -d $source_date)" sdcard.img
         popd
-        sha512sum Builds/$loc/sdcard.img >> Results/release.sha512sum
+        sha512sum Builds/$dev$loc/sdcard.img >> Results/release.sha512sum
       done
     done
     dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
