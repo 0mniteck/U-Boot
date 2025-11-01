@@ -10,7 +10,7 @@ do_update() {
   git pull $(git remote -v | awk '{ print $2 }' | tail -n 1) $(git rev-parse --abbrev-ref HEAD)
 }
 
-if [ $1 = "update" ]; then
+if [ "$1" = "update" ]; then
 do_update
 exit 0
 fi
