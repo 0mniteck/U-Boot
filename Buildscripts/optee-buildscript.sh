@@ -38,7 +38,7 @@ do
     sed -i '39d' mk/compile.mk
     sed -i "s'length \\\\'length'" mk/compile.mk
     # sed -i "35ilibgcc\$(sm)	:= \$(shell \$(CC\$(sm)) \$(CFLAGS\$(arch-bits-\$(sm))) -rtlib=compiler-rt -print-libgcc-file-name 2> /dev/null)" mk/clang.mk
-    make -j $(nproc) PLATFORM=rockchip-$plat CFG_ARM64_core=y CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_core=aarch64-linux-gnu- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- CFG_USER_TA_TARGETS=ta_arm64 CFG_EARLY_CONSOLE_BAUDRATE=115200 EARLY_TA_PATHS=/$plat/optee_ftpm-$OPT_VER/out/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf ta_dev_kit
+    make -j $(nproc) PLATFORM=rockchip-$plat CFG_OPTEE_CONFIG=mk/config.mk CFG_CORE_BTI=y CFG_TA_BTI=y CFG_USER_TA_TARGETS=ta_arm64 CFG_ARM64_ta_arm64=y AARCH64_CROSS_COMPILE=/CROSS/x-tools/aarch64-unknown-linux-gnu/bin/aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200 CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y CFG_EARLY_TA=y ta_dev_kit
     sed -i "178d" out/arm-plat-rockchip/export-ta_arm64/include/util.h
     sed -i "27d" out/arm-plat-rockchip/export-ta_arm64/include/limits.h
     cat ta/link.mk
@@ -377,12 +377,11 @@ srcs_ext-y += support/TpmFail.c
 srcs_ext-y += support/TpmSizeChecks.c" >> sub.mk
     cat sub.mk
     ls -la /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64
-    # CFG_CORE_DYN_SHM=y CFG_SCTLR_ALIGNMENT_CHECK=n
-    make -j $(nproc) VERBOSE=1 V=1 TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM CFG_TA_MEASURED_BOOT=y CFG_USER_TA_TARGETS=ta_arm64 CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y CFG_CORE_BTI=y CFG_TA_BTI=n CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- EARLY_TA_PATHS=/$plat/optee_ftpm-$OPT_VER/out/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf O=out
+    make -j $(nproc) PLATFORM=rockchip-$plat CFG_OPTEE_CONFIG=mk/config.mk CFG_CORE_BTI=y CFG_TA_BTI=y CFG_USER_TA_TARGETS=ta_arm64 CFG_ARM64_ta_arm64=y AARCH64_CROSS_COMPILE=/CROSS/x-tools/aarch64-unknown-linux-gnu/bin/aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200 CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM
     read -p "Waiting for user..."
   popd
   pushd /$plat/optee_os-$OPT_VER
-    make -j $(nproc) PLATFORM=rockchip-$plat CFG_STMM_PATH=/BL32_AP_MM.fd CFG_RPMB_FS=y CFG_RPMB_FS_DEV_ID=0 CFG_RPMB_WRITE_KEY=y CFG_RPMB_TESTKEY=n CFG_REE_FS_ALLOW_RESET=y CFG_REE_FS=y CFG_ARM64_core=y CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_core=aarch64-linux-gnu- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- CFG_USER_TA_TARGETS=ta_arm64 CFG_EARLY_CONSOLE_BAUDRATE=115200 EARLY_TA_PATHS=/$plat/optee_ftpm-$OPT_VER/out/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf
+    make -j $(nproc) PLATFORM=rockchip-$plat CFG_OPTEE_CONFIG=mk/config.mk CFG_CORE_BTI=y CFG_TA_BTI=y CFG_USER_TA_TARGETS=ta_arm64 CFG_ARM64_ta_arm64=y AARCH64_CROSS_COMPILE=/CROSS/x-tools/aarch64-unknown-linux-gnu/bin/aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200 CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y CFG_STMM_PATH=/BL32_AP_MM.fd CFG_RPMB_FS=y EARLY_TA_PATHS=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/ta/remoteproc/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf
   popd
 done
 mkdir /NOTPM
@@ -390,7 +389,7 @@ for plat in $ARCHS
 do
   unzip -q $OPT_VER.zip -d /NOTPM/$plat > /dev/null
   pushd /NOTPM/$plat/optee_os-$OPT_VER
-    make -j $(nproc) PLATFORM=rockchip-$plat CFG_ARM64_core=y CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE32=arm-linux-gnueabihf- CROSS_COMPILE_core=aarch64-linux-gnu- CROSS_COMPILE_ta_arm32=arm-linux-gnueabihf- CROSS_COMPILE_ta_arm64=aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200
+    make -j $(nproc) PLATFORM=rockchip-$plat CFG_OPTEE_CONFIG=mk/config.mk CROSS_COMPILE=aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200
     ls -la /NOTPM/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/core/
   popd
 done
