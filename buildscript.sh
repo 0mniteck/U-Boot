@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+
 export HUB="0mniteck/debian"
 export BASE="10-16-2025@sha256:aa56598a56a68f2f7499f7613c62b5e875d7a44521c1c884fd06fc3fd42028ea"
 export BASE_EXTRA="10-16-2025@sha256:6f0ab64a8af1fa60679af8cc60719e4d73204f7a8a25de74aaddf591b3875e6f"
