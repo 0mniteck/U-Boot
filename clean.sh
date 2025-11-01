@@ -15,26 +15,30 @@ fi
 
 if [ "$1" = "pre.cleanup" ]; then
   pushd Builds/
-    find . ! -type d -delete
     for dev in $LIST
     do
       for loc in $VARIANTS
       do
+        find $dev$loc/. ! -type d -delete
         touch $dev$loc/tmp
       done
-        touch $dev/tmp
+      find $dev/. ! -type d -delete
+      touch $dev/tmp
     done
     for arch in $ARCHS
     do
+      find $arch/. ! -type d -delete
       touch $arch/tmp
     done
   popd
   pushd Results/
     cp release.sha512sum /tmp/release.last.sha512sum
     find . ! -type d -delete
+    rm -f builder.* && rm -f release.*
     for con in $TARGETS
       do
         mkdir -p $con
+        find $con/. ! -type d -delete
         touch $con/tmp
       done
   popd
