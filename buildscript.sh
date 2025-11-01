@@ -85,7 +85,7 @@ if [ "$ALT" = "yes" ]; then
   export LIST="PT2-rk3566"
   export ARCHS="rk3568"
 fi
-if [ "$TARGET" = "" || "$TARGET" = "all" ]; then
+if [[ "$TARGET" = "" || "$TARGET" = "all" ]]; then
   TARGET="$TARGETS"
 fi
 if [ "$CLEAN" = "yes" ]; then
