@@ -18,7 +18,7 @@ if [ "$1" = "pre.cleanup" ]; then
     find . ! -type d -delete
     for dev in $LIST
     do
-      for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
+      for loc in $VARIANTS
       do
         touch $loc/tmp
       done
@@ -31,7 +31,7 @@ if [ "$1" = "pre.cleanup" ]; then
   pushd Results/
     cp release.sha512sum /tmp/release.last.sha512sum
     find . ! -type d -delete
-    for con in edk2 arm-trusted optee u-boot ubuntu
+    for con in $TARGETS
       do
         mkdir -p $con
         touch $con/tmp
@@ -73,7 +73,7 @@ if [ "$1" = "cleanup" ]; then
   pushd Builds/
     for dev in $LIST
     do
-      for loc in $dev $dev-SB $dev-TPM-SB $dev-MU-SB
+      for loc in $VARIANTS
       do
         rm -f $loc/tmp
       done
@@ -84,7 +84,7 @@ if [ "$1" = "cleanup" ]; then
     done
   popd
   pushd Results/
-    for con in edk2 arm-trusted optee u-boot ubuntu
+    for con in $TARGETS
     do
       rm -f $con/tmp
     done
