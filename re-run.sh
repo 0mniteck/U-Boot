@@ -61,8 +61,6 @@ echo "SOURCE_DATE: $source_date"
 echo "SOURCE_DATE_EPOCH: $source_date_epoch"
 echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
-echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/release.sha512sum && echo "" >> Results/release.sha512sum && echo "Starting Build: $(date -u '+on %D at %R UTC')"
-echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum
 
 if [ "$3" != "yes" ]; then
   snap refresh
@@ -345,11 +343,10 @@ fi
 pushd Results/
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
   echo "" && echo "" >> release.sha512sum
-  echo "# 0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> release.sha512sum && echo "" >> release.sha512sum
-  echo "# Source Date Epoch: $source_date_epoch" >> release.sha512sum
-  echo "# Build Complete: $(date -u '+on %D at %R UTC')" >> release.sha512sum && echo "Build Complete: $(date -u '+on %D at %R UTC')"
-  echo "# Base Build System: $(uname -o) $(uname -r) $(uname -p) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> release.sha512sum
-  echo $(cat ../sys.info) >> release.sha512sum
+  echo "# 0mniteck's Current GPG Key ID: 287EE837E6releaseED2DD3" >> build.info && echo "" >> build.info
+  echo "# Build Complete: $(date -u '+on %D at %R UTC')" >> build.info && echo "Build Complete: $(date -u '+on %D at %R UTC')"
+  echo "# Base Build System: $(uname -o) $(uname -r) $(uname -p) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> build.info
+  echo $(cat ../sys.info) >> build.info
 popd
 if [ "$check_file" = "1" ]; then
   pushd Results/
