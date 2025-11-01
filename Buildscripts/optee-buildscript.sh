@@ -1,8 +1,20 @@
 #!/usr/bin/env bash
 trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q SSL.zip -d / > /dev/null
+unzip -q CROSS.zip -d / > /dev/null
+mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
+pushd /CROSS
+  ./bootstrap && ./configure --enable-local && make
+  ./ct-ng aarch64-unknown-linux-gnu
+  cat >>.config <<_EOF_
+  CT_CC_GCC_EXTRA_CONFIG_ARRAY="--enable-standard-branch-protection"
+  CT_CC_GCC_CORE_EXTRA_CONFIG_ARRAY="--enable-standard-branch-protection"
+  _EOF_
+  ./ct-ng build.$(nproc)
+popd
+mv /openssl-openssl-$SSL_VER /SSL
 rm -f -r /usr/include/openssl
-pushd /openssl-openssl-$SSL_VER/
+pushd /SSL
   sed -i "1,15d" build.info
   sed -i "s'MAJOR=.'MAJOR=1'" VERSION.dat
   sed -i "s'MINOR=.'MINOR=1'" VERSION.dat
@@ -11,7 +23,7 @@ pushd /openssl-openssl-$SSL_VER/
   make
   cp include/crypto/sm4.h include/openssl/sm4.h
 popd
-mv /openssl-openssl-$SSL_VER/include /usr/include/openssl
+mv /SSL/include /usr/include/openssl
 # sed -i "s'#define __ONCE_ALIGNMENT'#define __ONCE_ALIGNMENT __attribute__((aligned(8)))'" /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
 for plat in $ARCHS
 do
@@ -28,8 +40,8 @@ do
     sed -i "178d" out/arm-plat-rockchip/export-ta_arm64/include/util.h
     sed -i "27d" out/arm-plat-rockchip/export-ta_arm64/include/limits.h
     cat ta/link.mk
+    cat mk/compile.mk
     # cat mk/clang.mk
-    cat out/arm-plat-rockchip/export-ta_arm64/mk/link.mk
   popd
   pushd /$plat/TPM/TPMCmd/
     sed -i "5d;7d" Platform/include/Platform.h
