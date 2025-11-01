@@ -1,13 +1,7 @@
 #!/bin/bash
 
 do_update() {
-  echo "Fetching recent changes..."
-  if [ "$(echo "$(cat "$HOME/.ssh/config" | grep UBoot)")" != "" ]; then
-    while [ "$(echo "$(lsusb | grep Yubikey)")" = "" ]; do printf "\rPlease insert yubikey...\033[K"; done
-    git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
-    echo "" && read -p "Origin set to SSH; Continue git pull..."
-  fi
-  git pull $(git remote -v | awk '{ print $2 }' | tail -n 1) $(git rev-parse --abbrev-ref HEAD)
+  ./git.sh update
 }
 
 if [ "$1" = "git.cleanup" ]; then
