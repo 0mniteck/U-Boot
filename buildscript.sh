@@ -97,6 +97,9 @@ fi
 
 if [ "$CLEAN" = "yes" ]; then
   ./clean.sh git.cleanup
+  if [ "$DEV" != "yes" ]; then
+    ./clean.sh git.cleanup.cache
+  fi
 fi
 
 > vars.env
@@ -146,16 +149,13 @@ chmod -R +x Buildscripts/
 chmod -R +x Configs/
 
 if [ "$CLEAN" = "yes" ]; then
-  ./clean.sh pre.cleanup
-  if [ "$DEV" != "yes" ]; then
-    ./clean.sh cleanup.cache
-  fi
+  ./clean.sh dir.cleanup
 fi
 
 sudo apt update && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
 > builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$TARGET
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo "" && cat Results/release.sha512sum && echo "" && cat Results/release.sha3sum && echo ""
-mv builder.log Results/builder.log && status="$(cat status.build)" && ./clean.sh cleanup && ls -la Builds/*
+mv builder.log Results/builder.log && status="$(cat status.build)" && ./clean.sh tmp.cleanup && ls -la Builds/*
 read -p "$status: --> sign/commit/push"
 if [ "$DEV" = "no" ]; then
   ./git.sh "$status" "$TAG"
