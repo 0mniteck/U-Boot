@@ -113,6 +113,7 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
       echo $left1 > $1.grype.status
       echo $left2 >> $1.grype.status
       echo $left3 >> $1.grype.status
+      echo $line1
       rm -f $1.grype.tmp
       rm -f $1.grype.status.*
       cat $1.grype.status
