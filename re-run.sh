@@ -284,6 +284,11 @@ if [[ "$6" == "u-boot" ]]; then
       sha512sum Builds/$dev$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$dev$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
       openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
     done
+    docker cp $NAME:/$dev/ Builds
+    sha512sum Builds/$dev/u-boot-rockchip.bin && sha512sum Builds/$dev/u-boot-rockchip.bin >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip.bin >> Results/release.sha3sum
+    sha512sum Builds/$dev/u-boot-rockchip-spi.bin && sha512sum Builds/$dev/u-boot-rockchip-spi.bin >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip-spi.bin >> Results/release.sha3sum
   done
   docker cp $NAME:/sys.info sys.info
   stop $NAME
