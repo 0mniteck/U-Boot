@@ -1,8 +1,6 @@
 #!/bin/bash
 
-if [ "$1" = "git.cleanup" ]; then
-  git reset --hard
-  git clean -xfd
+do_update() {
   echo "Fetching recent changes..."
   if [ "$(echo "$(cat "$HOME/.ssh/config" | grep UBoot)")" != "" ]; then
     while [ "$(echo "$(lsusb | grep Yubikey)")" = "" ]; do printf "\rPlease insert yubikey...\033[K"; done
@@ -10,6 +8,12 @@ if [ "$1" = "git.cleanup" ]; then
     echo "" && read -p "Origin set to SSH; Continue git pull..."
   fi
   git pull $(git remote -v | awk '{ print $2 }' | tail -n 1) $(git rev-parse --abbrev-ref HEAD)
+}
+
+if [ "$1" = "git.cleanup" ]; then
+  git reset --hard
+  git clean -xfd
+  do_update
   mkdir -p .git/Cache
 fi
 
@@ -96,5 +100,6 @@ if [ "$1" = "cleanup" ]; then
     done
   popd
   rm -f status.build && rm -f sys.info && rm -f vars.env
+  do_update
 fi
 exit
