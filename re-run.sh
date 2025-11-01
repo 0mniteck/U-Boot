@@ -127,16 +127,16 @@ if [ "$4" = "yes" ]; then
   docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
 fi
 
-if [[ $(echo "$6" | grep "base") != "" ]]; then
-  load base
+load base
+if [[ "$6" == *$NAME* ]]; then
   docker buildx build $LOAD \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
     -f Dockerfile .
 fi
 
-if [[ $(echo "$6" | grep "edk2") != "" ]]; then
-  load edk2
+load edk2
+if [[ "$6" == *$NAME* ]]; then
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg EDKP_VER=$EDKP_VER \
@@ -169,8 +169,8 @@ if [[ $(echo "$6" | grep "edk2") != "" ]]; then
   stop $NAME
 fi
 
-if [[ $(echo "$6" | grep "optee") != "" ]]; then
-  load optee
+load optee
+if [[ "$6" == *$NAME* ]]; then
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg OPT_VER=$OPT_VER \
@@ -214,8 +214,8 @@ if [[ $(echo "$6" | grep "optee") != "" ]]; then
   stop $NAME
 fi
 
-if [[ $(echo "$6" | grep "arm-trusted") != "" ]]; then
-  load arm-trusted
+load arm-trusted
+if [[ "$6" == *$NAME* ]]; then
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
@@ -250,8 +250,8 @@ if [[ $(echo "$6" | grep "arm-trusted") != "" ]]; then
   stop $NAME
 fi
 
-if [[ $(echo "$6" | grep "u-boot") != "" ]]; then
-  load u-boot
+load u-boot
+if [[ "$6" == *$NAME* ]]; then
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg UB_VER=$UB_VER \
@@ -297,7 +297,8 @@ fi
 
 ./clean.sh cleanup.docker $5
 
-if [[ $(echo "$6" | grep "ubuntu") != "" ]]; then
+load ubuntu
+if [[ "$6" == *$NAME* ]]; then
   scan_using_grype ubuntu "/ --select-catalogers debian" $3
 fi
 
@@ -306,7 +307,8 @@ if [ "$3" = "no" ]; then
   ./clean.sh cleanup.snaps remove
 fi
 
-if [[ $(echo "$6" | grep "u-boot") != "" ]]; then
+load u-boot
+if [[ "$6" == *$NAME* ]]; then
   if [ "$3" = "no" ]; then
     for dev in $LIST
     do
