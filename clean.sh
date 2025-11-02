@@ -109,6 +109,5 @@ if [ "$1" = "tmp.cleanup" ]; then
     done
   popd
   rm -f Results/builder.* && rm -f status.build && rm -f sys.info && rm -f vars.env
-  do_update
 fi
 exit 0
