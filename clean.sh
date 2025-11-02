@@ -61,7 +61,7 @@ if [[ "$1" == *cleanup.docker* ]]; then
   snap disable docker 2>/dev/null
   if [[ "$1" == *cleanup.docker.remove* ]]; then
     rm -f -r /var/snap/docker/*
-    $1=cleanup.docker.unmount
+    1="cleanup.docker.unmount"
   fi
   if [[ "$1" == *cleanup.docker.unmount* ]]; then
     umount -f /dev/mapper/Luks-Signal 2>/dev/null
