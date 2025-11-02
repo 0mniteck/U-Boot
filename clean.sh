@@ -63,7 +63,7 @@ if [[ "$1" == *cleanup.docker* ]]; then
     rm -f -r /var/snap/docker/*
     $1=cleanup.docker.unmount
   fi
-  if [[ "$1" == *cleanup.docker.unmount* ]; then
+  if [[ "$1" == *cleanup.docker.unmount* ]]; then
     umount -f /dev/mapper/Luks-Signal
     sleep 5
     systemd-cryptsetup detach Luks-Signal
