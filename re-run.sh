@@ -64,8 +64,8 @@ ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 
 if [ "$3" != "yes" ]; then
   snap refresh
-  snap install syft --classic
-  snap install grype --classic
+  snap install syft --classic 2>/dev/null
+  snap install grype --classic 2>/dev/null
 fi
 ./clean.sh cleanup.snaps
 ./clean.sh cleanup.docker.unmount
