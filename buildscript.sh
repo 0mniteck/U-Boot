@@ -96,10 +96,11 @@ else
 fi
 
 if [ "$CLEAN" = "yes" ]; then
-  ./clean.sh git.cleanup
   if [ "$DEV" != "yes" ]; then
     ./clean.sh git.cleanup.cache
   fi
+elif [ "$CLEAN" = "yes" ]; then
+  ./clean.sh git.cleanup
 fi
 
 > vars.env
