@@ -95,10 +95,8 @@ else
   exit 1
 fi
 
-if [ "$CLEAN" = "yes" ]; then
-  if [ "$DEV" != "yes" ]; then
-    ./clean.sh git.cleanup.cache
-  fi
+if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
+  ./clean.sh git.cleanup.cache
 elif [ "$CLEAN" = "yes" ]; then
   ./clean.sh git.cleanup
 fi
