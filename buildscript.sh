@@ -134,7 +134,7 @@ sha512sum vars.env >> Results/release.sha512sum && openssl dgst -SHA3-256 vars.e
 
 echo "Env Config Sums: $ENV" && echo "Env Config Sums: $ENV" >> build.info
 echo "Cross-Compile: $CROSS" && echo "Cross-Compile: $CROSS" >> build.info
-echo "Clean Build: $CLEAN" && echo "Clean Build: $CLEAN" >> build.info
+echo "Clean Build: $CLEAN" && echo "Clean Build: $CLEAN" >> build.infof
 echo "Tag Release: $TAG" && echo "Tag Release: $TAG" >> build.info
 echo "Developer Build: $DEV" && echo "Developer Build: $DEV" >> build.info
 echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
@@ -158,7 +158,7 @@ if [ "$CLEAN" = "yes" ]; then
 fi
 
 sudo apt update && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
-> builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$TARGET
+> builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$TARGET' '
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo "" && cat Results/release.sha512sum && echo "" && cat Results/release.sha3sum && echo "" && cat Results/build.info && echo ""
 mv builder.log Results/builder.log && status="$(cat status.build)" && ./clean.sh tmp.cleanup && ls -la Builds/*
 read -p "$status: --> sign/commit/push"
