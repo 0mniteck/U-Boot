@@ -14,7 +14,7 @@ do_update() {
   if [[ $(<"$HOME/.ssh/config") == *UBoot* ]]; then
     yubi_check
     git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
-    echo "" && read -p "Origin set to SSH; Continue git pull..."
+    read -p "Origin set to SSH; Continue git pull..."
   fi
   git pull $(git remote -v | awk '{ print $2 }' | tail -n 1) $(git rev-parse --abbrev-ref HEAD)
 }
