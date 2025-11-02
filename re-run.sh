@@ -28,6 +28,7 @@ fi
 source_date="@$source_date_epoch"
 build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
 local_cache="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
+echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/build.info && echo "" >> Results/build.info && echo "Starting Build: $(date -u '+on %D at %R UTC')"
 
 if [ "$5" != "" ]; then
   echo "MOUNT: /dev/$5"
