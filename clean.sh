@@ -58,30 +58,30 @@ if [ "$1" = "dir.cleanup" ]; then
 fi
 
 if [[ "$1" == *cleanup.docker* ]]; then
-  snap disable docker
+  snap disable docker 2>/dev/null
   if [[ "$1" == *cleanup.docker.remove* ]]; then
     rm -f -r /var/snap/docker/*
     $1=cleanup.docker.unmount
   fi
   if [[ "$1" == *cleanup.docker.unmount* ]]; then
-    umount -f /dev/mapper/Luks-Signal
+    umount -f /dev/mapper/Luks-Signal 2>/dev/null
     sleep 5
-    systemd-cryptsetup detach Luks-Signal
+    systemd-cryptsetup detach Luks-Signal 2>/dev/null
   fi
   rm -f -r /var/snap/docker
   sleep 5
-  snap enable docker
-  snap remove docker --purge
-  snap remove docker --purge
-  snap remove core24 --purge
-  networkctl delete docker0
+  snap enable docker 2>/dev/null
+  snap remove docker --purge 2>/dev/null
+  snap remove docker --purge 2>/dev/null
+  snap remove core24 --purge 2>/dev/null
+  networkctl delete docker0 2>/dev/null
   rm -f -r /var/lib/snapd/cache/*
 fi
 
 if [[ "$1" == *cleanup.snaps* ]]; then
   if [[ "$1" == *cleanup.snaps.remove* ]]; then
-    snap remove syft --purge
-    snap remove grype --purge
+    snap remove syft --purge 2>/dev/null
+    snap remove grype --purge 2>/dev/null
   fi
   rm /root/getter* -f -r && rm /root/grype-scratch* -f -r && rm /root/syft -f -r && rm /root/6 -f -r && rm /root/Library -f -r && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter*
 fi
