@@ -23,7 +23,7 @@ if [[ "$1" == *git.cleanup* ]]; then
     rm -r -f .git/Cache
   fi
   mkdir -p .git/Cache
-  rm -f Results/builder.* && rm -f Results/build.* && rm -f Results/release.*
+  rm -f builder.* && rm -f build.* && rm -f release.*
   echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum && echo '' > Results/build.info
 fi
 
@@ -47,7 +47,8 @@ if [ "$1" = "dir.cleanup" ]; then
   popd
   pushd Results/
     cp release.sha512sum /tmp/release.last.sha512sum
-    find . ! -type d -delete
+    rm -f Results/builder.* && rm -f Results/build.* && rm -f Results/release.*
+    find . ! -type d -delete # Will be removed
     for con in $TARGETS
       do
         mkdir -p $con
