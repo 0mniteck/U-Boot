@@ -77,4 +77,4 @@ echo 'void spl_board_init(void)
     rm -f -r /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER
   done
 done
-echo "# Container Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(uname -v)" > /sys.info
+echo "Container Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(uname -v)" > /sys.info
