@@ -94,11 +94,14 @@ else
   if [ "${timestamp}" != "" ]; then
     echo "Setting SOURCE_DATE_EPOCH from release.sha512sum: $(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)"
     EPOCH=$((timestamp))
-    CHECK=yes
+    CHECK="yes"
   else
     echo "Can't get latest commit timestamp. Defaulting to 1."
     EPOCH=1
   fi
+fi
+if [ "$CHECK" = "" ]; then
+  CHECK="no"
 fi
 if [ "$ALT" = "" ]; then
   ALT="no"
