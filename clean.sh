@@ -22,8 +22,6 @@ if [[ "$1" == *git.cleanup* ]]; then
     rm -r -f .git/Cache
   fi
   mkdir -p .git/Cache
-  rm -f builder.* && rm -f build.* && rm -f release.*
-  echo '' > Results/release.sha512sum && echo '' > Results/release.sha3sum && echo '' > Results/build.info
 fi
 
 if [ "$1" = "dir.cleanup" ]; then
@@ -46,7 +44,7 @@ if [ "$1" = "dir.cleanup" ]; then
   popd
   pushd Results/
     cp release.sha512sum /tmp/release.last.sha512sum
-    rm -f Results/builder.* && rm -f Results/build.* && rm -f Results/release.*
+    rm -f builder.* && rm -f build.* && rm -f sys.* && rm -f release.*
     find . ! -type d -delete # Will be removed
     for con in $TARGETS
       do
@@ -55,6 +53,7 @@ if [ "$1" = "dir.cleanup" ]; then
         touch $con/tmp
       done
   popd
+  rm -f builder.* && rm -f build.* && rm -f status.* && rm -f vars.*
 fi
 
 if [[ "$1" == *cleanup.docker* ]]; then
@@ -115,8 +114,8 @@ if [ "$1" = "tmp.cleanup" ]; then
     do
       rm -f $con/tmp
     done
-  rm -f builder.*
+  rm -f builder.* && rm -f sys.*
   popd
-  rm -f build.info && rm -f status.build && rm -f sys.info && rm -f vars.env
+  rm -f builder.* && rm -f build.* && rm -f status.* && rm -f vars.*
 fi
 exit 0
