@@ -139,9 +139,7 @@ echo "Developer Build: $DEV" && echo "Developer Build: $DEV" >> build.info
 echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
 echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
 
-if [ "$EPOCH" = "" ]; then
-  echo "Override Source Epoch: $(cat Results/release.sha512sum | grep Epoch | cut -d ' ' -f5)"
-else
+if [ "$EPOCH" != "" ]; then
   echo "Override Source Epoch: $EPOCH"
 fi
 if [ "$MOUNT" != "" ]; then
