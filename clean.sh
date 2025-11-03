@@ -44,7 +44,7 @@ if [ "$1" = "dir.cleanup" ]; then
   popd
   pushd Results/
     cp release.sha512sum /tmp/release.last.sha512sum
-    rm -f builder.* && rm -f build.* && rm -f sys.* && rm -f release.*
+    rm -f build.* && rm -f sys.* && rm -f release.*
     find . ! -type d -delete # Will be removed
     for con in $TARGETS
       do
@@ -90,8 +90,9 @@ if [[ "$1" == *cleanup.snaps* ]]; then
   if [[ "$1" == *cleanup.snaps.remove* ]]; then
     snap remove syft --purge 2>/dev/null && wait
     snap remove grype --purge 2>/dev/null && wait
+    rm -f -r /root/Library
   fi
-  rm -f -r /root/getter* && rm -f -r /root/grype-scratch* && rm -f -r /root/syft && rm -f -r /root/6 && rm -f -r /root/Library && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter* && rm -f $HOME/.grype.yaml
+  rm -f -r /root/getter* && rm -f -r /root/grype-scratch* && rm -f -r /root/syft && rm -f -r /root/6 && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter* && rm -f $HOME/.grype.yaml
 fi
 
 if [ "$1" = "tmp.cleanup" ]; then
@@ -114,7 +115,7 @@ if [ "$1" = "tmp.cleanup" ]; then
     do
       rm -f $con/tmp
     done
-  rm -f builder.* && rm -f sys.*
+  rm -f sys.*
   popd
   rm -f builder.* && rm -f build.* && rm -f status.* && rm -f vars.*
 fi
