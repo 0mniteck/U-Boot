@@ -1,33 +1,13 @@
 #!/bin/bash
 
-source_date_epoch=1;
-if [ "$1" = "today" ]; then
-  timestamp=$(date -d $(date +%D) +%s);
-  if [ "${timestamp}" != "" ]; then
-    echo "Setting SOURCE_DATE_EPOCH from today's date: $(date +%D) = @$timestamp";
-    source_date_epoch=$((timestamp));
-  else
-    echo "Can't get timestamp. Defaulting to 1.";
-    source_date_epoch=1;
-  fi
-elif [ "$1" != 0 ]; then
-  echo "Using override timestamp for SOURCE_DATE_EPOCH."
-  source_date_epoch=$(($1))
-else
-  timestamp=$(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)
-  if [ "${timestamp}" != "" ]; then
-    echo "Setting SOURCE_DATE_EPOCH from release.sha512sum: $(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)"
-    source_date_epoch=$((timestamp))
-    check_file=1
-  else
-    echo "Can't get latest commit timestamp. Defaulting to 1."
-    source_date_epoch=1
-  fi
-fi
-
+ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
   export TARGET="$TARGETS"
+fi
+if [ "$6" != "" ]; then
+  echo "CHECK REPRODUCIBILITY: $6"
+  export check_file=1
 fi
 if [ "$5" != "" ]; then
   echo "MOUNT: /dev/$5"
@@ -37,12 +17,6 @@ fi
 if [ "$4" = "yes" ]; then
   echo "CROSS_COMPILE: $4"
   export CROSS="--platform linux/arm64"
-fi
-if [ "$2" = "yes" ]; then
-  echo "CLEAN_BUILD: $2"
-  export remove=".remove"
-else
-  echo "CLEAN_BUILD: $2"
 fi
 if [ "$3" = "yes" ]; then
   echo "DEV_BUILD: $3"
@@ -61,13 +35,21 @@ else
     return
     }
 fi
+if [ "$2" = "yes" ]; then
+  echo "CLEAN_BUILD: $2"
+  export remove=".remove"
+else
+  echo "CLEAN_BUILD: $2"
+fi
+if [ "$1" != "" ]; then
+  echo "SOURCE_DATE_EPOCH: $1"
+  export source_date_epoch=$1
+  source_date="@$source_date_epoch"
+  echo "SOURCE_DATE: $source_date"
+  build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
+  echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
+fi
 
-source_date="@$source_date_epoch"
-build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
-echo "SOURCE_DATE: $source_date"
-echo "SOURCE_DATE_EPOCH: $source_date_epoch"
-echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
-ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/build.info && echo "" >> Results/build.info && echo "Starting Build: $(date -u '+on %D at %R UTC')"
 
 if [ "$3" != "yes" ]; then
