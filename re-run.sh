@@ -76,7 +76,7 @@ if [ "$3" != "yes" ]; then
   snap install grype --classic 2>/dev/null && wait
 fi
 
-./clean.sh cleanup.snaps$remove
+./clean.sh cleanup.snaps
 ./clean.sh cleanup.docker$remove $unmount
 
 if [ "$5" != "" ]; then
