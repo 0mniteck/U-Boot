@@ -25,9 +25,9 @@ else
   fi
 fi
 
-if [ "$6" != "" ]; then
-  echo "TARGET: $6"
-  export TARGET="$6"
+if [ "$TARGETS" != "" ]; then
+  echo "TARGET: $TARGETS"
+  export TARGET="$TARGETS"
 fi
 if [ "$5" != "" ]; then
   echo "MOUNT: /dev/$5"
@@ -123,7 +123,6 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
         right1=${line1#*" [K[2A"}
         if [[ "$right1" == *$3* ]]; then
           wright$($2)=${right1%%" [K"*}
-          
         elif [[ "$left1" == *$3* ]]; then
           wright$($2)=${left1%%" [K"*}
         fi
@@ -151,7 +150,7 @@ if [ "$4" = "yes" ]; then
 fi
 
 load base
-if [[ "$6" == *$NAME* ]]; then
+if [[ "$TARGET" == *$NAME* ]]; then
   docker buildx build $LOAD \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
@@ -159,7 +158,7 @@ if [[ "$6" == *$NAME* ]]; then
 fi
 
 load edk2
-if [[ "$6" == *$NAME* ]]; then
+if [[ "$TARGET" == *$NAME* ]]; then
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg EDKP_VER=$EDKP_VER \
@@ -193,7 +192,7 @@ if [[ "$6" == *$NAME* ]]; then
 fi
 
 load optee
-if [[ "$6" == *$NAME* ]]; then
+if [[ "$TARGET" == *$NAME* ]]; then
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg OPT_VER=$OPT_VER \
@@ -238,7 +237,7 @@ if [[ "$6" == *$NAME* ]]; then
 fi
 
 load arm-trusted
-if [[ "$6" == *$NAME* ]]; then
+if [[ "$TARGET" == *$NAME* ]]; then
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
@@ -274,7 +273,7 @@ if [[ "$6" == *$NAME* ]]; then
 fi
 
 load u-boot
-if [[ "$6" == *$NAME* ]]; then
+if [[ "$TARGET" == *$NAME* ]]; then
   docker buildx build $LOAD \
     --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
     --build-arg UB_VER=$UB_VER \
@@ -321,14 +320,14 @@ fi
 ./clean.sh cleanup.docker$remove $unmount
 
 load ubuntu
-if [[ "$6" == *$NAME* ]]; then
+if [[ "$TARGET" == *$NAME* ]]; then
   scan_using_grype ubuntu "/ --select-catalogers debian" $3
 fi
 
 ./clean.sh cleanup.snaps$remove
 
 load u-boot
-if [[ "$6" == *$NAME* ]]; then
+if [[ "$TARGET" == *$NAME* ]]; then
   if [ "$3" = "no" ]; then
     for dev in $LIST
     do
