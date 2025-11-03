@@ -175,7 +175,7 @@ sleep 5
 chmod -R +x Buildscripts/
 chmod -R +x Configs/
 
-> builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c "./re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
+> builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo ""
 cat Results/release.sha512sum && echo "" && cat Results/release.sha3sum && echo ""
 cat build.info >> Results/build.info && cat Results/build.info && echo ""
