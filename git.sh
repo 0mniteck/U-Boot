@@ -6,7 +6,7 @@
 #    IdentitiesOnly yes
 
 yubi_check() {
-  while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done; echo ""
+  while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
 }
 
 do_update() {
