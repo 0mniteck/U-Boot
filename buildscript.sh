@@ -124,8 +124,10 @@ sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools part
 
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
   ./clean.sh git.cleanup.cache
+  ./clean.sh dir.cleanup
 elif [ "$CLEAN" = "yes" ]; then
   ./clean.sh git.cleanup
+  ./clean.sh dir.cleanup
 fi
 
 > vars.env
@@ -137,6 +139,7 @@ do
   echo $env3 >> vars.env
 done
 printf "\"" >> vars.env
+
 for lis in BUILD_LIST^$BUILD_LIST LIST^$LIST ARCHS^$ARCHS VARIANTS^$VARIANTS TARGETS^$TARGETS
 do
   lis1=$(echo $lis | cut -d'^' -f1)
@@ -171,10 +174,6 @@ sleep 5
 
 chmod -R +x Buildscripts/
 chmod -R +x Configs/
-
-if [ "$CLEAN" = "yes" ]; then
-  ./clean.sh dir.cleanup
-fi
 
 > builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c "./re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo ""
