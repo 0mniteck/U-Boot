@@ -179,7 +179,7 @@ chmod -R +x Configs/
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo ""
 cat Results/release.sha512sum && echo "" && cat Results/release.sha3sum && echo ""
 cat build.info >> Results/build.info && cat Results/build.info && echo ""
-mv builder.log Results/builder.log && status="$(cat status.build)"
+mv builder.log ../builder.log && status="$(cat status.build)"
 
 if [ "$CLEAN" = "yes" ]; then
   ./clean.sh tmp.cleanup && ls -la Builds/*
