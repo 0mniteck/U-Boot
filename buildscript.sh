@@ -41,7 +41,7 @@ while getopts ":a:c:d:e:m:t:w:z:" opt; do
   d) # Developer Build [Skip some steps] (yes/No)
     DEV="$OPTARG"
     ;;
-  e) # SOURCE_DATE_EPOCH [For reproducibility] (source_date_epoch/"today"/"")
+  e) # SOURCE_DATE_EPOCH [For reproducibility] (source_date_epoch/"today"/" ")
     EPOCH="$OPTARG"
     ;;
   m) # Mount External [U2F Backed Luks] Partition ex. "mmcblk1p1"
@@ -77,6 +77,29 @@ fi
 if [ "$EPOCH" = "" ]; then
   EPOCH="today"
 fi
+if [ "$EPOCH" = "today" ]; then
+  timestamp=$(date -d $(date +%D) +%s);
+  if [ "${timestamp}" != "" ]; then
+    echo "Setting SOURCE_DATE_EPOCH from today's date: $(date +%D) = @$timestamp";
+    EPOCH=$((timestamp));
+  else
+    echo "Can't get timestamp. Defaulting to 1.";
+    EPOCH=1;
+  fi
+elif [ "$EPOCH" != 0 ]; then
+  echo "Using override timestamp for SOURCE_DATE_EPOCH."
+  EPOCH=$(($EPOCH))
+else
+  timestamp=$(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)
+  if [ "${timestamp}" != "" ]; then
+    echo "Setting SOURCE_DATE_EPOCH from release.sha512sum: $(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)"
+    EPOCH=$((timestamp))
+    CHECK=yes
+  else
+    echo "Can't get latest commit timestamp. Defaulting to 1."
+    EPOCH=1
+  fi
+fi
 if [ "$ALT" = "" ]; then
   ALT="no"
 fi
@@ -85,7 +108,6 @@ if [ "$ALT" = "yes" ]; then
   export LIST="PT2-rk3566"
   export ARCHS="rk3568"
 fi
-
 if [[ "$TARGET" = "" || "$TARGET" == *all* ]]; then
   TARGET="$TARGETS"
 elif [[ "$TARGET" == *edk2* || "$TARGET" == *arm-trusted* || "$TARGET" == *optee* || "$TARGET" == *u-boot* ]]; then
@@ -93,6 +115,9 @@ elif [[ "$TARGET" == *edk2* || "$TARGET" == *arm-trusted* || "$TARGET" == *optee
 else
   echo "INVALID TARGET: $TARGET"
   exit 1
+fi
+if [ "$MOUNT" != "" ]; then
+  echo "Mount: /dev/$MOUNT"
 fi
 
 sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
@@ -132,19 +157,16 @@ ENV=$(sha512sum vars.env)
 sha512sum vars.env >> Results/release.sha512sum && openssl dgst -SHA3-256 vars.env >> Results/release.sha3sum
 
 echo "Env Config Sum: $ENV" && echo "Env Config Sums: $ENV" >> build.info
-echo "Cross-Compile: $CROSS" && echo "Cross-Compile: $CROSS" >> build.info
+echo "Source Date Epoch: $EPOCH" && echo "Source Date Epoch: $EPOCH" >> build.info
 echo "Clean Build: $CLEAN" && echo "Clean Build: $CLEAN" >> build.info
-echo "Tag Release: $TAG" && echo "Tag Release: $TAG" >> build.info
 echo "Developer Build: $DEV" && echo "Developer Build: $DEV" >> build.info
+echo "Cross-Compile: $CROSS" && echo "Cross-Compile: $CROSS" >> build.info
+echo "Mounted External: /dev/$MOUNT" && echo "Mounted External: /dev/$MOUNT" >> build.info
+echo "Check Reporoducibility: $CHECK" && echo "Check Reporoducibility: $CHECK" >> build.info
+echo "Tag Release: $TAG" && echo "Tag Release: $TAG" >> build.info
 echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
 echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
 
-if [ "$EPOCH" != "" ]; then
-  echo "Override Source Epoch: $EPOCH"
-fi
-if [ "$MOUNT" != "" ]; then
-  echo "Mount: /dev/$MOUNT"
-fi
 sleep 5
 
 chmod -R +x Buildscripts/
@@ -154,7 +176,7 @@ if [ "$CLEAN" = "yes" ]; then
   ./clean.sh dir.cleanup
 fi
 
-> builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c "./re-run.sh "$EPOCH" "$CLEAN" "$DEV" "$CROSS" "$MOUNT" "
+> builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c "./re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo ""
 cat Results/release.sha512sum && echo "" && cat Results/release.sha3sum && echo ""
 cat build.info >> Results/build.info && cat Results/build.info && echo ""
