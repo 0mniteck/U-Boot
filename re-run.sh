@@ -25,24 +25,28 @@ else
   fi
 fi
 
-source_date="@$source_date_epoch"
-build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
-local_cache="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
-echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/build.info && echo "" >> Results/build.info && echo "Starting Build: $(date -u '+on %D at %R UTC')"
-
+if [ "$6" != "" ]; then
+  echo "TARGET: $6"
+  export TARGET="$6"
+fi
 if [ "$5" != "" ]; then
   echo "MOUNT: /dev/$5"
   export MOUNT="/dev/$5"
+  export unmount="unmount"
 fi
 if [ "$4" = "yes" ]; then
   echo "CROSS_COMPILE: $4"
   export CROSS="--platform linux/arm64"
 fi
-if [ "$2" = "no" ]; then
+if [ "$2" = "yes" ]; then
+  echo "CLEAN_BUILD: $2"
+  export remove=".remove"
+else
   echo "CLEAN_BUILD: $2"
 fi
 if [ "$3" = "yes" ]; then
   echo "DEV_BUILD: $3"
+  local_cache="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
   load() { # $1 = Name
     export LOAD="--load $CROSS $local_cache --target $1 --tag $1"
     export NAME=$1
@@ -58,28 +62,39 @@ else
     }
 fi
 
+source_date="@$source_date_epoch"
+build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
 echo "SOURCE_DATE: $source_date"
 echo "SOURCE_DATE_EPOCH: $source_date_epoch"
 echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/build.info && echo "" >> Results/build.info && echo "Starting Build: $(date -u '+on %D at %R UTC')"
 
 if [ "$3" != "yes" ]; then
   snap refresh
-  snap install syft --classic 2>/dev/null
-  snap install grype --classic 2>/dev/null
+  snap install syft --classic 2>/dev/null && wait
+  snap install grype --classic 2>/dev/null && wait
 fi
-./clean.sh cleanup.snaps
-./clean.sh cleanup.docker.unmount
+
+./clean.sh cleanup.snaps$remove
+./clean.sh cleanup.docker$remove $unmount
+
 if [ "$5" != "" ]; then
-  ./git.sh check
+  ./git.sh check && echo ""
   systemd-cryptsetup attach Luks-Signal /dev/$5
 fi
+
 mkdir -p /var/snap/docker
+
 if [ "$5" != "" ]; then
   mount /dev/mapper/Luks-Signal /var/snap/docker
-  rm -f -r /var/snap/docker/*
+  if [ "$2" = "yes" ]; then
+    rm -f -r /var/snap/docker/*
+  fi
 fi
+
 chown root:root /var/snap/docker
+
 if [ "$4" = "yes" ]; then
   snap install docker --revision=3377
 else
@@ -96,24 +111,29 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
     pushd Results/$1
       if [ -f "$HOME/.grype.yaml" ]; then GRCONF="-c $HOME/.grype.yaml"; fi
       mkdir -p "/var/snap/docker/syft" && TMPDIR="/var/snap/docker/syft" syft scan $2 -o spdx-json=$1.spdx.json
-      script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp
-      grep "✔ Scanned for vulnerabilities" $1.grype.tmp | tail -n 1 > $1.grype.status.1
-      tr -d '\000-\037\177' < $1.grype.status.1 | sed '/^$/d' > $1.grype.status.1.tmp
-      line1=$(cat $1.grype.status.1.tmp)
-      left1=${line1%%" [K"*}
-      grep "├── by severity:" $1.grype.tmp | tail -n 1 > $1.grype.status.2
-      tr -d '\000-\037\177' < $1.grype.status.2 | sed '/^$/d' > $1.grype.status.2.tmp
-      line2=$(cat $1.grype.status.2.tmp)
-      left2=${line2%%" [K"*}
-      grep "└── by status:" $1.grype.tmp | tail -n 1 > $1.grype.status.3
-      tr -d '\000-\037\177' < $1.grype.status.3 | sed '/^$/d' > $1.grype.status.3.tmp
-      line3=$(cat $1.grype.status.3.tmp)
-      left3=${line3%%" [K"*}
-      echo $left1 > $1.grype.status
-      echo $left2 >> $1.grype.status
-      echo $left3 >> $1.grype.status
-      echo $line1
-      rm -f $1.grype.tmp
+      script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp.tmp > $1.grype.tmp
+      marker() { # $1 = Name, $2 = Order, $3 = Marker/ID
+        grep "$3" $1.grype.tmp | tail -n 1 > $1.grype.status.$2
+        tr -d '\000-\037\177' < $1.grype.status.$2 | sed '/^$/d' > $1.grype.status.$2.tmp
+        line1=$(cat $1.grype.status.$2.tmp)
+        left1=${line1%%" [K[2A"*}
+        right1=${line1#*" [K[2A"}
+        if [[ "$right1" == *$3* ]]; then
+          wright$($2)=${right1%%" [K"*}
+          
+        elif [[ "$left1" == *$3* ]]; then
+          wright$($2)=${left1%%" [K"*}
+        fi
+      }
+      marker $1 1 "✔ Scanned for vulnerabilities"
+      marker $1 2 "├── by severity:"
+      marker $1 3 "└── by status:"
+      echo ""
+      echo $wright1 > $1.grype.status
+      echo $wright2 >> $1.grype.status
+      echo $wright3 >> $1.grype.status
+      echo ""
+      rm -f $1.grype.tmp*
       rm -f $1.grype.status.*
       cat $1.grype.status
     popd
@@ -295,22 +315,14 @@ if [[ "$6" == *$NAME* ]]; then
   stop $NAME
 fi
 
-if [ "$3" = "no" ]; then
-  ./clean.sh cleanup.docker.remove
-else
-  ./clean.sh cleanup.docker
-fi
+./clean.sh cleanup.docker$remove $unmount
 
 load ubuntu
 if [[ "$6" == *$NAME* ]]; then
   scan_using_grype ubuntu "/ --select-catalogers debian" $3
 fi
 
-if [ "$3" = "no" ]; then
-  ./clean.sh cleanup.snaps.remove
-else
-  ./clean.sh cleanup.snaps
-fi
+./clean.sh cleanup.snaps$remove
 
 load u-boot
 if [[ "$6" == *$NAME* ]]; then
