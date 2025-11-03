@@ -41,7 +41,7 @@ while getopts ":a:c:d:e:m:t:w:z:" opt; do
   d) # Developer Build [Skip some steps] (yes/No)
     DEV="$OPTARG"
     ;;
-  e) # SOURCE_DATE_EPOCH [For reproducibility] (source_date_epoch/"today"/" ")
+  e) # SOURCE_DATE_EPOCH [For reproducibility] (source_date_epoch/"today"/"^")
     EPOCH="$OPTARG"
     ;;
   m) # Mount External [U2F Backed Luks] Partition ex. "mmcblk1p1"
@@ -86,7 +86,7 @@ if [ "$EPOCH" = "today" ]; then
     echo "Can't get timestamp. Defaulting to 1.";
     EPOCH=1;
   fi
-elif [ "$EPOCH" != 0 ]; then
+elif [[ "$EPOCH" != 0 && "$EPOCH" != "^" ]]; then
   echo "Using override timestamp for SOURCE_DATE_EPOCH."
   EPOCH=$(($EPOCH))
 else
