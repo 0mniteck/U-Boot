@@ -108,8 +108,11 @@ stop() { # $1 = Name
 
 scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
   if [ "$3" != "yes" ]; then
+    if [ ! -f "$HOME/.grype.yaml" ]; then
+      cp Includes/.grype.yaml $HOME/.grype.yaml
+    fi
+    GRCONF="-c $HOME/.grype.yaml"
     pushd Results/$1
-      if [ -f "$HOME/.grype.yaml" ]; then GRCONF="-c $HOME/.grype.yaml"; fi
       mkdir -p "/var/snap/docker/syft" && TMPDIR="/var/snap/docker/syft" syft scan $2 -o spdx-json=$1.spdx.json
       script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp.tmp > $1.grype.tmp
       marker() { # $1 = Name, $2 = Order, $3 = Marker/ID
