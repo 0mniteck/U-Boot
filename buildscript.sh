@@ -131,7 +131,7 @@ echo "$lis1 \"" >> vars.env
 ENV=$(sha512sum vars.env)
 sha512sum vars.env >> Results/release.sha512sum && openssl dgst -SHA3-256 vars.env >> Results/release.sha3sum
 
-echo "Env Config Sums: $ENV" && echo "Env Config Sums: $ENV" >> build.info
+echo "Env Config Sum: $ENV" && echo "Env Config Sums: $ENV" >> build.info
 echo "Cross-Compile: $CROSS" && echo "Cross-Compile: $CROSS" >> build.info
 echo "Clean Build: $CLEAN" && echo "Clean Build: $CLEAN" >> build.info
 echo "Tag Release: $TAG" && echo "Tag Release: $TAG" >> build.info
@@ -166,7 +166,7 @@ mv builder.log Results/builder.log && status="$(cat status.build)"
 if [ "$CLEAN" = "yes" ]; then
   ./clean.sh tmp.cleanup && ls -la Builds/*
   read -p "$status: --> sign/commit/push"
-  if [ "$DEV" = "no" ]; then
+  if [ "$DEV" != "yes" ]; then
     ./git.sh "$status" "$TAG"
   fi
 fi
