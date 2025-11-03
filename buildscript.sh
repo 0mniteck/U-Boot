@@ -154,7 +154,7 @@ if [ "$CLEAN" = "yes" ]; then
   ./clean.sh dir.cleanup
 fi
 
-> builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$TARGET' '
+> builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c "./re-run.sh "$EPOCH" "$CLEAN" "$DEV" "$CROSS" "$MOUNT" "$TARGET" "
 
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo ""
 cat Results/release.sha512sum && echo "" && cat Results/release.sha3sum && echo ""
