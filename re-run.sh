@@ -104,9 +104,9 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
         left1=${line1%%" [K[2A"*}
         right1=${line1#*" [K[2A"}
         if [[ "$right1" == *$3* ]]; then
-          wright$($2)=${right1%%" [K"*}
+          export "wright$2"=${right1%%" [K"*}
         elif [[ "$left1" == *$3* ]]; then
-          wright$($2)=${left1%%" [K"*}
+          export "wright$2"=${left1%%" [K"*}
         fi
       }
       marker $1 1 "✔ Scanned for vulnerabilities"
