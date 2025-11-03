@@ -59,24 +59,33 @@ if [ "$1" = "dir.cleanup" ]; then
 fi
 
 if [[ "$1" == *cleanup.docker* ]]; then
-  snap disable docker 2>/dev/null
   if [[ "$1" == *cleanup.docker.remove* ]]; then
+    snap disable docker 2>/dev/null
     rm -f -r /var/snap/docker/*
-    1="cleanup.docker.unmount"
+    rm -f -r /var/lib/snapd/cache/*
+    sleep 5
   fi
   if [[ "$1" == *cleanup.docker.unmount* ]]; then
+    snap disable docker 2>/dev/null
     umount -f /dev/mapper/Luks-Signal 2>/dev/null
     sleep 5
     systemd-cryptsetup detach Luks-Signal 2>/dev/null
   fi
-  rm -f -r /var/snap/docker
-  sleep 5
-  snap enable docker 2>/dev/null
-  snap remove docker --purge 2>/dev/null
-  snap remove docker --purge 2>/dev/null
-  snap remove core24 --purge 2>/dev/null
+  if [[ "$1" == *cleanup.docker.remove* ]]; then
+    rm -f -r /var/snap/docker
+    snap enable docker 2>/dev/null
+    snap remove docker --purge 2>/dev/null
+    snap remove docker --purge 2>/dev/null
+    snap remove core24 --purge 2>/dev/null
+  else
+    snap enable docker 2>/dev/null
+    snap remove docker 2>/dev/null
+  fi
+  if [[ $(snap list) == *disabled* ]]; then
+    snap list
+  fi
   networkctl delete docker0 2>/dev/null
-  rm -f -r /var/lib/snapd/cache/*
+  networkctl delete docker1 2>/dev/null
 fi
 
 if [[ "$1" == *cleanup.snaps* ]]; then
@@ -107,7 +116,8 @@ if [ "$1" = "tmp.cleanup" ]; then
     do
       rm -f $con/tmp
     done
+  rm -f builder.*
   popd
-  rm -f Results/builder.* && rm -f status.build && rm -f sys.info && rm -f vars.env
+  rm -f build.info && rm -f status.build && rm -f sys.info && rm -f vars.env
 fi
 exit 0
