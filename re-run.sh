@@ -50,7 +50,7 @@ if [ "$1" != "" ]; then
   echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
 fi
 
-echo "# Starting Build: $(date -u '+on %D at %R UTC')" >> Results/build.info && echo "" >> Results/build.info && echo "Starting Build: $(date -u '+on %D at %R UTC')"
+echo "Starting Build: $(date -u '+on %D at %R UTC')" >> Results/build.info && echo "Starting Build: $(date -u '+on %D at %R UTC')"
 
 if [ "$3" != "yes" ]; then
   snap refresh
@@ -295,7 +295,7 @@ if [[ "$TARGET" == *$NAME* ]]; then
     sha512sum Builds/$dev/u-boot-rockchip-spi.bin && sha512sum Builds/$dev/u-boot-rockchip-spi.bin >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip-spi.bin >> Results/release.sha3sum
   done
-  docker cp $NAME:/sys.info sys.info
+  docker cp $NAME:/sys.info Results/sys.info
   stop $NAME
 fi
 
@@ -339,11 +339,10 @@ if [[ "$TARGET" == *$NAME* ]]; then
 fi
 pushd Results/
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
-  echo "" && echo "" >> release.sha512sum
-  echo "# 0mniteck's Current GPG Key ID: 287EE837E6releaseED2DD3" >> build.info && echo "" >> build.info
-  echo "# Build Complete: $(date -u '+on %D at %R UTC')" >> build.info && echo "Build Complete: $(date -u '+on %D at %R UTC')"
-  echo "# Base Build System: $(uname -o) $(uname -r) $(uname -p) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> build.info
-  echo $(cat ../sys.info) >> build.info
+  echo "0mniteck's Current GPG Key ID: 287EE837E6releaseED2DD3" >> build.info
+  echo "Build Complete: $(date -u '+on %D at %R UTC')" >> build.info && echo "Build Complete: $(date -u '+on %D at %R UTC')"
+  echo "Base Build System: $(uname -o) $(uname -r) $(uname -p) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> build.info
+  echo $(cat sys.info) >> build.info
 popd
 if [ "$check_file" = "1" ]; then
   pushd Results/
