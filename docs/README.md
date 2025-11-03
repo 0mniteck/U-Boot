@@ -22,4 +22,4 @@ Prebuilt u-boot-rockchip.bin & u-boot-rockchip-spi.bin are included in a bootabl
 
 --> [SIGNING YOUR OWN](https://github.com/0mniteck/U-Boot/blob/Docs/docs/SIGN.md)
 
---> [The Sovereignty Ephemerality Reproducibility (SER) framework](https://omniteck.com/?p=1104)
+--> [SER FRAMEWORK (Sovereignty Ephemerality Reproducibility)](https://omniteck.com/?p=1104)
