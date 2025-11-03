@@ -53,7 +53,6 @@ fi
 echo "Starting Build: $(date -u '+on %D at %R UTC')" >> Results/build.info && echo "Starting Build: $(date -u '+on %D at %R UTC')"
 
 if [ "$3" != "yes" ]; then
-  snap refresh
   snap install syft --classic 2>/dev/null && wait
   snap install grype --classic 2>/dev/null && wait
 fi
