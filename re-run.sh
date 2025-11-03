@@ -338,9 +338,9 @@ if [[ "$TARGET" == *$NAME* ]]; then
 fi
 pushd Results/
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
-  echo "0mniteck's Current GPG Key ID: 287EE837E6releaseED2DD3" >> build.info
   echo "Build Complete: $(date -u '+on %D at %R UTC')" >> build.info && echo "Build Complete: $(date -u '+on %D at %R UTC')"
-  echo "Base Build System: $(uname -o) $(uname -r) $(uname -p) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> build.info
+  echo "0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> build.info
+  echo "Base Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> build.info
   echo $(cat sys.info) >> build.info
 popd
 if [ "$check_file" = "1" ]; then
