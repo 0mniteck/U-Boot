@@ -65,6 +65,9 @@ while getopts ":a:c:d:e:m:t:w:z:" opt; do
   esac
 done
 
+if [ "$MOUNT" != "" ]; then
+  echo "MOUNT: /dev/$MOUNT"
+fi
 if [ "$CROSS" = "" ]; then
   CROSS="no"
 fi
@@ -118,9 +121,6 @@ elif [[ "$TARGET" == *edk2* || "$TARGET" == *arm-trusted* || "$TARGET" == *optee
 else
   echo "INVALID TARGET: $TARGET"
   exit 1
-fi
-if [ "$MOUNT" != "" ]; then
-  echo "MOUNT: /dev/$MOUNT"
 fi
 
 sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
