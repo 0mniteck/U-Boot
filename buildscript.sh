@@ -80,23 +80,23 @@ fi
 if [ "$EPOCH" = "today" ]; then
   timestamp=$(date -d $(date +%D) +%s);
   if [ "${timestamp}" != "" ]; then
-    echo "Setting SOURCE_DATE_EPOCH from today's date: $(date +%D) = @$timestamp";
+    echo "SOURCE_DATE_EPOCH from today's date: $(date +%D) = @$timestamp";
     EPOCH=$((timestamp));
   else
-    echo "Can't get timestamp. Defaulting to 1.";
+    echo "ERROR: Can't get timestamp. Defaulting to 1.";
     EPOCH=1;
   fi
 elif [[ "$EPOCH" != 0 && "$EPOCH" != "^" ]]; then
-  echo "Using override timestamp for SOURCE_DATE_EPOCH."
+  echo "SOURCE_DATE_EPOCH: $EPOCH"
   EPOCH=$(($EPOCH))
 else
   timestamp=$(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)
   if [ "${timestamp}" != "" ]; then
-    echo "Setting SOURCE_DATE_EPOCH from release.sha512sum: $(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)"
+    echo "SOURCE_DATE_EPOCH from release.sha512sum: $(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)"
     EPOCH=$((timestamp))
     CHECK="yes"
   else
-    echo "Can't get latest commit timestamp. Defaulting to 1."
+    echo "ERROR: Can't get latest commit timestamp. Defaulting to 1."
     EPOCH=1
   fi
 fi
@@ -120,7 +120,7 @@ else
   exit 1
 fi
 if [ "$MOUNT" != "" ]; then
-  echo "Mount: /dev/$MOUNT"
+  echo "MOUNT: /dev/$MOUNT"
 fi
 
 sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
