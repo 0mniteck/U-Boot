@@ -5,7 +5,7 @@ if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
   export TARGET="$TARGETS"
 fi
-if [ "$6" != "no" ]; then
+if [ "$6" = "yes" ]; then
   echo "CHECK REPRODUCIBILITY: $6"
   export check_file=1
 fi
