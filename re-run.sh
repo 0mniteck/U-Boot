@@ -306,6 +306,7 @@ load u-boot
 if [[ "$TARGET" == *$NAME* ]]; then
   if [ "$3" = "no" ]; then
     mkfs.fat -i 00000000 -n "U-BOOT" --invariant -C /tmp/sdcard.img 35000
+    echo "dc3272192cb9339d79bc1b8d6066ba056e2d7f952313688085f8009d221f692842f6cd0f378bd83c22dfcd2b5b266e8b0c6805ae5c9a05b4ffe0edefe7b4d079  /tmp/sdcard.img" | sha512sum -c -- && wait || exit 1
     for dev in $LIST
     do
       for loc in $VARIANTS
