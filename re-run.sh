@@ -107,11 +107,9 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
       marker $1 1 "✔ Scanned for vulnerabilities"
       marker $1 2 "├── by severity:"
       marker $1 3 "└── by status:"
-      echo ""
       echo $wright1 > $1.grype.status
       echo $wright2 >> $1.grype.status
       echo $wright3 >> $1.grype.status
-      echo ""
       rm -f $1.grype.tmp*
       rm -f $1.grype.status.*
       cat $1.grype.status
