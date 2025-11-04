@@ -311,27 +311,24 @@ if [[ "$TARGET" == *$NAME* ]]; then
       for loc in $VARIANTS
       do
         pushd Builds/$dev$loc/
-        dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
-        parted /dev/mmcblk1 mktable gpt mkpart P1 fat32 15MB 34MB -s && sleep 3
-        mkfs.fat -i 00000000 -n "U-BOOT" /dev/mmcblk1p1 && mount /dev/mmcblk1p1 /mnt
+        mkfs.fat -i 00000000 -n "U-BOOT" --invariant -C sdcard.img 35000 && mount sdcard.img /mnt
         cp u-boot-rockchip.bin /mnt/u-boot-rockchip.bin
         cp u-boot-rockchip-spi.bin /mnt/u-boot-rockchip-spi.bin
+        touch -d "$(date -R -d $source_date)" /mnt/*
+        touch -d "$(date -R -d $source_date)" /mnt
         touch -c -d "$(date -R -d $source_date)" /mnt/*
-        touch -c -d "$(date -R -d $source_date)" /mnt/
-        dd if=/mnt/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
-        sync && umount /mnt && dd if=/dev/mmcblk1 of=sdcard.img bs=1M count=35 status=progress
-        touch -c -d "$(date -R -d $source_date)" sdcard.img
+        touch -c -d "$(date -R -d $source_date)" /mnt
+        touch -a -d "$(date -R -d $source_date)" /mnt/*
+        touch -a -d "$(date -R -d $source_date)" /mnt
+        dd if=/mnt/u-boot-rockchip.bin of=sdcard.img seek=64 conv=notrunc status=progress
+        sync && umount /mnt
         popd
         sha512sum Builds/$dev$loc/sdcard.img >> Results/release.sha512sum
       done
     done
-    dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
-    dd if=Builds/RP64-rk3399-TPM-SB/sdcard.img of=/dev/mmcblk1 conv=notrunc status=progress
-  else
-    dd if=/dev/zero of=/dev/mmcblk1 bs=1M count=100 status=progress
-    dd if=Builds/RP64-rk3399-TPM-SB/u-boot-rockchip.bin of=/dev/mmcblk1 seek=64 conv=notrunc status=progress
   fi
 fi
+
 pushd Results/
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
   echo "Build Complete: $(date -u '+on %D at %R UTC')" >> build.info && echo "Build Complete: $(date -u '+on %D at %R UTC')"
@@ -339,6 +336,7 @@ pushd Results/
   echo "Base Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> build.info
   echo $(cat sys.info) >> build.info
 popd
+
 if [ "$check_file" = "1" ]; then
   pushd Results/
     cp /tmp/release.last.sha512sum release.last.sha512sum
@@ -346,4 +344,5 @@ if [ "$check_file" = "1" ]; then
     rm -f /tmp/release.last.sha512sum && rm -f release.last.sha512sum
   popd
 fi
+
 echo "Successful Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.build
