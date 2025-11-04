@@ -306,12 +306,13 @@ fi
 load u-boot
 if [[ "$TARGET" == *$NAME* ]]; then
   if [ "$3" = "no" ]; then
+    mkfs.fat -i 00000000 -n "U-BOOT" --invariant -C /tmp/sdcard.img 35000
     for dev in $LIST
     do
       for loc in $VARIANTS
       do
         pushd Builds/$dev$loc/
-        mkfs.fat -i 00000000 -n "U-BOOT" --invariant -C sdcard.img 35000 && mount sdcard.img /mnt
+        cp /tmp/sdcard.img sdcard.img && mount sdcard.img /mnt
         cp u-boot-rockchip.bin /mnt/u-boot-rockchip.bin
         cp u-boot-rockchip-spi.bin /mnt/u-boot-rockchip-spi.bin
         touch -d "$(date -R -d $source_date)" /mnt/*
@@ -326,6 +327,7 @@ if [[ "$TARGET" == *$NAME* ]]; then
         sha512sum Builds/$dev$loc/sdcard.img >> Results/release.sha512sum
       done
     done
+    rm -f /tmp/sdcard.img
   fi
 fi
 
