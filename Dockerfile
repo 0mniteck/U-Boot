@@ -37,7 +37,7 @@ ENV ARCHS=$ARCHS
 ENV OPT_VER=$OPT_VER
 ENV SSL_VER=$SSL_VER
 ENV CROSS_VER=$CROSS_VER
-RUN apt install clang cmake codespell gdb-multiarch gettext libclang-rt-dev libncurses-dev lld makeinfo python3-pycryptodome python3-pycodestyle -y
+RUN apt install clang cmake codespell gdb-multiarch gettext libclang-rt-dev libncurses-dev lld python3-pycryptodome python3-pycodestyle texinfo -y
 ADD https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /$OPT_VER.zip
 ADD https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_$OPT_VER.zip
 ADD https://github.com/microsoft/ms-tpm-20-ref/archive/refs/tags/v1.83r1.zip /TPM.zip
