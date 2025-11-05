@@ -340,14 +340,10 @@ pushd Results/
   echo "0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> build.info
   echo "Base Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> build.info
   echo $(cat sys.info) >> build.info
-popd
-
-if [ "$check_file" = "1" ]; then
-  pushd Results/
+  if [ "$check_file" = "1" ]; then
     cp /tmp/release.last.sha512sum release.last.sha512sum
     sha512sum -c release.last.sha512sum
     rm -f /tmp/release.last.sha512sum && rm -f release.last.sha512sum
-  popd
-fi
-
-echo "Successful Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.build
+  fi
+  echo "Successful Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.build
+popd
