@@ -1,4 +1,4 @@
-ARG HUB=0mniteck/debian BASE=latest BASE_EXTRA=latest SOURCE_DATE_EPOCH ENTRYPOINT
+ARG HUB=0mniteck/debian BASE=latest BASE_EXTRA=latest SOURCE_DATE_EPOCH
 FROM $HUB:$BASE AS base
 ONBUILD RUN echo "Next stage starting: Using base image $HUB $BASE"; sleep 5
 FROM $HUB-extra:$BASE_EXTRA AS base_extra
