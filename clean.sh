@@ -43,7 +43,6 @@ if [ "$1" = "dir.cleanup" ]; then
     done
   popd
   pushd Results/
-    cp release.sha512sum /tmp/release.last.sha512sum
     rm -f *.info && rm -f release.* && rm -f vars.* && rm -f builder.*
     find . ! -type d -delete # Will be removed
     for con in $TARGETS
@@ -110,6 +109,7 @@ if [ "$1" = "tmp.cleanup" ]; then
     done
   popd
   pushd Results/
+    rm -f /tmp/release.last.* && rm -f release.last.*
     rm -f sys.* && rm -f status.* && rm -f vars.* && rm -f builder.*
     for con in $TARGETS
     do
