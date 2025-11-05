@@ -11,7 +11,7 @@ yubi_check() {
 
 do_update() {
   echo "Fetching recent changes..."
-  if [[ $(<"$HOME/.ssh/config") == *UBoot* ]]; then
+  if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
     yubi_check && echo ""
     git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
     read -p "Origin set to SSH; Continue git pull..."
