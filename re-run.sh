@@ -133,6 +133,15 @@ if [[ "$TARGET" == *$NAME* ]]; then
     -f Dockerfile .
 fi
 
+load base_extra
+if [[ "$TARGET" == *$NAME* ]]; then
+  docker buildx build $LOAD \
+    --build-arg HUB=$HUB \
+    --build-arg BASE=$BASE \
+    --build-arg BASE_EXTRA=$BASE_EXTRA \
+    -f Dockerfile .
+fi
+
 load edk2
 if [[ "$TARGET" == *$NAME* ]]; then
   docker buildx build $LOAD \
@@ -142,7 +151,6 @@ if [[ "$TARGET" == *$NAME* ]]; then
     --build-arg EDK_VER=$EDK_VER \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
-    --build-arg BASE_EXTRA=$BASE_EXTRA \
     --build-arg ENTRYPOINT=$NAME \
     -f Dockerfile .
 
@@ -221,7 +229,6 @@ if [[ "$TARGET" == *$NAME* ]]; then
     --build-arg MTLS_SUM=$MTLS_SUM \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
-    --build-arg BASE_EXTRA=$BASE_EXTRA \
     --build-arg ENTRYPOINT=$NAME \
     -f Dockerfile .
   
@@ -253,7 +260,6 @@ if [[ "$TARGET" == *$NAME* ]]; then
     --build-arg UB_SUM=$UB_SUM \
     --build-arg HUB=$HUB \
     --build-arg BASE=$BASE \
-    --build-arg BASE_EXTRA=$BASE_EXTRA \
     --build-arg ENTRYPOINT=$NAME \
     -f Dockerfile .
   
