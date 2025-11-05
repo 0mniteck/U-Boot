@@ -1,7 +1,6 @@
 ARG HUB BASE BASE_EXTRA SOURCE_DATE_EPOCH ENTRYPOINT
 FROM $HUB:$BASE AS base
 ONBUILD RUN echo "Next stage starting: Using base image $HUB $BASE"; sleep 5
-
 FROM $HUB-extra:$BASE_EXTRA AS base_extra
 ONBUILD RUN echo "Next stage starting: Using base image $HUB-extra $BASE_EXTRA"; sleep 5
 
@@ -17,10 +16,9 @@ RUN cd /edk2-$EDK_VER && git submodule init && git submodule update --init --rec
 ENTRYPOINT exec /$ENTRYPOINT-buildscript.sh
 
 FROM base_extra AS optee
-ARG OPT_VER OPT_SUM OPT_SUM2 TPM_SUM SSL_VER SSL_SUM CROSS_VER CROSS_SUM ROT_SUM ARCHS
-ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH OPT_VER=$OPT_VER SSL_VER=$SSL_VER CROSS_VER=$CROSS_VER ARCHS="$ARCHS"
-COPY --link Builds/rk3399/BL32_AP_MM.fd /BL32_AP_MM.fd
-COPY --link Buildscripts/$ENTRYPOINT-buildscript.sh /
+ARG OPT_VER OPT_SUM OPT_SUM2 TPM_SUM SSL_VER SSL_SUM CROSS_VER CROSS_SUM ROT_SUM
+ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH OPT_VER=$OPT_VER SSL_VER=$SSL_VER CROSS_VER=$CROSS_VER ARCHS
+COPY --link Builds/rk3399/BL32_AP_MM.fd Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /$OPT_VER.zip
 ADD --link https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_$OPT_VER.zip
 ADD --link https://github.com/microsoft/ms-tpm-20-ref/archive/refs/tags/v1.83r1.zip /TPM.zip
@@ -38,8 +36,8 @@ RUN echo "$ROT_SUM  arm_rotprivk_rsa.pem" | sha512sum --status -c - && echo "ATF
 ENTRYPOINT exec /$ENTRYPOINT-buildscript.sh
 
 FROM base AS arm-trusted
-ARG BUILD_MESSAGE_TIMESTAMP ATF_VER ATF_SUM MTLS_VER MTLS_SUM ARCHS
-ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH BUILD_MESSAGE_TIMESTAMP="$BUILD_MESSAGE_TIMESTAMP" ATF_VER=$ATF_VER MTLS_VER=$MTLS_VER ARCHS="$ARCHS"
+ARG BUILD_MESSAGE_TIMESTAMP ATF_VER ATF_SUM MTLS_VER MTLS_SUM
+ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH BUILD_MESSAGE_TIMESTAMP="$BUILD_MESSAGE_TIMESTAMP" ATF_VER=$ATF_VER MTLS_VER=$MTLS_VER ARCHS
 COPY --link Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/$ATF_VER.zip /
 ADD --link https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-$MTLS_VER.zip /
@@ -50,10 +48,7 @@ ENTRYPOINT exec /$ENTRYPOINT-buildscript.sh
 FROM base AS u-boot
 ARG UB_VER UB_SUM
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH SOURCE_DATE="@$SOURCE_DATE_EPOCH" FORCE_SOURCE_DATE=1 UB_VER=$UB_VER
-COPY --link Builds /Builds
-COPY --link Includes /Includes
-COPY --link Configs /Configs
-COPY --link Buildscripts/$ENTRYPOINT-buildscript.sh /
+COPY --link Builds Includes Configs Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/u-boot/u-boot/archive/refs/tags/v$UB_VER.zip /
 RUN apt install -y libgnutls28-dev lzop
 RUN echo "$UB_SUM  v$UB_VER.zip" | sha512sum --status -c - && echo "U-Boot Checksum Matched!" || exit 1; sleep 5
