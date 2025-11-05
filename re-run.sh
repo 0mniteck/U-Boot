@@ -336,7 +336,7 @@ popd
 echo "Build Complete: $(date -u '+on %D at %R UTC')" >> build.info && echo "Build Complete: $(date -u '+on %D at %R UTC')"
 echo "0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> build.info
 echo "Base Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> build.info
-echo $(cat sys.info) >> build.info
+echo $(<sys.info) >> build.info
 if [ "$check_file" = "1" ]; then
   cp /tmp/release.last.sha512sum release.last.sha512sum
   cp /tmp/release.last.sha3sum release.last.sha3sum
