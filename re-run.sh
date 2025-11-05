@@ -340,6 +340,5 @@ echo $(cat sys.info) >> build.info
 if [ "$check_file" = "1" ]; then
   cp /tmp/release.last.sha512sum release.last.sha512sum
   sha512sum -c release.last.sha512sum
-  rm -f /tmp/release.last.sha512sum && rm -f release.last.sha512sum
 fi
 echo "Successful Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.info
