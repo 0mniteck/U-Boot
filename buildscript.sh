@@ -83,9 +83,6 @@ if [ "$DEV" = "" ]; then
 fi
 if [ "$EPOCH" = "" ]; then
   EPOCH="today"
-else
-  cp Results/release.sha512sum /tmp/release.last.sha512sum
-  cp Results/release.sha3sum /tmp/release.last.sha3sum
 fi
 if [ "$EPOCH" = "today" ]; then
   timestamp=$(date -d $(date +%D) +%s);
@@ -100,9 +97,11 @@ elif [[ "$EPOCH" != 0 && "$EPOCH" != "^" ]]; then
   echo "SOURCE_DATE_EPOCH: $EPOCH"
   EPOCH=$(($EPOCH))
 else
-  timestamp=$(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)
+  cp Results/release.sha512sum /tmp/release.last.sha512sum
+  cp Results/release.sha3sum /tmp/release.last.sha3sum
+  timestamp=$(<"/tmp/release.last.sha512sum" | grep Epoch | cut -d ' ' -f5)
   if [ "${timestamp}" != "" ]; then
-    echo "SOURCE_DATE_EPOCH from release.sha512sum: $(cat /tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)"
+    echo "SOURCE_DATE_EPOCH from release.sha512sum: $(<'/tmp/release.last.sha512sum' | grep Epoch | cut -d ' ' -f5)"
     EPOCH=$((timestamp))
     CHECK="yes"
   else
@@ -195,7 +194,7 @@ pushd Results
   echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
   sleep 5 && > builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c '../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
-  echo "" && cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && status="$(cat status.info)"
+  echo "" && cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && status="$(<status.info)"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && cat build.info && echo ""
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
