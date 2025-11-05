@@ -1,5 +1,4 @@
 ARG HUB BASE BASE_EXTRA SOURCE_DATE_EPOCH ENTRYPOINT
-
 FROM $HUB:$BASE AS base
 ONBUILD RUN echo "Next stage starting: Using base image $HUB $BASE"; sleep 5
 
@@ -11,7 +10,7 @@ ARG EDK_VER EDKP_VER EDKP_SUM
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH EDK_VER=$EDK_VER EDKP_VER=$EDKP_VER
 COPY --link Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/tianocore/edk2-platforms/archive/$EDKP_VER.zip /$EDKP_VER.zip
-ADD --link --keep-git-dir=true https://github.com/tianocore/edk2.git#$EDK_VER /edk2-$EDK_VER
+ADD --link --keep-git-dir=true https://github.com/tianocore/edk2.git?tag=$EDK_VER&checksum=d46aa46 /edk2-$EDK_VER
 RUN apt install -y nasm
 RUN echo "$EDKP_SUM  $EDKP_VER.zip" | sha512sum --status -c - && echo "EDK2 Platform Checksum Matched!" || exit 1; sleep 5
 RUN cd /edk2-$EDK_VER && git submodule init && git submodule update --init --recursive
