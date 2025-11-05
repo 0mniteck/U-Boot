@@ -1,10 +1,10 @@
 ARG HUB BASE BASE_EXTRA SOURCE_DATE_EPOCH ENTRYPOINT
 
 FROM $HUB:$BASE AS base
-ONBUILD RUN echo "Next stage starting:"; sleep 5
+ONBUILD RUN echo "Next stage starting: Using base image $HUB $BASE"; sleep 5
 
 FROM $HUB-extra:$BASE_EXTRA AS base_extra
-ONBUILD RUN echo "Next stage starting:"; sleep 5
+ONBUILD RUN echo "Next stage starting: Using base image $HUB-extra $BASE_EXTRA"; sleep 5
 
 FROM base AS edk2
 ARG EDK_VER EDKP_VER EDKP_SUM
