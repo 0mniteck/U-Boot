@@ -1,8 +1,8 @@
 ARG HUB=0mniteck/debian BASE=latest BASE_EXTRA=latest SOURCE_DATE_EPOCH
 FROM $HUB:$BASE AS base
-ONBUILD RUN echo "Next stage starting: Using base image $HUB $BASE"; sleep 5
+ONBUILD RUN echo "Container $ENTRYPOINT starting: Using base image $HUB $BASE"; sleep 5
 FROM $HUB-extra:$BASE_EXTRA AS base_extra
-ONBUILD RUN echo "Next stage starting: Using base image $HUB-extra $BASE_EXTRA"; sleep 5
+ONBUILD RUN echo "Container $ENTRYPOINT starting: Using base image $HUB-extra $BASE_EXTRA"; sleep 5
 
 FROM base AS edk2
 ARG EDK_VER EDKP_VER EDKP_SUM ENTRYPOINT
