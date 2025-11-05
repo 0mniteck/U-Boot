@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # ── Configuration for vars.env ─ Source file for screen using setenv ─────────
 ## ─ Base image definitions ───────────────────────────────────────────────────
 export HUB="0mniteck/debian"
