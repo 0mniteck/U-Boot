@@ -339,6 +339,7 @@ echo "Base Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) 
 echo $(cat sys.info) >> build.info
 if [ "$check_file" = "1" ]; then
   cp /tmp/release.last.sha512sum release.last.sha512sum
-  sha512sum -c release.last.sha512sum
+  cp /tmp/release.last.sha3sum release.last.sha3sum
+  sha512sum -c release.last.sha512sum && REP="ly Reproduced" || wait
 fi
-echo "Successful Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.info
+echo "Successful$REP Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.info
