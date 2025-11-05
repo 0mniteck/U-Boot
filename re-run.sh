@@ -1,5 +1,6 @@
 #!/bin/bash
-echo "Starting Build: $(date -u '+on %D at %R UTC')" >> build.info && echo "Starting Build: $(date -u '+on %D at %R UTC')"
+mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
+echo "Starting Build: $(date -u '+on %D at %R UTC')"
 pushd ..
   ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
   TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
@@ -59,7 +60,6 @@ pushd ..
   
   ./clean.sh cleanup.snaps
   ./clean.sh cleanup.docker$remove $unmount
-  
   if [ "$5" != "" ]; then
     ./git.sh check && echo ""
     systemd-cryptsetup attach Luks-Signal /dev/$5
@@ -336,7 +336,7 @@ popd
 echo "Build Complete: $(date -u '+on %D at %R UTC')" >> build.info && echo "Build Complete: $(date -u '+on %D at %R UTC')"
 echo "0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> build.info
 echo "Base Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> build.info
-echo $(<sys.info) >> build.info
+cat sys.info >> build.info
 if [ "$check_file" = "1" ]; then
   cp /tmp/release.last.sha512sum release.last.sha512sum
   cp /tmp/release.last.sha3sum release.last.sha3sum
