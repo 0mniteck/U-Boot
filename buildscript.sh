@@ -1,9 +1,11 @@
 #!/bin/bash
 
+# ── Configuration for vars.env ─ Source file for screen using setenv ─────────
+## ─ Base image definitions ───────────────────────────────────────────────────
 export HUB="0mniteck/debian"
 export BASE="10-16-2025@sha256:aa56598a56a68f2f7499f7613c62b5e875d7a44521c1c884fd06fc3fd42028ea"
 export BASE_EXTRA="10-16-2025@sha256:6f0ab64a8af1fa60679af8cc60719e4d73204f7a8a25de74aaddf591b3875e6f"
-
+## ─ Pinned versions + sha512sums ─────────────────────────────────────────────
 export EDK_VER="edk2-stable202508"
 export EDKP_VER="996c79ee0ed5236a0449b20f2bec4162ab4185fd"
 export EDKP_SUM="fe4182bc720b76578a99f600b2cfcb015c63ae43a720807dd1b771d7e956c476154159d65f990c6a5e5a7e2eef871caf644f54f7afe40051699888afadf008f6"
@@ -22,14 +24,15 @@ export MTLS_VER="2.28.9"
 export MTLS_SUM="9ee36b7989f5b940f69b5b84c6bec70098b4fe6e33a248c40019f4f5cfe2018b874bb8b5cf1383b05da8b7eb4a76c05b5af41f66ae56edc8a9919c71a9818707"
 export UB_VER="2025.10"
 export UB_SUM="07ba80c05cd37d4631b87a7a21c4b12556f8f70ff45396b34821b23826a092317d980c9fcc6b48162888e697773a24d33dd8e484933e88d353e6df3161af443f"
-
+## ─ Build list selections ────────────────────────────────────────────────────
 export BUILD_LIST="R5B-rk3588:rock5b-rk3588_defconfig RP64-rk3399:rockpro64-rk3399_defconfig PBP-rk3399:pinebook-pro-rk3399_defconfig"
 export LIST="R5B-rk3588 RP64-rk3399 PBP-rk3399"
 export ARCHS="rk3588 rk3399"
-
-export VARIANTS="-SB -TPM-SB -MU-SB"
+## ─ Build targets + variants ─────────────────────────────────────────────────
 export TARGETS="edk2 optee arm-trusted u-boot ubuntu"
+export VARIANTS="-SB -TPM-SB -MU-SB"
 
+# ── User Config Inputs ───────────────────────────────────────────────────────
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
   case $opt in
   a) # Alternate List (yes/No)
@@ -65,6 +68,7 @@ while getopts ":a:c:d:e:m:t:w:z:" opt; do
   esac
 done
 
+# ── Defaults ─────────────────────────────────────────────────────────────────
 if [ "$MOUNT" != "" ]; then
   echo "MOUNT: /dev/$MOUNT"
 fi
@@ -79,6 +83,9 @@ if [ "$DEV" = "" ]; then
 fi
 if [ "$EPOCH" = "" ]; then
   EPOCH="today"
+else
+  cp Results/release.sha512sum /tmp/release.last.sha512sum
+  cp Results/release.sha3sum /tmp/release.last.sha3sum
 fi
 if [ "$EPOCH" = "today" ]; then
   timestamp=$(date -d $(date +%D) +%s);
@@ -114,6 +121,7 @@ if [ "$ALT" = "yes" ]; then
   export LIST="PT2-rk3566"
   export ARCHS="rk3568"
 fi
+## ─ Target Validation ────────────────────────────────────────────────────────
 TRGLIST="(edk2|arm-trusted|optee|u-boot|ubuntu|base|base_extra)"
 if [[ -z "$TARGET" || "$TARGET" == *all* ]]; then
   TARGET="$TARGETS"
@@ -143,6 +151,7 @@ elif [ "$CLEAN" = "yes" ]; then
   ./clean.sh dir.cleanup
 fi
 
+# ── Output to vars.env + build.info ──────────────────────────────────────────
 pushd Results
   > vars.env
   for env in HUB^$HUB BASE^$BASE BASE_EXTRA^$BASE_EXTRA EDK_VER^$EDK_VER EDKP_VER^$EDKP_VER EDKP_SUM^$EDKP_SUM OPT_VER^$OPT_VER OPT_SUM^$OPT_SUM OPT_SUM2^$OPT_SUM2 TPM_SUM^$TPM_SUM SSL_VER^$SSL_VER SSL_SUM^$SSL_SUM CROSS_VER^$CROSS_VER CROSS_SUM^$CROSS_SUM ROT_SUM^$ROT_SUM ATF_VER^$ATF_VER ATF_SUM^$ATF_SUM MTLS_VER^$MTLS_VER MTLS_SUM^$MTLS_SUM UB_VER^$UB_VER UB_SUM^$UB_SUM
@@ -153,7 +162,7 @@ pushd Results
     echo $env3 >> vars.env
   done
   printf "\"" >> vars.env
-  
+
   for lis in BUILD_LIST^$BUILD_LIST LIST^$LIST ARCHS^$ARCHS VARIANTS^$VARIANTS TARGETS^$TARGETS
   do
     lis1=$(echo $lis | cut -d'^' -f1)
@@ -171,6 +180,8 @@ pushd Results
   done
   echo "$lis1 \"" >> vars.env
   ENV=$(sha512sum vars.env)
+
+  > release.sha512sum && > release.sha3sum && > build.info
   sha512sum vars.env >> release.sha512sum && openssl dgst -SHA3-256 vars.env >> release.sha3sum
   echo "Env Config Sum: $ENV" && echo "Env Config Sums: $ENV" >> build.info
   echo "Source Date Epoch: $EPOCH" && echo "Source Date Epoch: $EPOCH" >> build.info
@@ -182,22 +193,15 @@ pushd Results
   echo "Tag Release: $TAG" && echo "Tag Release: $TAG" >> build.info
   echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
   echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
+# ── Run re-run.sh to start build ─────────────────────────────────────────────
+  sleep 5 && > builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c '../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
+  echo "" && cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && status="$(cat status.info)"
+  echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && cat build.info && echo ""
+  sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
-
-sleep 5
-
-chmod -R +x Buildscripts/
-chmod -R +x Configs/
-
-> builder.log && sudo screen -c Results/vars.env -L -Logfile builder.log bash -c './re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
-echo "" && cat builder.log | grep -n "Checksum Matched! " && echo ""
-cat Results/release.sha512sum && echo "" && cat Results/release.sha3sum && echo ""
-cat build.info >> Results/build.info && cat Results/build.info && echo ""
-mv builder.log ../builder.log && status="$(cat status.build)"
-
 if [ "$CLEAN" = "yes" ]; then
   ./clean.sh tmp.cleanup && ls -la Builds/*
-  read -p "$status: --> sign/commit/push"
+  read -p "$status: --> Continue"
   if [ "$DEV" != "yes" ]; then
     ./git.sh "$status" "$TAG"
   fi
