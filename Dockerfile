@@ -14,7 +14,7 @@ ADD --link https://github.com/tianocore/edk2-platforms/archive/$EDKP_VER.zip /$E
 ADD --link --keep-git-dir=true https://github.com/tianocore/edk2.git?tag=$EDK_VER&checksum=d46aa46 /edk2-$EDK_VER
 RUN apt install -y nasm
 RUN echo "$EDKP_SUM  $EDKP_VER.zip" | sha512sum --status -c - && echo "EDK2 Platform Checksum Matched!" || exit 1; sleep 5
-ENTRYPOINT ["/bin/bash","-c","/$ENTRYPOINT-buildscript.sh"]
+ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 
 FROM base_extra AS optee
 ARG SOURCE_DATE_EPOCH OPT_VER OPT_SUM OPT_SUM2 TPM_SUM SSL_VER SSL_SUM CROSS_VER CROSS_SUM ROT_SUM ENTRYPOINT
@@ -34,7 +34,7 @@ RUN echo "$TPM_SUM  TPM.zip" | sha512sum --status -c - && echo "TPM Checksum Mat
 RUN echo "$SSL_SUM  SSL.zip" | sha512sum --status -c - && echo "OpenSSL Checksum Matched!" || exit 1; sleep 5
 RUN echo "$CROSS_SUM  CROSS.zip" | sha512sum --status -c - && echo "Crosstool-ng Checksum Matched!" || exit 1; sleep 5
 RUN echo "$ROT_SUM  arm_rotprivk_rsa.pem" | sha512sum --status -c - && echo "ATF ROT Key Checksum Matched!" || exit 1; sleep 5
-ENTRYPOINT ["/bin/bash","-c","/$ENTRYPOINT-buildscript.sh"]
+ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 
 FROM base AS arm-trusted
 ARG SOURCE_DATE_EPOCH BUILD_MESSAGE_TIMESTAMP ATF_VER ATF_SUM MTLS_VER MTLS_SUM ENTRYPOINT
@@ -44,7 +44,7 @@ ADD --link https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tag
 ADD --link https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-$MTLS_VER.zip /
 RUN echo "$ATF_SUM  $ATF_VER.zip" | sha512sum --status -c - && echo "TF-A Checksum Matched!" || exit 1; sleep 5
 RUN echo "$MTLS_SUM  mbedtls-$MTLS_VER.zip" | sha512sum --status -c - && echo "MTLS Checksum Matched!" || exit 1; sleep 5
-ENTRYPOINT ["/bin/bash","-c","/$ENTRYPOINT-buildscript.sh"]
+ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 
 FROM base AS u-boot
 ARG SOURCE_DATE_EPOCH UB_VER UB_SUM ENTRYPOINT
@@ -53,4 +53,4 @@ COPY --link Builds Includes Configs Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/u-boot/u-boot/archive/refs/tags/v$UB_VER.zip /
 RUN apt install -y libgnutls28-dev lzop
 RUN echo "$UB_SUM  v$UB_VER.zip" | sha512sum --status -c - && echo "U-Boot Checksum Matched!" || exit 1; sleep 5
-ENTRYPOINT ["/bin/bash","-c","/$ENTRYPOINT-buildscript.sh"]
+ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
