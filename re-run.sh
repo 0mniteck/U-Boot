@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
   export TARGET="$TARGETS"
