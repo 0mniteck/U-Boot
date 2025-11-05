@@ -26,7 +26,7 @@ ADD --link https://github.com/microsoft/ms-tpm-20-ref/archive/refs/tags/v1.83r1.
 ADD --link https://github.com/openssl/openssl/archive/refs/tags/openssl-$SSL_VER.zip /SSL.zip
 ADD --link https://github.com/crosstool-ng/crosstool-ng/archive/refs/tags/crosstool-ng-$CROSS_VER.zip /CROSS.zip
 ADD --link https://github.com/ARM-software/arm-trusted-firmware/raw/refs/heads/master/plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem /
-RUN apt install -y clang cmake codespell gdb-multiarch gettext help2man libclang-rt-dev \
+RUN apt install -y clang cmake codespell gawk gdb-multiarch gettext help2man libclang-rt-dev \
 libncurses-dev lld python3-pycryptodome python3-pycodestyle texinfo
 RUN echo "$OPT_SUM  $OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE Checksum Matched!" || exit 1; sleep 5
 RUN echo "$OPT_SUM2  ftpm_$OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE fTPM Checksum Matched!" || exit 1; sleep 5
