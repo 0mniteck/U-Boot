@@ -31,7 +31,6 @@ export ARCHS="rk3588 rk3399"
 ## ─ Build targets + variants ─────────────────────────────────────────────────
 export TARGETS="edk2 optee arm-trusted u-boot ubuntu"
 export VARIANTS="-SB -TPM-SB -MU-SB"
-
 # ── User Config Inputs ───────────────────────────────────────────────────────
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
   case $opt in
@@ -67,7 +66,6 @@ while getopts ":a:c:d:e:m:t:w:z:" opt; do
     ;;
   esac
 done
-
 # ── Defaults ─────────────────────────────────────────────────────────────────
 if [ "$MOUNT" != "" ]; then
   echo "MOUNT: /dev/$MOUNT"
@@ -99,9 +97,9 @@ elif [[ "$EPOCH" != 0 && "$EPOCH" != "^" ]]; then
 else
   cp Results/release.sha512sum /tmp/release.last.sha512sum
   cp Results/release.sha3sum /tmp/release.last.sha3sum
-  timestamp=$(<"/tmp/release.last.sha512sum" | grep Epoch | cut -d ' ' -f5)
+  timestamp=$(</tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)
   if [ "${timestamp}" != "" ]; then
-    echo "SOURCE_DATE_EPOCH from release.sha512sum: $(<'/tmp/release.last.sha512sum' | grep Epoch | cut -d ' ' -f5)"
+    echo "SOURCE_DATE_EPOCH from release.sha512sum: $(</tmp/release.last.sha512sum | grep Epoch | cut -d ' ' -f5)"
     EPOCH=$((timestamp))
     CHECK="yes"
   else
@@ -139,9 +137,9 @@ else
 fi
 export ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 export TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
-
+# ── Update ───────────────────────────────────────────────────────────────────
 sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
-
+# ── Clean ────────────────────────────────────────────────────────────────────
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
   ./clean.sh git.cleanup.cache
   ./clean.sh dir.cleanup
@@ -149,8 +147,9 @@ elif [ "$CLEAN" = "yes" ]; then
   ./clean.sh git.cleanup
   ./clean.sh dir.cleanup
 fi
-
 # ── Output to vars.env + build.info ──────────────────────────────────────────
+## ─ Variables set by setenv ──────────────────────────────────────────────────
+###- Single Variables ─────────────────────────────────────────────────────────
 pushd Results
   > vars.env
   for env in HUB^$HUB BASE^$BASE BASE_EXTRA^$BASE_EXTRA EDK_VER^$EDK_VER EDKP_VER^$EDKP_VER EDKP_SUM^$EDKP_SUM OPT_VER^$OPT_VER OPT_SUM^$OPT_SUM OPT_SUM2^$OPT_SUM2 TPM_SUM^$TPM_SUM SSL_VER^$SSL_VER SSL_SUM^$SSL_SUM CROSS_VER^$CROSS_VER CROSS_SUM^$CROSS_SUM ROT_SUM^$ROT_SUM ATF_VER^$ATF_VER ATF_SUM^$ATF_SUM MTLS_VER^$MTLS_VER MTLS_SUM^$MTLS_SUM UB_VER^$UB_VER UB_SUM^$UB_SUM
@@ -161,7 +160,7 @@ pushd Results
     echo $env3 >> vars.env
   done
   printf "\"" >> vars.env
-
+###- Variable Arrays ──────────────────────────────────────────────────────────
   for lis in BUILD_LIST^$BUILD_LIST LIST^$LIST ARCHS^$ARCHS VARIANTS^$VARIANTS TARGETS^$TARGETS
   do
     lis1=$(echo $lis | cut -d'^' -f1)
@@ -179,7 +178,7 @@ pushd Results
   done
   echo "$lis1 \"" >> vars.env
   ENV=$(sha512sum vars.env)
-
+## ─ Build Info ───────────────────────────────────────────────────────────────
   > release.sha512sum && > release.sha3sum && > build.info
   sha512sum vars.env >> release.sha512sum && openssl dgst -SHA3-256 vars.env >> release.sha3sum
   echo "Env Config Sum: $ENV" && echo "Env Config Sums: $ENV" >> build.info
