@@ -21,6 +21,8 @@ if [[ "$1" == *git.cleanup* ]]; then
   if [[ "$1" == *git.cleanup.cache* ]]; then
     rm -r -f .git/Cache
   fi
+  chmod -R +x Buildscripts/
+  chmod -R +x Configs/
   mkdir -p .git/Cache
 fi
 
