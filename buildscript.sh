@@ -30,6 +30,8 @@ export ARCHS="rk3588 rk3399"
 ## ─ Build targets + variants ─────────────────────────────────────────────────
 export TARGETS="edk2 optee arm-trusted u-boot ubuntu"
 export VARIANTS="-SB -TPM-SB -MU-SB"
+# ── Update ───────────────────────────────────────────────────────────────────
+sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
 # ── User Config Inputs ───────────────────────────────────────────────────────
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
   case $opt in
@@ -136,8 +138,6 @@ else
 fi
 export ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 export TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
-# ── Update ───────────────────────────────────────────────────────────────────
-sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
 # ── Clean ────────────────────────────────────────────────────────────────────
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
   ./clean.sh git.cleanup.cache
