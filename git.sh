@@ -29,13 +29,13 @@ do_update
 exit 0
 fi
 
-if [[ $(<"$HOME/.ssh/config") == *UBoot* ]]; then
+if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
   export GPG_TTY=$(tty)
   eval `ssh-agent -s`
   ssh-add $HOME/.ssh/id_ecdsa_s*[!.pub]
 fi
 git status && git add -A && git status
-if [[ $(<"$HOME/.ssh/config") == *UBoot* ]]; then
+if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
   yubi_check && echo ""
 fi
 git commit -a -S -m "$1" && sleep 5 && git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD):Docker
