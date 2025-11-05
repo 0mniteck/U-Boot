@@ -3,6 +3,9 @@ ARG HUB BASE BASE_EXTRA SOURCE_DATE_EPOCH ENTRYPOINT
 FROM $HUB:$BASE AS base
 ONBUILD RUN echo "Next stage starting:"; sleep 5
 
+FROM $HUB-extra:$BASE_EXTRA AS base_extra
+ONBUILD RUN echo "Next stage starting:"; sleep 5
+
 FROM base AS edk2
 ARG EDK_VER EDKP_VER EDKP_SUM
 ENV EDK_VER=$EDK_VER EDKP_VER=$EDKP_VER SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH
@@ -14,7 +17,7 @@ RUN git clone https://github.com/tianocore/edk2.git -b $EDK_VER edk2-$EDK_VER
 RUN cd /edk2-$EDK_VER && git submodule init && git submodule update --init --recursive
 ENTRYPOINT exec /$ENTRYPOINT-buildscript.sh
 
-FROM $HUB-extra:$BASE_EXTRA AS optee
+FROM base_extra AS optee
 ARG OPT_VER OPT_SUM OPT_SUM2 TPM_SUM SSL_VER SSL_SUM CROSS_VER CROSS_SUM ROT_SUM ARCHS
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH OPT_VER=$OPT_VER SSL_VER=$SSL_VER CROSS_VER=$CROSS_VER ARCHS="$ARCHS"
 COPY --link Builds/rk3399/BL32_AP_MM.fd /BL32_AP_MM.fd
