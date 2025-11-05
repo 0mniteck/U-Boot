@@ -114,14 +114,24 @@ if [ "$ALT" = "yes" ]; then
   export LIST="PT2-rk3566"
   export ARCHS="rk3568"
 fi
-if [[ "$TARGET" = "" || "$TARGET" == *all* ]]; then
+TRGLIST="(edk2|arm-trusted|optee|u-boot|ubuntu|base|base_extra)"
+if [[ -z "$TARGET" || "$TARGET" == *all* ]]; then
   TARGET="$TARGETS"
-elif [[ "$TARGET" == *edk2* || "$TARGET" == *arm-trusted* || "$TARGET" == *optee* || "$TARGET" == *u-boot* ]]; then
-  export TARGETS="$TARGET"
+elif [[ "$TARGET" =~ $TRGLIST ]]; then
+  for TRG in $TARGET; do
+    if [[ "$TRG" =~ $TRGLIST ]]; then
+      export TARGETS="$TARGET"
+    else
+      echo "INVALID TARGET: $TRG"
+      exit 1
+    fi
+  done
 else
-  echo "INVALID TARGET: $TARGET"
+  echo "INVALID TARGET LIST: $TARGET"
   exit 1
 fi
+export ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+export TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 
 sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
 
@@ -133,52 +143,53 @@ elif [ "$CLEAN" = "yes" ]; then
   ./clean.sh dir.cleanup
 fi
 
-> vars.env
-for env in HUB^$HUB BASE^$BASE BASE_EXTRA^$BASE_EXTRA EDK_VER^$EDK_VER EDKP_VER^$EDKP_VER EDKP_SUM^$EDKP_SUM OPT_VER^$OPT_VER OPT_SUM^$OPT_SUM OPT_SUM2^$OPT_SUM2 TPM_SUM^$TPM_SUM SSL_VER^$SSL_VER SSL_SUM^$SSL_SUM CROSS_VER^$CROSS_VER CROSS_SUM^$CROSS_SUM ROT_SUM^$ROT_SUM ATF_VER^$ATF_VER ATF_SUM^$ATF_SUM MTLS_VER^$MTLS_VER MTLS_SUM^$MTLS_SUM UB_VER^$UB_VER UB_SUM^$UB_SUM
-do
-  env1=$(echo $env | cut -d'^' -f1)
-  env2=$(echo $env | cut -d'^' -f2)
-  env3=$(echo "setenv $env1 \"$env2\"")
-  echo $env3 >> vars.env
-done
-printf "\"" >> vars.env
-
-for lis in BUILD_LIST^$BUILD_LIST LIST^$LIST ARCHS^$ARCHS VARIANTS^$VARIANTS TARGETS^$TARGETS
-do
-  lis1=$(echo $lis | cut -d'^' -f1)
-  lis2=$(echo $lis | cut -d'^' -f2)
-  if [ $lis1 = BUILD_LIST ] || [ $lis1 = LIST ] || [ $lis1 = ARCHS ] || [ $lis1 = TARGETS ]; then
-    printf "\"" >> vars.env
-    echo "" >> vars.env
-    printf "setenv $lis1 \"" >> vars.env
-  elif [ $lis1 = VARIANTS ]; then
-    printf "\"" >> vars.env
-    echo "" >> vars.env
-    printf "setenv $lis1 \"\\\\\$'\\\\\\\\\\\\\\\\0' " >> vars.env
-  fi
-  printf -- "$lis2 " >> vars.env
-done
-echo "$lis1 \"" >> vars.env
-ENV=$(sha512sum vars.env)
-sha512sum vars.env >> Results/release.sha512sum && openssl dgst -SHA3-256 vars.env >> Results/release.sha3sum
-
-echo "Env Config Sum: $ENV" && echo "Env Config Sums: $ENV" >> build.info
-echo "Source Date Epoch: $EPOCH" && echo "Source Date Epoch: $EPOCH" >> build.info
-echo "Clean Build: $CLEAN" && echo "Clean Build: $CLEAN" >> build.info
-echo "Developer Build: $DEV" && echo "Developer Build: $DEV" >> build.info
-echo "Cross-Compile: $CROSS" && echo "Cross-Compile: $CROSS" >> build.info
-echo "Mounted External: /dev/$MOUNT" && echo "Mounted External: /dev/$MOUNT" >> build.info
-echo "Check Reporoducibility: $CHECK" && echo "Check Reporoducibility: $CHECK" >> build.info
-echo "Tag Release: $TAG" && echo "Tag Release: $TAG" >> build.info
-echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
-echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
+pushd Results
+  > vars.env
+  for env in HUB^$HUB BASE^$BASE BASE_EXTRA^$BASE_EXTRA EDK_VER^$EDK_VER EDKP_VER^$EDKP_VER EDKP_SUM^$EDKP_SUM OPT_VER^$OPT_VER OPT_SUM^$OPT_SUM OPT_SUM2^$OPT_SUM2 TPM_SUM^$TPM_SUM SSL_VER^$SSL_VER SSL_SUM^$SSL_SUM CROSS_VER^$CROSS_VER CROSS_SUM^$CROSS_SUM ROT_SUM^$ROT_SUM ATF_VER^$ATF_VER ATF_SUM^$ATF_SUM MTLS_VER^$MTLS_VER MTLS_SUM^$MTLS_SUM UB_VER^$UB_VER UB_SUM^$UB_SUM
+  do
+    env1=$(echo $env | cut -d'^' -f1)
+    env2=$(echo $env | cut -d'^' -f2)
+    env3=$(echo "setenv $env1 \"$env2\"")
+    echo $env3 >> vars.env
+  done
+  printf "\"" >> vars.env
+  
+  for lis in BUILD_LIST^$BUILD_LIST LIST^$LIST ARCHS^$ARCHS VARIANTS^$VARIANTS TARGETS^$TARGETS
+  do
+    lis1=$(echo $lis | cut -d'^' -f1)
+    lis2=$(echo $lis | cut -d'^' -f2)
+    if [ $lis1 = BUILD_LIST ] || [ $lis1 = LIST ] || [ $lis1 = ARCHS ] || [ $lis1 = TARGETS ]; then
+      printf "\"" >> vars.env
+      echo "" >> vars.env
+      printf "setenv $lis1 \"" >> vars.env
+    elif [ $lis1 = VARIANTS ]; then
+      printf "\"" >> vars.env
+      echo "" >> vars.env
+      printf "setenv $lis1 \"\\\\\$'\\\\\\\\\\\\\\\\0' " >> vars.env
+    fi
+    printf -- "$lis2 " >> vars.env
+  done
+  echo "$lis1 \"" >> vars.env
+  ENV=$(sha512sum vars.env)
+  sha512sum vars.env >> release.sha512sum && openssl dgst -SHA3-256 vars.env >> release.sha3sum
+  echo "Env Config Sum: $ENV" && echo "Env Config Sums: $ENV" >> build.info
+  echo "Source Date Epoch: $EPOCH" && echo "Source Date Epoch: $EPOCH" >> build.info
+  echo "Clean Build: $CLEAN" && echo "Clean Build: $CLEAN" >> build.info
+  echo "Developer Build: $DEV" && echo "Developer Build: $DEV" >> build.info
+  echo "Cross-Compile: $CROSS" && echo "Cross-Compile: $CROSS" >> build.info
+  echo "Mounted External: /dev/$MOUNT" && echo "Mounted External: /dev/$MOUNT" >> build.info
+  echo "Check Reporoducibility: $CHECK" && echo "Check Reporoducibility: $CHECK" >> build.info
+  echo "Tag Release: $TAG" && echo "Tag Release: $TAG" >> build.info
+  echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
+  echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
+popd
 
 sleep 5
 
 chmod -R +x Buildscripts/
 chmod -R +x Configs/
 
-> builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c './re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
+> builder.log && sudo screen -c Results/vars.env -L -Logfile builder.log bash -c './re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
 echo "" && cat builder.log | grep -n "Checksum Matched! " && echo ""
 cat Results/release.sha512sum && echo "" && cat Results/release.sha3sum && echo ""
 cat build.info >> Results/build.info && cat Results/build.info && echo ""
