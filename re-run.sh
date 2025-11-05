@@ -300,7 +300,7 @@ fi
 
 load u-boot
 if [[ "$TARGET" == *$NAME* ]]; then
-  if [ "$3" = "no" ]; then
+  if [ "$3" != "yes" ]; then
     mkfs.fat -i 00000000 -n "U-BOOT" --invariant -C /tmp/sdcard.img 35000
     for dev in $LIST
     do
