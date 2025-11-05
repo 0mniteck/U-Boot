@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "Starting Build: $(date -u '+on %D at %R UTC')" >> build.info && echo "Starting Build: $(date -u '+on %D at %R UTC')"
 pushd ..
   ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
   TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
@@ -50,9 +51,7 @@ pushd ..
     build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
     echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
   fi
-  
-  echo "Starting Build: $(date -u '+on %D at %R UTC')" >> Results/build.info && echo "Starting Build: $(date -u '+on %D at %R UTC')"
-  
+    
   if [ "$3" != "yes" ]; then
     snap install syft --classic 2>/dev/null && wait
     snap install grype --classic 2>/dev/null && wait
@@ -334,7 +333,6 @@ pushd ..
     fi
   fi
 popd
-sed -i 's/Builds/..\/Builds/g' release.sha512sum
 echo "Build Complete: $(date -u '+on %D at %R UTC')" >> build.info && echo "Build Complete: $(date -u '+on %D at %R UTC')"
 echo "0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> build.info
 echo "Base Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> build.info
