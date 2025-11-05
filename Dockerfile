@@ -17,7 +17,7 @@ ENTRYPOINT exec /$ENTRYPOINT-buildscript.sh
 
 FROM base_extra AS optee
 ARG OPT_VER OPT_SUM OPT_SUM2 TPM_SUM SSL_VER SSL_SUM CROSS_VER CROSS_SUM ROT_SUM
-ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH OPT_VER=$OPT_VER SSL_VER=$SSL_VER CROSS_VER=$CROSS_VER ARCHS
+ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH OPT_VER=$OPT_VER SSL_VER=$SSL_VER CROSS_VER=$CROSS_VER
 COPY --link Builds/rk3399/BL32_AP_MM.fd Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /$OPT_VER.zip
 ADD --link https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_$OPT_VER.zip
@@ -37,7 +37,7 @@ ENTRYPOINT exec /$ENTRYPOINT-buildscript.sh
 
 FROM base AS arm-trusted
 ARG BUILD_MESSAGE_TIMESTAMP ATF_VER ATF_SUM MTLS_VER MTLS_SUM
-ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH BUILD_MESSAGE_TIMESTAMP="$BUILD_MESSAGE_TIMESTAMP" ATF_VER=$ATF_VER MTLS_VER=$MTLS_VER ARCHS
+ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH BUILD_MESSAGE_TIMESTAMP="$BUILD_MESSAGE_TIMESTAMP" ATF_VER=$ATF_VER MTLS_VER=$MTLS_VER
 COPY --link Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/$ATF_VER.zip /
 ADD --link https://github.com/Mbed-TLS/mbedtls/archive/refs/tags/mbedtls-$MTLS_VER.zip /
