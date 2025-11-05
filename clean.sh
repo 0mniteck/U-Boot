@@ -44,7 +44,7 @@ if [ "$1" = "dir.cleanup" ]; then
   popd
   pushd Results/
     cp release.sha512sum /tmp/release.last.sha512sum
-    rm -f build.* && rm -f sys.* && rm -f release.*
+    rm -f *.info && rm -f release.* && rm -f vars.* && rm -f builder.*
     find . ! -type d -delete # Will be removed
     for con in $TARGETS
       do
@@ -53,7 +53,6 @@ if [ "$1" = "dir.cleanup" ]; then
         touch $con/tmp
       done
   popd
-  rm -f builder.* && rm -f build.* && rm -f status.* && rm -f vars.*
 fi
 
 if [[ "$1" == *cleanup.docker* ]]; then
@@ -111,12 +110,11 @@ if [ "$1" = "tmp.cleanup" ]; then
     done
   popd
   pushd Results/
+    rm -f *.info && rm -f release.* && rm -f vars.* && rm -f builder.*
     for con in $TARGETS
     do
       rm -f $con/tmp
     done
-  rm -f sys.*
   popd
-  rm -f builder.* && rm -f build.* && rm -f status.* && rm -f vars.*
 fi
 exit 0
