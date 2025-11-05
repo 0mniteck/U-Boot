@@ -192,7 +192,8 @@ pushd Results
   echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
   sleep 5 && > builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c '../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
-  echo "" && cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && status="$(<status.info)"
+  echo "" && cat builder.log | grep -n "Checksum Matched! "
+  mv builder.log ../../builder.log && status="$(<status.info)"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && cat build.info && echo ""
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
