@@ -12,7 +12,6 @@ ADD --link https://github.com/tianocore/edk2-platforms/archive/$EDKP_VER.zip /$E
 ADD --link --keep-git-dir=true https://github.com/tianocore/edk2.git?tag=$EDK_VER&checksum=d46aa46 /edk2-$EDK_VER
 RUN apt install -y nasm
 RUN echo "$EDKP_SUM  $EDKP_VER.zip" | sha512sum --status -c - && echo "EDK2 Platform Checksum Matched!" || exit 1; sleep 5
-RUN cd /edk2-$EDK_VER && git submodule init && git submodule update --init --recursive
 ENTRYPOINT exec /$ENTRYPOINT-buildscript.sh
 
 FROM base_extra AS optee
