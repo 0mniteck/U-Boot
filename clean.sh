@@ -110,7 +110,7 @@ if [ "$1" = "tmp.cleanup" ]; then
     done
   popd
   pushd Results/
-    rm -f *.info && rm -f release.* && rm -f vars.* && rm -f builder.*
+    rm -f sys.* && rm -f status.* && rm -f vars.* && rm -f builder.*
     for con in $TARGETS
     do
       rm -f $con/tmp
