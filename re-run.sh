@@ -314,7 +314,7 @@ if [[ "$TARGET" == *$NAME* ]]; then
       for loc in $VARIANTS
       do
         pushd Builds/$dev$loc/
-          echo "dc3272192cb9339d79bc1b8d6066ba056e2d7f952313688085f8009d221f692842f6cd0f378bd83c22dfcd2b5b266e8b0c6805ae5c9a05b4ffe0edefe7b4d079  /tmp/sdcard.img" | sha512sum -c -- && wait || exit 1
+          echo "dc3272192cb9339d79bc1b8d6066ba056e2d7f952313688085f8009d221f692842f6cd0f378bd83c22dfcd2b5b266e8b0c6805ae5c9a05b4ffe0edefe7b4d079  /tmp/sdcard.img" | sha512sum -c - && wait || exit 1
           cp /tmp/sdcard.img sdcard.img && mount sdcard.img /mnt
           cp u-boot-rockchip.bin /mnt/u-boot-rockchip.bin
           cp u-boot-rockchip-spi.bin /mnt/u-boot-rockchip-spi.bin
@@ -345,5 +345,5 @@ pushd Results/
     sha512sum -c release.last.sha512sum
     rm -f /tmp/release.last.sha512sum && rm -f release.last.sha512sum
   fi
-  echo "Successful Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.build
+  echo "Successful Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.info
 popd
