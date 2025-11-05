@@ -111,6 +111,7 @@ pushd ..
         echo $wright2 >> $1.grype.status
         echo $wright3 >> $1.grype.status
         sed -i "s'\[K''" $1.grype.status
+        sed -i "s'\[2A''" $1.grype.status
         rm -f $1.grype.tmp*
         rm -f $1.grype.status.*
         cat $1.grype.status
