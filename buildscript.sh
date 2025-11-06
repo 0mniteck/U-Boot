@@ -31,7 +31,7 @@ export ARCHS="rk3588 rk3399"
 export TARGETS="edk2 optee arm-trusted u-boot ubuntu"
 export VARIANTS="-SB -TPM-SB -MU-SB"
 # ── Update ───────────────────────────────────────────────────────────────────
-sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
+sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted policykit-1 screen snapd systemd-cryptsetup
 # ── User Config Inputs ───────────────────────────────────────────────────────
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
   case $opt in
@@ -191,8 +191,8 @@ pushd Results
   echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
   echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
-  sleep 5 && > builder.log && sudo screen -c vars.env -L -Logfile builder.log bash -c '../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
-  echo "" && cat builder.log | grep -n "Checksum Matched! "
+  sleep 5 && > builder.log && pkexec screen -c vars.env -L -Logfile builder.log bash -c '../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
+  echo "FQPN: $program CMDLN: $command_line" && cat builder.log | grep -n "Checksum Matched! "
   mv builder.log ../../builder.log && status="$(<status.info)"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && cat build.info && echo ""
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
