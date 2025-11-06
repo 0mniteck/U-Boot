@@ -7,7 +7,6 @@ echo $PWD
 
 yubi_check() {
   while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
-  chown $(whoami):$(whoami) /dev/hidraw*
 }
 
 do_update() {
