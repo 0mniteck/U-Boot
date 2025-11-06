@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/pkexec /bin/bash
 
 # Host UBoot ## Add to $HOME/.ssh/config for SSH support, recommend ecdsa-sk or ed25519_sk.
 #    Hostname github.com
