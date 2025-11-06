@@ -1,4 +1,4 @@
-#!/usr/bin/pkexec /bin/bash
+#!/usr/bin/pkexec
 echo $PWD
 # Host UBoot ## Add to ~/.ssh/config for SSH support, recommend ecdsa-sk or ed25519_sk.
 #    Hostname github.com
