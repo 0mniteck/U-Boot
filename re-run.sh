@@ -1,4 +1,5 @@
 #!/usr/bin/pkexec /bin/bash
+echo $PWD
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
 pushd ..
