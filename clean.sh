@@ -1,5 +1,5 @@
 #!/usr/bin/pkexec /bin/bash
-
+echo $PWD
 ## Available Commands:
 # git.cleanup
 # git.cleanup.(cache)
