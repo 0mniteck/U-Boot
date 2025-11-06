@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/pkexec /bin/bash
 
 ## Available Commands:
 # git.cleanup
