@@ -31,7 +31,7 @@ export ARCHS="rk3588 rk3399"
 export TARGETS="edk2 optee arm-trusted u-boot ubuntu"
 export VARIANTS="-SB -TPM-SB -MU-SB"
 # ── Update ───────────────────────────────────────────────────────────────────
-sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted policykit-1 screen snapd systemd-cryptsetup
+sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
 # ── User Config Inputs ───────────────────────────────────────────────────────
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
   case $opt in
