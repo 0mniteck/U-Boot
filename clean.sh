@@ -1,4 +1,4 @@
-#!/usr/bin/pkexec /bin/bash
+#!/usr/bin/pkexec
 echo $PWD
 ## Available Commands:
 # git.cleanup
