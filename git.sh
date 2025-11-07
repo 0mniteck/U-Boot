@@ -6,7 +6,6 @@
 #    IdentitiesOnly yes
 
 cd $3
-source defaults
 
 yubi_check() {
   while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
