@@ -36,6 +36,7 @@ if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
   eval `ssh-agent -s`
   ssh-add $HOME/.ssh/id_ecdsa_s*[!.pub]
 fi
+
 git status && git add -A && git status
 if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
   yubi_check && echo ""
