@@ -14,7 +14,10 @@ cd $3
 source defaults
 
 do_update() {
-  $PWD/git.sh update "" "$PWD"
+  ./git.sh update
+}
+do_clean() {
+  ./git.sh clean
 }
 
 apt_update() {
@@ -28,9 +31,7 @@ if [[ "$1" == *apt.update* ]]; then
 fi
 
 if [[ "$1" == *git.cleanup* ]]; then
-  git config --global --add safe.directory "$3"
-  git reset --hard
-  git clean -xfd
+  do_clean
   do_update
   if [[ "$1" == *git.cleanup.cache* ]]; then
     rm -r -f .git/Cache
@@ -38,9 +39,6 @@ if [[ "$1" == *git.cleanup* ]]; then
   chmod -R +x Buildscripts/
   chmod -R +x Configs/
   mkdir -p .git/Cache
-fi
-
-if [ "$1" = "dir.cleanup" ]; then
   pushd Builds/
     for dev in $LIST
     do
