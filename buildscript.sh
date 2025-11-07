@@ -32,6 +32,7 @@ export TARGETS="edk2 optee arm-trusted u-boot ubuntu"
 export VARIANTS="-SB -TPM-SB -MU-SB"
 # ── Update ───────────────────────────────────────────────────────────────────
 sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
+sudo -K
 # ── User Config Inputs ───────────────────────────────────────────────────────
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
   case $opt in
@@ -136,8 +137,9 @@ else
   echo "INVALID TARGET LIST: $TARGET"
   exit 1
 fi
-export ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
-export TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+export CALLER_PWD="$(pwd)"
 # ── Clean ────────────────────────────────────────────────────────────────────
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
   ./clean.sh git.cleanup.cache
