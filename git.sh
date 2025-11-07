@@ -5,9 +5,8 @@
 #    IdentityFile ~/.ssh/id_ecdsa_sk
 #    IdentitiesOnly yes
 
+cd $3
 source defaults
-cd $CALLER_PWD
-echo $CALLER_PWD
 
 yubi_check() {
   while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
@@ -23,7 +22,7 @@ do_update() {
   git pull $(git remote -v | awk '{ print $2 }' | tail -n 1) $(git rev-parse --abbrev-ref HEAD)
 }
 
-if [[ "$1" == *check* ]]; then
+if [[ "" == *check* ]]; then
 yubi_check
 exit 0
 fi
