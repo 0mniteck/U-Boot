@@ -6,7 +6,7 @@
 # tmp.cleanup
 
 do_clean() {
-  ./git.sh clean
+  ./git.sh reset
 }
 do_update() {
   ./git.sh update
