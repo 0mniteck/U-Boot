@@ -8,7 +8,11 @@
 yubi_check() {
   while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
 }
-do_update() {
+git_reset() {
+  git reset --hard
+  git clean -xfd
+}
+git_update() {
   echo "Fetching recent changes..."
   if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
     yubi_check && echo ""
@@ -23,7 +27,11 @@ yubi_check
 exit 0
 fi
 if [[ "$1" == *update* ]]; then
-do_update "$3"
+git_update
+exit 0
+fi
+if [[ "$1" == *reset* ]]; then
+git_reset
 exit 0
 fi
 
@@ -32,7 +40,6 @@ if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
   eval `ssh-agent -s`
   ssh-add $HOME/.ssh/id_ecdsa_s*[!.pub]
 fi
-
 git status && git add -A && git status
 if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
   yubi_check && echo ""
