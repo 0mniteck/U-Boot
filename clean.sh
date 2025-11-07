@@ -1,7 +1,5 @@
 #!/usr/bin/pkexec /bin/bash
-cd $CALLER_PWD
-echo $CALLER_PWD
-echo $PWD
+
 ## Available Commands:
 # git.cleanup
 # git.cleanup.(cache)
@@ -12,8 +10,11 @@ echo $PWD
 # cleanup.snaps.(remove)
 # tmp.cleanup
 
+cd $3
+source defaults
+
 do_update() {
-  $PWD/git.sh update
+  $PWD/git.sh update "" "$PWD"
 }
 
 if [[ "$1" == *git.cleanup* ]]; then
