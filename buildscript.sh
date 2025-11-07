@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # ── Configuration for vars.env ─ Source file for screen using setenv ─────────
-sed -i "31d" defaults && echo "export CALLER_PWD=$PWD" >> defaults
 source defaults
 # ── Update ───────────────────────────────────────────────────────────────────
 sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
