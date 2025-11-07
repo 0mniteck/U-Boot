@@ -7,6 +7,9 @@
 
 yubi_check() {
   while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
+  if [[ $(ls -la /dev/hidraw0) = *root* ]]; then
+    pkexec chown $(whoami):$(whoami) /dev/hidraw*
+  fi
 }
 git_reset() {
   git reset --hard
