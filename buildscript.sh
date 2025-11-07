@@ -107,7 +107,6 @@ else
 fi
 export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
 export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-chmod +x install.sh
 # ── Update ───────────────────────────────────────────────────────────────────
 if [[ $(which pkexec) = "" ]]; then
   sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
