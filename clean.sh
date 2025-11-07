@@ -17,6 +17,16 @@ do_update() {
   $PWD/git.sh update "" "$PWD"
 }
 
+apt_update() {
+  apt update
+  apt upgrade -y
+  apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
+}
+
+if [[ "$1" == *apt.update* ]]; then
+  apt_update
+fi
+
 if [[ "$1" == *git.cleanup* ]]; then
   git reset --hard
   git clean -xfd
