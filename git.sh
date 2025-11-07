@@ -27,7 +27,7 @@ fi
 git_update() {
   echo "Fetching recent changes..."
   if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
-    yubi_check && echo ""
+    yubi_check
     git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
     read -p "Origin set to SSH; Continue git pull..."
   fi
@@ -47,7 +47,7 @@ fi
 
 git status && git add -A && git status
 if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
-  yubi_check && echo ""
+  yubi_check
 fi
 pkexec --keep-cwd git commit -a -S -m "$1" && sleep 5 && git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD):Docker
 if [ "$2" != "" ]; then
