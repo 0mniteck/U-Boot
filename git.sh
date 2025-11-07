@@ -1,4 +1,4 @@
-#!/usr/bin/pkexec /bin/bash
+#!/bin/bash
 
 # Host UBoot ## Add to ~/.ssh/config for SSH support, recommend ecdsa-sk or ed25519_sk.
 #    Hostname github.com
@@ -10,7 +10,6 @@ cd $3
 yubi_check() {
   while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
 }
-
 do_update() {
   echo "Fetching recent changes..."
   if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
@@ -25,7 +24,6 @@ if [[ "" == *check* ]]; then
 yubi_check
 exit 0
 fi
-
 if [[ "$1" == *update* ]]; then
 do_update "$3"
 exit 0
