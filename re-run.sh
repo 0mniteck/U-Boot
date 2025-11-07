@@ -60,10 +60,10 @@ pushd ..
     snap install grype --classic 2>/dev/null && wait
   fi
   
-  ./clean.sh cleanup.snaps
-  ./clean.sh cleanup.docker$remove $unmount
+  $PWD/clean.sh cleanup.snaps
+  $PWD/clean.sh cleanup.docker$remove $unmount
   if [ "$5" != "" ]; then
-    ./git.sh check && echo ""
+    $PWD/git.sh check && echo ""
     systemd-cryptsetup attach Luks-Signal /dev/$5
   fi
   
@@ -298,14 +298,14 @@ pushd ..
     stop $NAME
   fi
   
-  ./clean.sh cleanup.docker$remove $unmount
+  $PWD/clean.sh cleanup.docker$remove $unmount
   
   load ubuntu
   if [[ "$TARGET" == *$NAME* ]]; then
     scan_using_grype ubuntu "/ --select-catalogers debian" $3
   fi
   
-  ./clean.sh cleanup.snaps$remove
+  $PWD/clean.sh cleanup.snaps$remove
   
   load u-boot
   if [[ "$TARGET" == *$NAME* ]]; then
