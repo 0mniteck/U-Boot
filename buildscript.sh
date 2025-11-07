@@ -112,7 +112,7 @@ if [[ $(which pkexec) = "" ]]; then
   sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
   sudo -K
 else
-  $PWD/install.sh apt.update "" "$PWD"
+  $PWD/install.sh apt.update
 fi
 # ── Clean ────────────────────────────────────────────────────────────────────
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
