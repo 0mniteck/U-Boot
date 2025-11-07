@@ -1,6 +1,7 @@
 #!/usr/bin/pkexec /bin/bash
 cd $CALLER_PWD
-export CALLER_PWD=$PWD
+echo $CALLER_PWD
+export CALLER_PWD="$PWD"
 echo $PWD
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
