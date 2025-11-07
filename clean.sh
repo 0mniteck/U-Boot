@@ -28,6 +28,7 @@ if [[ "$1" == *apt.update* ]]; then
 fi
 
 if [[ "$1" == *git.cleanup* ]]; then
+  git config --global --add safe.directory "$3"
   git reset --hard
   git clean -xfd
   do_update
