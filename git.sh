@@ -5,8 +5,6 @@
 #    IdentityFile ~/.ssh/id_ecdsa_sk
 #    IdentitiesOnly yes
 
-cd $3
-
 yubi_check() {
   while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
 }
