@@ -13,7 +13,6 @@ yubi_check() {
 
 do_update() {
   echo "Fetching recent changes..."
-  git config --global --add safe.directory "$1"
   if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
     yubi_check && echo ""
     git remote remove origin && git remote add origin git@UBoot:0mniteck/U-Boot.git
