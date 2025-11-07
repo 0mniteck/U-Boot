@@ -9,7 +9,6 @@
 #    Hostname github.com
 #    IdentityFile ~/.ssh/id_ecdsa_sk
 #    IdentitiesOnly yes
-
 yubi_check() {
   while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
   if [[ $(ls -la /dev/hidraw0) = *root* ]]; then
@@ -19,6 +18,11 @@ yubi_check() {
 git_reset() {
   git reset --hard
   git clean -xfd
+if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
+  export GPG_TTY=$(tty)
+  eval `ssh-agent -s`
+  ssh-add $HOME/.ssh/id_ecdsa_s*[!.pub]
+fi
 }
 git_update() {
   echo "Fetching recent changes..."
@@ -45,11 +49,6 @@ git_update
 exit 0
 fi
 
-if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
-  export GPG_TTY=$(tty)
-  eval `ssh-agent -s`
-  ssh-add $HOME/.ssh/id_ecdsa_s*[!.pub]
-fi
 git status && git add -A && git status
 if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
   yubi_check && echo ""
