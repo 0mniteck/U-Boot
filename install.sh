@@ -20,6 +20,13 @@ add_user() {
   chmod 660 /var/run/docker.sock
 }
 
+do_check() {
+  while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
+  if [[ $(ls -la /dev/hidraw0) = *root* ]]; then
+    chown $(whoami):$(whoami) /dev/hidraw*
+  fi
+}
+
 purge_snapd() {
   rm -f -r /var/snap/docker/*
   rm -f -r /var/lib/snapd/cache/*
@@ -35,6 +42,7 @@ purge_snapd() {
 }
 
 crypt_mount() { #1 = device
+  do_check
   systemd-cryptsetup attach Luks-Signal /dev/$1
   sleep 5
   mount /dev/mapper/Luks-Signal /var/snap/docker
@@ -48,7 +56,6 @@ crypt_unmount() {
 if [[ "$1" == *apt.update* ]]; then
   apt_update
 fi
-
 if [[ "$1" == *purge.snapd* ]]; then
   purge_snapd
 fi
