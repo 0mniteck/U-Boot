@@ -54,7 +54,7 @@ git status && git add -A && git status
 if [[ $(<$HOME/.ssh/config) == *UBoot* ]]; then
   yubi_check && echo ""
 fi
-git commit -a -S -m "$1" && sleep 5 && git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD):Docker
+pkexec --keep-cwd git commit -a -S -m "$1" && sleep 5 && git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD):Docker
 if [ "$2" != "" ]; then
-  git tag -a "$2" -s -m "Tagged Release $2" && sleep 5 && git push origin "refs/tags/$2"
+  pkexec --keep-cwd git tag -a "$2" -s -m "Tagged Release $2" && sleep 5 && git push origin "refs/tags/$2"
 fi
