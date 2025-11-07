@@ -34,17 +34,13 @@ git_update() {
   git pull $(git remote -v | awk '{ print $2 }' | tail -n 1) $(git rev-parse --abbrev-ref HEAD)
 }
 
-if [[ "" == *check* ]]; then
+if [[ "$1" == *check* ]]; then
 yubi_check
 exit 0
-fi
-
-if [[ "$1" == *reset* ]]; then
+elif [[ "$1" == *reset* ]]; then
 git_reset
 exit 0
-fi
-
-if [[ "$1" == *update* ]]; then
+elif [[ "$1" == *update* ]]; then
 git_update
 exit 0
 fi
