@@ -139,7 +139,7 @@ else
 fi
 export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
 export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-export CALLER_PWD="$(pwd)"
+export CALLER_PWD="$PWD"
 # ── Clean ────────────────────────────────────────────────────────────────────
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
   $PWD/clean.sh git.cleanup.cache
