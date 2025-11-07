@@ -1,4 +1,5 @@
-#!/usr/bin/pkexec
+#!/usr/bin/pkexec /bin/bash
+cd $CALLER_PWD
 echo $PWD
 ## Available Commands:
 # git.cleanup
