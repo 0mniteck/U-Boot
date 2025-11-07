@@ -100,9 +100,9 @@ pushd ..
   $PWD/install.sh cleanup.snaps $install
   $PWD/install.sh cleanup.docker$remove $5
   if [ "$4" = "yes" ]; then
-    $PWD/install.sh install.docker.cross $5
+    $PWD/install.sh install.docker.cross $5 "$(whoami)"
   else
-    $PWD/install.sh install.docker $5
+    $PWD/install.sh install.docker $5 "$(whoami)"
   fi
   
   docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
