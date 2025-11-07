@@ -142,11 +142,11 @@ export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
 export CALLER_PWD="$(pwd)"
 # ── Clean ────────────────────────────────────────────────────────────────────
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
-  ./clean.sh git.cleanup.cache
-  ./clean.sh dir.cleanup
+  $PWD/clean.sh git.cleanup.cache
+  $PWD/clean.sh dir.cleanup
 elif [ "$CLEAN" = "yes" ]; then
-  ./clean.sh git.cleanup
-  ./clean.sh dir.cleanup
+  $PWD/clean.sh git.cleanup
+  $PWD/clean.sh dir.cleanup
 fi
 # ── Output to vars.env + build.info ──────────────────────────────────────────
 ## ─ Variables set by setenv ──────────────────────────────────────────────────
@@ -193,16 +193,16 @@ pushd Results
   echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
   echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
-  sleep 5 && > builder.log && screen -c vars.env -L -Logfile builder.log bash -c '../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
+  sleep 5 && > builder.log && screen -c vars.env -L -Logfile builder.log bash -c $PWD'/re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
   echo "FQPN: $program CMDLN: $command_line" && cat builder.log | grep -n "Checksum Matched! "
   mv builder.log ../../builder.log && status="$(<status.info)"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && cat build.info && echo ""
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
 if [ "$CLEAN" = "yes" ]; then
-  ./clean.sh tmp.cleanup && ls -la Builds/*
+  $PWD/clean.sh tmp.cleanup && ls -la Builds/*
   read -p "$status: --> Continue"
   if [ "$DEV" != "yes" ]; then
-    ./git.sh "$status" "$TAG"
+    $PWD/git.sh "$status" "$TAG"
   fi
 fi
