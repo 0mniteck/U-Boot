@@ -1,5 +1,10 @@
 #!/bin/bash
 
+## Available Commands:
+# ./clean.sh check
+# ./clean.sh reset
+# ./clean.sh update
+
 # Host UBoot ## Add to ~/.ssh/config for SSH support, recommend ecdsa-sk or ed25519_sk.
 #    Hostname github.com
 #    IdentityFile ~/.ssh/id_ecdsa_sk
@@ -29,12 +34,14 @@ if [[ "" == *check* ]]; then
 yubi_check
 exit 0
 fi
-if [[ "$1" == *update* ]]; then
-git_update
-exit 0
-fi
+
 if [[ "$1" == *reset* ]]; then
 git_reset
+exit 0
+fi
+
+if [[ "$1" == *update* ]]; then
+git_update
 exit 0
 fi
 
