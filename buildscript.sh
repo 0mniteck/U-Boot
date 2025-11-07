@@ -1,10 +1,6 @@
 #!/bin/bash
-
 # ── Configuration for vars.env ─ Source file for screen using setenv ─────────
 source defaults
-# ── Update ───────────────────────────────────────────────────────────────────
-sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
-sudo -K
 # ── User Config Inputs ───────────────────────────────────────────────────────
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
   case $opt in
@@ -111,17 +107,23 @@ else
 fi
 export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
 export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+# ── Update ───────────────────────────────────────────────────────────────────
+if [[ $(which pkexec) = "" ]]; then
+  sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
+  sudo -K
+else
+  $PWD/clean.sh apt.update "" "$PWD"
+fi
 # ── Clean ────────────────────────────────────────────────────────────────────
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
-  $PWD/clean.sh git.cleanup.cache
-  $PWD/clean.sh dir.cleanup
+  $PWD/clean.sh git.cleanup.cache "" "$PWD"
+  $PWD/clean.sh dir.cleanup "" "$PWD"
 elif [ "$CLEAN" = "yes" ]; then
-  $PWD/clean.sh git.cleanup
-  $PWD/clean.sh dir.cleanup
+  $PWD/clean.sh git.cleanup "" "$PWD"
+  $PWD/clean.sh dir.cleanup "" "$PWD"
 fi
 # ── Output to vars.env + build.info ──────────────────────────────────────────
-## ─ Variables set by setenv ──────────────────────────────────────────────────
-###- Single Variables ─────────────────────────────────────────────────────────
+## ─ Variables ────────────────────────────────────────────────────────────────
 pushd Results
   > vars.env
   for env in HUB^$HUB BASE^$BASE BASE_EXTRA^$BASE_EXTRA EDK_VER^$EDK_VER EDKP_VER^$EDKP_VER EDKP_SUM^$EDKP_SUM OPT_VER^$OPT_VER OPT_SUM^$OPT_SUM OPT_SUM2^$OPT_SUM2 TPM_SUM^$TPM_SUM SSL_VER^$SSL_VER SSL_SUM^$SSL_SUM CROSS_VER^$CROSS_VER CROSS_SUM^$CROSS_SUM ROT_SUM^$ROT_SUM ATF_VER^$ATF_VER ATF_SUM^$ATF_SUM MTLS_VER^$MTLS_VER MTLS_SUM^$MTLS_SUM UB_VER^$UB_VER UB_SUM^$UB_SUM
@@ -132,7 +134,6 @@ pushd Results
     echo $env3 >> vars.env
   done
   printf "\"" >> vars.env
-###- Variable Arrays ──────────────────────────────────────────────────────────
   for lis in BUILD_LIST^$BUILD_LIST LIST^$LIST ARCHS^$ARCHS VARIANTS^$VARIANTS TARGETS^$TARGETS
   do
     lis1=$(echo $lis | cut -d'^' -f1)
@@ -171,9 +172,9 @@ pushd Results
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
 if [ "$CLEAN" = "yes" ]; then
-  $PWD/clean.sh tmp.cleanup && ls -la Builds/*
+  $PWD/clean.sh tmp.cleanup "" "$PWD" && ls -la Builds/*
   read -p "$status: --> Continue"
   if [ "$DEV" != "yes" ]; then
-    $PWD/git.sh "$status" "$TAG"
+    $PWD/git.sh "$status" "$TAG" "$PWD"
   fi
 fi
