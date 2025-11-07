@@ -98,26 +98,11 @@ pushd ..
     install="install"
   fi
   $PWD/install.sh cleanup.snaps $install
-  $PWD/install.sh cleanup.docker$remove $unmount
-  if [ "$5" != "" ]; then
-    ./git.sh check && echo ""
-    systemd-cryptsetup attach Luks-Signal /dev/$5
-  fi
-  
-  mkdir -p /var/snap/docker
-  
-  if [ "$5" != "" ]; then
-    mount /dev/mapper/Luks-Signal /var/snap/docker
-    if [ "$2" = "yes" ]; then
-      rm -f -r /var/snap/docker/*
-    fi
-  fi
-  chown root:root /var/snap/docker
-  
+  $PWD/install.sh cleanup.docker$remove $5
   if [ "$4" = "yes" ]; then
-    $PWD/install.sh install.docker.cross
+    $PWD/install.sh install.docker.cross $5
   else
-    $PWD/install.sh install.docker
+    $PWD/install.sh install.docker $5
   fi
   
   docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
