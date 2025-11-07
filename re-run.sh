@@ -65,7 +65,7 @@ fi
 $PWD/clean.sh cleanup.snaps "" "$7"
 $PWD/clean.sh cleanup.docker$remove $unmount "$7"
 if [ "$5" != "" ]; then
-  $PWD/git.sh check "" "$7" && echo ""
+  ./git.sh check && echo ""
   systemd-cryptsetup attach Luks-Signal /dev/$5
 fi
 
