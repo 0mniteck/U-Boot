@@ -1,13 +1,11 @@
 #!/usr/bin/pkexec /bin/bash
 
-cd $3
-source defaults
-
 ## Available Commands:
-# cleanup.docker (unmount)
-# cleanup.docker.(remove) (unmount)
-# cleanup.snaps
-# cleanup.snaps.(remove)
+# apt.update
+# purge.snapd
+# install.docker.(cross)
+# cleanup.docker.(remove) (unmount/purge)
+# cleanup.snaps.(remove) (install)
 
 apt_update() {
   apt update
@@ -15,8 +13,39 @@ apt_update() {
   apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
 }
 
+purge_snapd() {
+  rm -f -r /var/snap/docker/*
+  rm -f -r /var/lib/snapd/cache/*
+  crypt_unmount
+  networkctl delete docker0 2>/dev/null && wait
+  networkctl delete docker1 2>/dev/null && wait
+  apt remove --purge snapd -y
+  rm -f -r /var/snap/docker
+  apt install ubuntu-server-minimal -y
+  snap install ufw
+  ufw allow ssh
+  printf 'y\n' | ufw enable
+}
+
+crypt_unmount() {
+  umount -f /dev/mapper/Luks-Signal 2>/dev/null && wait
+  sleep 5
+  systemd-cryptsetup detach Luks-Signal 2>/dev/null && wait
+}
+
 if [[ "$1" == *apt.update* ]]; then
   apt_update
+fi
+
+if [[ "$1" == *purge.snapd* ]]; then
+  purge_snapd
+fi
+
+if [[ "$1" == *install.docker.cross* ]]; then
+  snap install docker --revision=3377
+elif [[ "$1" == *install.docker* ]]; then
+  snap install docker --revision=3380 && systemctl stop snap.docker.nvidia-container-toolkit
+  systemctl disable snap.docker.nvidia-container-toolkit
 fi
 
 if [[ "$1" == *cleanup.docker* ]]; then
@@ -28,16 +57,17 @@ if [[ "$1" == *cleanup.docker* ]]; then
   fi
   if [[ "$2" == *unmount* ]]; then
     snap disable docker 2>/dev/null && wait
-    umount -f /dev/mapper/Luks-Signal 2>/dev/null && wait
-    sleep 5
-    systemd-cryptsetup detach Luks-Signal 2>/dev/null && wait
+    crypt_unmount
   fi
   if [[ "$1" == *cleanup.docker.remove* ]]; then
-    rm -f -r /var/snap/docker
     snap enable docker 2>/dev/null && wait
     snap remove docker --purge 2>/dev/null && wait
     snap remove docker --purge 2>/dev/null && wait
     snap remove core24 --purge 2>/dev/null && wait
+    rm -f -r /var/snap/docker
+    if [[ "$2" == *purge* ]]; then
+      purge_snapd
+    fi
   else
     snap enable docker 2>/dev/null && wait
     snap remove docker 2>/dev/null && wait
@@ -56,4 +86,8 @@ if [[ "$1" == *cleanup.snaps* ]]; then
     rm -f -r /root/Library
   fi
   rm -f -r /root/getter* && rm -f -r /root/grype-scratch* && rm -f -r /root/syft && rm -f -r /root/6 && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter* && rm -f $HOME/.grype.yaml
+  if [[ "$2" == *install* ]]; then
+    snap install syft --classic 2>/dev/null && wait
+    snap install grype --classic 2>/dev/null && wait
+  fi
 fi
