@@ -5,131 +5,131 @@ cd $7
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
 
-pushd ..
-  ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
-  TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
-  if [ "$TARGETS" != "" ]; then
-    echo "TARGET: $TARGETS"
-    export TARGET="$TARGETS"
-  fi
-  if [ "$6" = "yes" ]; then
-    echo "CHECK REPRODUCIBILITY: $6"
-    export check_file=1
-  fi
-  if [ "$5" != "" ]; then
-    echo "MOUNT: /dev/$5"
-    export MOUNT="/dev/$5"
-    export unmount="unmount"
-  fi
-  if [ "$4" = "yes" ]; then
-    echo "CROSS_COMPILE: $4"
-    export CROSS="--platform linux/arm64"
-  fi
-  if [ "$3" = "yes" ]; then
-    echo "DEV_BUILD: $3"
-    local_cache="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
-    load() { # $1 = Name
-      export LOAD="--load $CROSS $local_cache --target $1 --tag $1"
-      export NAME=$1
-      return
-      }
-  else
-    load() { # $1 Name
-      export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
-      export BUILDX_METADATA_PROVENANCE=max
-      export SIGNING=1
-      export NAME=$1
-      return
-      }
-  fi
+ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+
+if [ "$TARGETS" != "" ]; then
+  echo "TARGET: $TARGETS"
+  export TARGET="$TARGETS"
+fi
+if [ "$6" = "yes" ]; then
+  echo "CHECK REPRODUCIBILITY: $6"
+  export check_file=1
+fi
+if [ "$5" != "" ]; then
+  echo "MOUNT: /dev/$5"
+  export MOUNT="/dev/$5"
+  export unmount="unmount"
+fi
+if [ "$4" = "yes" ]; then
+  echo "CROSS_COMPILE: $4"
+  export CROSS="--platform linux/arm64"
+fi
+if [ "$3" = "yes" ]; then
+  echo "DEV_BUILD: $3"
+  local_cache="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
+  load() { # $1 = Name
+    export LOAD="--load $CROSS $local_cache --target $1 --tag $1"
+    export NAME=$1
+    return
+    }
+else
+  load() { # $1 Name
+    export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
+    export BUILDX_METADATA_PROVENANCE=max
+    export SIGNING=1
+    export NAME=$1
+    return
+    }
+fi
+if [ "$2" = "yes" ]; then
+  echo "CLEAN_BUILD: $2"
+  export remove=".remove"
+else
+  echo "CLEAN_BUILD: $2"
+fi
+if [ "$1" != "" ]; then
+  echo "SOURCE_DATE_EPOCH: $1"
+  export source_date_epoch=$1
+  source_date="@$source_date_epoch"
+  echo "SOURCE_DATE: $source_date"
+  build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
+  echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
+fi
+
+if [ "$3" != "yes" ]; then
+  snap install syft --classic 2>/dev/null && wait
+  snap install grype --classic 2>/dev/null && wait
+fi
+
+$PWD/clean.sh cleanup.snaps "" "$7"
+$PWD/clean.sh cleanup.docker$remove $unmount "$7"
+if [ "$5" != "" ]; then
+  $PWD/git.sh check "" "$7" && echo ""
+  systemd-cryptsetup attach Luks-Signal /dev/$5
+fi
+
+mkdir -p /var/snap/docker
+
+if [ "$5" != "" ]; then
+  mount /dev/mapper/Luks-Signal /var/snap/docker
   if [ "$2" = "yes" ]; then
-    echo "CLEAN_BUILD: $2"
-    export remove=".remove"
-  else
-    echo "CLEAN_BUILD: $2"
+    rm -f -r /var/snap/docker/*
   fi
-  if [ "$1" != "" ]; then
-    echo "SOURCE_DATE_EPOCH: $1"
-    export source_date_epoch=$1
-    source_date="@$source_date_epoch"
-    echo "SOURCE_DATE: $source_date"
-    build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
-    echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
-  fi
-    
+fi
+
+chown root:root /var/snap/docker
+
+if [ "$4" = "yes" ]; then
+  snap install docker --revision=3377
+else
+  snap install docker --revision=3380 && systemctl stop snap.docker.nvidia-container-toolkit
+  systemctl disable snap.docker.nvidia-container-toolkit
+fi
+
+stop() { # $1 = Name
+  docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
+}
+
+scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
   if [ "$3" != "yes" ]; then
-    snap install syft --classic 2>/dev/null && wait
-    snap install grype --classic 2>/dev/null && wait
-  fi
-  
-  $PWD/clean.sh cleanup.snaps
-  $PWD/clean.sh cleanup.docker$remove $unmount
-  if [ "$5" != "" ]; then
-    $PWD/git.sh check && echo ""
-    systemd-cryptsetup attach Luks-Signal /dev/$5
-  fi
-  
-  mkdir -p /var/snap/docker
-  
-  if [ "$5" != "" ]; then
-    mount /dev/mapper/Luks-Signal /var/snap/docker
-    if [ "$2" = "yes" ]; then
-      rm -f -r /var/snap/docker/*
-    fi
-  fi
-  
-  chown root:root /var/snap/docker
-  
-  if [ "$4" = "yes" ]; then
-    snap install docker --revision=3377
+    pushd Results/$1
+      mkdir -p "/var/snap/docker/syft" && TMPDIR="/var/snap/docker/syft" syft scan $2 -o spdx-json=$1.spdx.json
+      script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp.tmp > $1.grype.tmp
+      marker() { # $1 = Name, $2 = Order, $3 = Marker/ID
+        grep "$3" $1.grype.tmp | tail -n 1 > $1.grype.status.$2
+        tr -d '\000-\037\177' < $1.grype.status.$2 | sed '/^$/d' > $1.grype.status.$2.tmp
+        line1=$(<"${1}.grype.status.${2}.tmp")
+        left1="${line1%%' [K[2A'*}"
+        right1="${line1#*' [K[2A'}"
+        if [[ "$right1" == *$3* ]]; then
+          export "wright$2"="${right1%%' [K'*}"
+        elif [[ "$left1" == *$3* ]]; then
+          export "wright$2"="${left1%%' [K'*}"
+        fi
+      }
+      marker $1 1 "✔ Scanned for vulnerabilities"
+      marker $1 2 "├── by severity:"
+      marker $1 3 "└── by status:"
+      echo $wright1 > $1.grype.status
+      echo $wright2 >> $1.grype.status
+      echo $wright3 >> $1.grype.status
+      sed -i "s'\[K''" $1.grype.status
+      sed -i "s'\[2A''" $1.grype.status
+      rm -f $1.grype.tmp*
+      rm -f $1.grype.status.*
+      cat $1.grype.status
+    popd
   else
-    snap install docker --revision=3380 && systemctl stop snap.docker.nvidia-container-toolkit
-    systemctl disable snap.docker.nvidia-container-toolkit
+    return
   fi
-  
-  stop() { # $1 = Name
-    docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
-  }
-  
-  scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
-    if [ "$3" != "yes" ]; then
-      pushd Results/$1
-        mkdir -p "/var/snap/docker/syft" && TMPDIR="/var/snap/docker/syft" syft scan $2 -o spdx-json=$1.spdx.json
-        script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp.tmp > $1.grype.tmp
-        marker() { # $1 = Name, $2 = Order, $3 = Marker/ID
-          grep "$3" $1.grype.tmp | tail -n 1 > $1.grype.status.$2
-          tr -d '\000-\037\177' < $1.grype.status.$2 | sed '/^$/d' > $1.grype.status.$2.tmp
-          line1=$(<"${1}.grype.status.${2}.tmp")
-          left1="${line1%%' [K[2A'*}"
-          right1="${line1#*' [K[2A'}"
-          if [[ "$right1" == *$3* ]]; then
-            export "wright$2"="${right1%%' [K'*}"
-          elif [[ "$left1" == *$3* ]]; then
-            export "wright$2"="${left1%%' [K'*}"
-          fi
-        }
-        marker $1 1 "✔ Scanned for vulnerabilities"
-        marker $1 2 "├── by severity:"
-        marker $1 3 "└── by status:"
-        echo $wright1 > $1.grype.status
-        echo $wright2 >> $1.grype.status
-        echo $wright3 >> $1.grype.status
-        sed -i "s'\[K''" $1.grype.status
-        sed -i "s'\[2A''" $1.grype.status
-        rm -f $1.grype.tmp*
-        rm -f $1.grype.status.*
-        cat $1.grype.status
-      popd
-    else
-      return
-    fi
-  }
-  
-  docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
-  if [ "$4" = "yes" ]; then
-    docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
-  fi
-  
+}
+
+docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
+if [ "$4" = "yes" ]; then
+  docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
+fi
+pushd ..
   load base
   if [[ "$TARGET" == *$NAME* ]]; then
     docker buildx build $LOAD \
@@ -300,14 +300,14 @@ pushd ..
     stop $NAME
   fi
   
-  $PWD/clean.sh cleanup.docker$remove $unmount
+  $PWD/clean.sh cleanup.docker$remove $unmount "$7"
   
   load ubuntu
   if [[ "$TARGET" == *$NAME* ]]; then
     scan_using_grype ubuntu "/ --select-catalogers debian" $3
   fi
   
-  $PWD/clean.sh cleanup.snaps$remove
+  $PWD/clean.sh cleanup.snaps$remove "" "$7"
   
   load u-boot
   if [[ "$TARGET" == *$NAME* ]]; then
