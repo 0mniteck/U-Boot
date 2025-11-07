@@ -55,33 +55,6 @@ if [ "$1" != "" ]; then
   echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
 fi
 
-if [ "$3" != "yes" ]; then
-  install="install"
-fi
-$PWD/install.sh cleanup.snaps $install
-$PWD/install.sh cleanup.docker$remove $unmount
-if [ "$5" != "" ]; then
-  ./git.sh check && echo ""
-  systemd-cryptsetup attach Luks-Signal /dev/$5
-fi
-
-mkdir -p /var/snap/docker
-
-if [ "$5" != "" ]; then
-  mount /dev/mapper/Luks-Signal /var/snap/docker
-  if [ "$2" = "yes" ]; then
-    rm -f -r /var/snap/docker/*
-  fi
-fi
-
-chown root:root /var/snap/docker
-
-if [ "$4" = "yes" ]; then
-  $PWD/install.sh install.docker.cross
-else
-  $PWD/install.sh install.docker
-fi
-
 stop() { # $1 = Name
   docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
 }
@@ -120,11 +93,38 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
   fi
 }
 
-docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
-if [ "$4" = "yes" ]; then
-  docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
-fi
 pushd ..
+  if [ "$3" != "yes" ]; then
+    install="install"
+  fi
+  $PWD/install.sh cleanup.snaps $install
+  $PWD/install.sh cleanup.docker$remove $unmount
+  if [ "$5" != "" ]; then
+    ./git.sh check && echo ""
+    systemd-cryptsetup attach Luks-Signal /dev/$5
+  fi
+  
+  mkdir -p /var/snap/docker
+  
+  if [ "$5" != "" ]; then
+    mount /dev/mapper/Luks-Signal /var/snap/docker
+    if [ "$2" = "yes" ]; then
+      rm -f -r /var/snap/docker/*
+    fi
+  fi
+  chown root:root /var/snap/docker
+  
+  if [ "$4" = "yes" ]; then
+    $PWD/install.sh install.docker.cross
+  else
+    $PWD/install.sh install.docker
+  fi
+  
+  docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
+  if [ "$4" = "yes" ]; then
+    docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
+  fi
+  
   load base
   if [[ "$TARGET" == *$NAME* ]]; then
     docker buildx build $LOAD \
