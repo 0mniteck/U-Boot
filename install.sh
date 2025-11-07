@@ -13,6 +13,13 @@ apt_update() {
   apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
 }
 
+add_user() {
+  groupadd docker
+  usermod -aG docker $1
+  chown root:docker /var/run/docker.sock
+  chmod 660 /var/run/docker.sock
+}
+
 purge_snapd() {
   rm -f -r /var/snap/docker/*
   rm -f -r /var/lib/snapd/cache/*
@@ -51,12 +58,14 @@ if [[ "$1" == *install.docker.cross* ]]; then
   if [[ "$2" != "" ]]; then
     crypt_mount $2
   fi
+  add_user $3
 elif [[ "$1" == *install.docker* ]]; then
   snap install docker --revision=3380 && systemctl stop snap.docker.nvidia-container-toolkit
   systemctl disable snap.docker.nvidia-container-toolkit
   if [[ "$2" != "" ]]; then
     crypt_mount $2
   fi
+  add_user $3
 fi
 
 if [[ "$1" == *cleanup.docker* ]]; then
