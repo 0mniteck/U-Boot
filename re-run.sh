@@ -1,8 +1,10 @@
 #!/usr/bin/pkexec /bin/bash
+
 cd $7
-echo $PWD
+
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
+
 pushd ..
   ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
   TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
