@@ -117,10 +117,8 @@ fi
 # ── Clean ────────────────────────────────────────────────────────────────────
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
   $PWD/clean.sh git.cleanup.cache "" "$PWD"
-  $PWD/clean.sh dir.cleanup "" "$PWD"
 elif [ "$CLEAN" = "yes" ]; then
   $PWD/clean.sh git.cleanup "" "$PWD"
-  $PWD/clean.sh dir.cleanup "" "$PWD"
 fi
 # ── Output to vars.env + build.info ──────────────────────────────────────────
 ## ─ Variables ────────────────────────────────────────────────────────────────
@@ -175,6 +173,6 @@ if [ "$CLEAN" = "yes" ]; then
   $PWD/clean.sh tmp.cleanup "" "$PWD" && ls -la Builds/*
   read -p "$status: --> Continue"
   if [ "$DEV" != "yes" ]; then
-    $PWD/git.sh "$status" "$TAG" "$PWD"
+    ./git.sh "$status" "$TAG"
   fi
 fi
