@@ -112,13 +112,13 @@ if [[ $(which pkexec) = "" ]]; then
   sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
   sudo -K
 else
-  $PWD/clean.sh apt.update "" "$PWD"
+  $PWD/install.sh apt.update "" "$PWD"
 fi
 # ── Clean ────────────────────────────────────────────────────────────────────
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
-  $PWD/clean.sh git.cleanup.cache "" "$PWD"
+  ./clean.sh git.cleanup.cache
 elif [ "$CLEAN" = "yes" ]; then
-  $PWD/clean.sh git.cleanup "" "$PWD"
+  ./clean.sh git.cleanup
 fi
 # ── Output to vars.env + build.info ──────────────────────────────────────────
 ## ─ Variables ────────────────────────────────────────────────────────────────
@@ -163,14 +163,14 @@ pushd Results
   echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
   echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
-  sleep 5 && > builder.log && screen -c vars.env -L -Logfile builder.log bash -c $PWD'/re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '$PWD' '
+  sleep 5 && > builder.log && screen -c vars.env -L -Logfile builder.log bash -c '../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '$PWD' '
   echo "FQPN: $program CMDLN: $command_line" && cat builder.log | grep -n "Checksum Matched! "
   mv builder.log ../../builder.log && status="$(<status.info)"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && cat build.info && echo ""
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
 if [ "$CLEAN" = "yes" ]; then
-  $PWD/clean.sh tmp.cleanup "" "$PWD" && ls -la Builds/*
+  ./clean.sh tmp.cleanup && ls -la Builds/*
   read -p "$status: --> Continue"
   if [ "$DEV" != "yes" ]; then
     ./git.sh "$status" "$TAG"
