@@ -27,6 +27,11 @@ purge_snapd() {
   printf 'y\n' | ufw enable
 }
 
+crypt_mount() { #1 = device
+  systemd-cryptsetup attach Luks-Signal /dev/$1
+  sleep 5
+  mount /dev/mapper/Luks-Signal /var/snap/docker
+}
 crypt_unmount() {
   umount -f /dev/mapper/Luks-Signal 2>/dev/null && wait
   sleep 5
@@ -43,9 +48,15 @@ fi
 
 if [[ "$1" == *install.docker.cross* ]]; then
   snap install docker --revision=3377
+  if [[ "$2" != "" ]]; then
+    crypt_mount $2
+  fi
 elif [[ "$1" == *install.docker* ]]; then
   snap install docker --revision=3380 && systemctl stop snap.docker.nvidia-container-toolkit
   systemctl disable snap.docker.nvidia-container-toolkit
+  if [[ "$2" != "" ]]; then
+    crypt_mount $2
+  fi
 fi
 
 if [[ "$1" == *cleanup.docker* ]]; then
@@ -55,7 +66,7 @@ if [[ "$1" == *cleanup.docker* ]]; then
     rm -f -r /var/lib/snapd/cache/*
     sleep 5
   fi
-  if [[ "$2" == *unmount* ]]; then
+  if [[ "$2" != "" ]]; then
     snap disable docker 2>/dev/null && wait
     crypt_unmount
   fi
@@ -77,6 +88,7 @@ if [[ "$1" == *cleanup.docker* ]]; then
   fi
   networkctl delete docker0 2>/dev/null && wait
   networkctl delete docker1 2>/dev/null && wait
+  mkdir -p /var/snap/docker
 fi
 
 if [[ "$1" == *cleanup.snaps* ]]; then
