@@ -28,4 +28,4 @@ export ARCHS="rk3588 rk3399"
 ## ─ Build targets + variants ─────────────────────────────────────────────────
 export TARGETS="edk2 optee arm-trusted u-boot ubuntu"
 export VARIANTS="-SB -TPM-SB -MU-SB"
-export CALLER_PWD="$PWD"
+export CALLER_PWD
