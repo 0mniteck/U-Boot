@@ -1,6 +1,4 @@
-#!/usr/bin/pkexec /bin/bash
-
-cd $7
+#!/bin/bash
 
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
@@ -58,12 +56,10 @@ if [ "$1" != "" ]; then
 fi
 
 if [ "$3" != "yes" ]; then
-  snap install syft --classic 2>/dev/null && wait
-  snap install grype --classic 2>/dev/null && wait
+  install="install"
 fi
-
-$PWD/clean.sh cleanup.snaps "" "$7"
-$PWD/clean.sh cleanup.docker$remove $unmount "$7"
+$PWD/install.sh cleanup.snaps $install
+$PWD/install.sh cleanup.docker$remove $unmount
 if [ "$5" != "" ]; then
   ./git.sh check && echo ""
   systemd-cryptsetup attach Luks-Signal /dev/$5
@@ -81,10 +77,9 @@ fi
 chown root:root /var/snap/docker
 
 if [ "$4" = "yes" ]; then
-  snap install docker --revision=3377
+  $PWD/install.sh install.docker.cross
 else
-  snap install docker --revision=3380 && systemctl stop snap.docker.nvidia-container-toolkit
-  systemctl disable snap.docker.nvidia-container-toolkit
+  $PWD/install.sh install.docker
 fi
 
 stop() { # $1 = Name
@@ -300,14 +295,14 @@ pushd ..
     stop $NAME
   fi
   
-  $PWD/clean.sh cleanup.docker$remove $unmount "$7"
+  $PWD/install.sh cleanup.docker$remove $unmount
   
   load ubuntu
   if [[ "$TARGET" == *$NAME* ]]; then
     scan_using_grype ubuntu "/ --select-catalogers debian" $3
   fi
   
-  $PWD/clean.sh cleanup.snaps$remove "" "$7"
+  $PWD/install.sh cleanup.snaps$remove
   
   load u-boot
   if [[ "$TARGET" == *$NAME* ]]; then
