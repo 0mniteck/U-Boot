@@ -165,8 +165,7 @@ pushd Results
   echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
   echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
-  sleep 5 && > builder.log && env -i - env -u LS_COLORS -u PWD -u LESSCLOSE -u LESSOPEN -u SHLVL -u _ - env PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin TERM=screen - \
-  screen -h 10000 -c vars.env -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - bash -c "$PWD'/../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '"
+  sleep 5 && > builder.log && env -i - env -u LS_COLORS -u PWD -u LESSCLOSE -u LESSOPEN -u SHLVL -u _ - env PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin TERM=screen - screen -h 10000 -c vars.env -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - bash -c "$PWD'/../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '"
   cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
