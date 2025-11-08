@@ -88,7 +88,7 @@ if [ "$ALT" = "yes" ]; then
   export LIST="PT2-rk3566"
   export ARCHS="rk3568"
 fi
-## ─ Target Validation ────────────────────────────────────────────────────────
+# ── Target Validation ────────────────────────────────────────────────────────
 TRGLIST="(edk2|arm-trusted|optee|u-boot|ubuntu|base|base_extra)"
 if [[ -z "$TARGET" || "$TARGET" == *all* ]]; then
   TARGET="$TARGETS"
