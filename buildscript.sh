@@ -119,40 +119,10 @@ if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
 elif [ "$CLEAN" = "yes" ]; then
   ./clean.sh git.cleanup
 fi
-# ── Output to vars.env + build.info ──────────────────────────────────────────
-## ─ Variables ────────────────────────────────────────────────────────────────
+# ── Check Variables ──────────────────────────────────────────────────────────
+  ENV=$(sha512sum defaults)
 pushd Results
-  > vars.env
-  for env in HUB^$HUB BASE^$BASE BASE_EXTRA^$BASE_EXTRA EDK_VER^$EDK_VER EDKP_VER^$EDKP_VER \
-  EDKP_SUM^$EDKP_SUM OPT_VER^$OPT_VER OPT_SUM^$OPT_SUM OPT_SUM2^$OPT_SUM2 TPM_SUM^$TPM_SUM \
-  SSL_VER^$SSL_VER SSL_SUM^$SSL_SUM CROSS_VER^$CROSS_VER CROSS_SUM^$CROSS_SUM ROT_SUM^$ROT_SUM \
-  ATF_VER^$ATF_VER ATF_SUM^$ATF_SUM MTLS_VER^$MTLS_VER MTLS_SUM^$MTLS_SUM UB_VER^$UB_VER UB_SUM^$UB_SUM
-  do
-    env1=$(echo $env | cut -d'^' -f1)
-    env2=$(echo $env | cut -d'^' -f2)
-    env3=$(echo "setenv $env1 \"$env2\"")
-    echo $env3 >> vars.env
-  done
-  printf "\"" >> vars.env
-  for lis in BUILD_LIST^$BUILD_LIST LIST^$LIST ARCHS^$ARCHS VARIANTS^$VARIANTS TARGETS^$TARGETS
-  do
-    lis1=$(echo $lis | cut -d'^' -f1)
-    lis2=$(echo $lis | cut -d'^' -f2)
-    if [ $lis1 = BUILD_LIST ] || [ $lis1 = LIST ] || [ $lis1 = ARCHS ] || [ $lis1 = TARGETS ]; then
-      printf "\"" >> vars.env
-      echo "" >> vars.env
-      printf "setenv $lis1 \"" >> vars.env
-    elif [ $lis1 = VARIANTS ]; then
-      printf "\"" >> vars.env
-      echo "" >> vars.env
-      printf "setenv $lis1 \"\\\\\$'\\\\\\\\\\\\\\\\0' " >> vars.env
-    fi
-    printf -- "$lis2 " >> vars.env
-  done
-  echo "$lis1 \"" >> vars.env
-## ─ Check Variables ──────────────────────────────────────────────────────────
-  ENV=$(sha512sum vars.env)
-  if [[ $ENV == *9b70b8128aa795bb305fd7e297302963113239322eeaa2a054539ec5085cbc12bd467043d083d1b0be8d475a746359fad4cbf89137efe5e2b3b06adf84fe92a0* ]]; then
+  if [[ $ENV == *068e37dc74100e179e6a2ff76e6c194aed9974b742aa7481db5000e40246a24273bb98e3a11b7c8538294128411dfeed2223ed5c7e8ddafc883bf637ec8e5914* ]]; then
     ENVV="MATCHED DEFAULT CONFIG SHA512SUM"
   else
     sed s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ ../defaults > defaults.set
@@ -160,7 +130,7 @@ pushd Results
     sed -i s/"$(grep "LIST" defaults | awk -F'"' '{print $2}')"/"$LIST"/ defaults.set
     sed -i s/"$(grep "ARCHS" defaults | awk -F'"' '{print $2}')"/"$ARCHS"/ defaults.set
   fi
-## ─ Build Info ───────────────────────────────────────────────────────────────
+# ── Build Info ───────────────────────────────────────────────────────────────
   > release.sha512sum && > release.sha3sum && > build.info
   sha512sum vars.env >> release.sha512sum && openssl dgst -SHA3-256 vars.env >> release.sha3sum
   echo "Clean Build: $CLEAN" && echo "Clean Build: $CLEAN" >> build.info
@@ -177,7 +147,7 @@ pushd Results
   echo "export CR_C=$CROSS" >> .set && echo "export MOUNT=$MOUNT" >> .set && echo "export CHECK=$CHECK" >> .set
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
   sleep 5 && > builder.log && env -i - env -u LS_COLORS -u PWD -u LESSCLOSE -u LESSOPEN -u SHLVL -u _ - env TERM=screen - screen -h 10000 \
-  -c vars.env -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin SHLVL=1 bash --noprofile --norc -c ../re-run.sh
+  -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin SHLVL=1 bash --noprofile --norc -c ../re-run.sh
   cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
