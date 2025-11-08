@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ## Available Commands:
-# git.cleanup
-# git.cleanup.(cache)
-# tmp.cleanup
+# ./clean.sh git.cleanup
+# ./clean.sh git.cleanup.(cache)
+# ./clean.sh tmp.cleanup
 
 do_clean() {
   ./git.sh reset
