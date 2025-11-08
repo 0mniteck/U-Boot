@@ -132,7 +132,7 @@ pushd Results
   fi
 # ── Build Info ───────────────────────────────────────────────────────────────
   > release.sha512sum && > release.sha3sum && > build.info
-  sha512sum defaults >> release.sha512sum && openssl dgst -SHA3-256 defaults >> release.sha3sum
+  sha512sum ../defaults >> release.sha512sum && openssl dgst -SHA3-256 ../defaults >> release.sha3sum
   echo "Clean Build: $CLEAN" && echo "Clean Build: $CLEAN" >> build.info
   echo "Cross-Compile: $CROSS" && echo "Cross-Compile: $CROSS" >> build.info
   echo "Developer Build: $DEV" && echo "Developer Build: $DEV" >> build.info
