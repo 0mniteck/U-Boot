@@ -124,7 +124,10 @@ fi
 ## ─ Variables ────────────────────────────────────────────────────────────────
 pushd Results
   > vars.env
-  for env in HUB^$HUB BASE^$BASE BASE_EXTRA^$BASE_EXTRA EDK_VER^$EDK_VER EDKP_VER^$EDKP_VER EDKP_SUM^$EDKP_SUM OPT_VER^$OPT_VER OPT_SUM^$OPT_SUM OPT_SUM2^$OPT_SUM2 TPM_SUM^$TPM_SUM SSL_VER^$SSL_VER SSL_SUM^$SSL_SUM CROSS_VER^$CROSS_VER CROSS_SUM^$CROSS_SUM ROT_SUM^$ROT_SUM ATF_VER^$ATF_VER ATF_SUM^$ATF_SUM MTLS_VER^$MTLS_VER MTLS_SUM^$MTLS_SUM UB_VER^$UB_VER UB_SUM^$UB_SUM
+  for env in HUB^$HUB BASE^$BASE BASE_EXTRA^$BASE_EXTRA EDK_VER^$EDK_VER EDKP_VER^$EDKP_VER \
+  EDKP_SUM^$EDKP_SUM OPT_VER^$OPT_VER OPT_SUM^$OPT_SUM OPT_SUM2^$OPT_SUM2 TPM_SUM^$TPM_SUM \
+  SSL_VER^$SSL_VER SSL_SUM^$SSL_SUM CROSS_VER^$CROSS_VER CROSS_SUM^$CROSS_SUM ROT_SUM^$ROT_SUM \
+  ATF_VER^$ATF_VER ATF_SUM^$ATF_SUM MTLS_VER^$MTLS_VER MTLS_SUM^$MTLS_SUM UB_VER^$UB_VER UB_SUM^$UB_SUM
   do
     env1=$(echo $env | cut -d'^' -f1)
     env2=$(echo $env | cut -d'^' -f2)
@@ -163,10 +166,10 @@ pushd Results
   echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
   echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
-  sleep 5 && > builder.log && screen -c vars.env -L -Logfile builder.log bash -c '../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
-  echo "FQPN: $program CMDLN: $command_line" && cat builder.log | grep -n "Checksum Matched! "
-  mv builder.log ../../builder.log && status="$(<status.info)"
-  echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && cat build.info && echo ""
+  sleep 5 && > builder.log
+  screen -h 10000 -c vars.env -L -Logfile builder.log env -i - bash -c "env -u LS_COLORS -u PWD -u LESSCLOSE -u LESSOPEN -u SHLVL -u _ && env PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin && env && bash -c $PWD'/../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '"
+  cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "Build Failed"
+  echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo ""
   sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
 if [ "$CLEAN" = "yes" ]; then
