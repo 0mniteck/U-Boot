@@ -18,6 +18,7 @@ add_user() { #1 = $(whoami)
   chmod 660 /var/run/docker.sock
   mkdir -p /var/snap/docker/common/var-lib-docker/tmp/
   mkdir -p /var/snap/docker/common/var-lib-docker/overlay2/l/
+  mkdir -p /var/snap/docker/common/var-lib-docker/image/overlay2/imagedb/content/
 }
 
 do_check() {
