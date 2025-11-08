@@ -1,11 +1,9 @@
 #!/usr/bin/pkexec /bin/bash
-
+##                                                                                  # WIP
 ## Available Commands:
-# apt.update
-# purge.snapd
-# install.docker.(cross)
-# cleanup.docker.(remove) (unmount/purge)
-# cleanup.snaps.(remove) (install)
+# $PWD/install.sh apt.update
+# $PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$5"
+# $PWD/install.sh run.uninstall "$remove" "$unmount"
 
 apt_update() {
   apt update
@@ -13,7 +11,7 @@ apt_update() {
   apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
 }
 
-add_user() {
+add_user() { #1 = $(whoami)
   groupadd docker
   usermod -aG docker $1
   chown root:docker /var/run/docker.sock
@@ -43,22 +41,13 @@ purge_snapd() {
 
 crypt_mount() { #1 = device
   do_check
-  systemd-cryptsetup attach Luks-Signal /dev/$1
-  sleep 5
-  mount /dev/mapper/Luks-Signal /var/snap/docker
+  systemd-cryptsetup attach Luks-Signal /dev/$1 && wait && sleep 1
+  mount /dev/mapper/Luks-Signal /var/snap/docker && wait
 }
 crypt_unmount() {
-  umount -f /dev/mapper/Luks-Signal 2>/dev/null && wait
-  sleep 5
+  umount -f /dev/mapper/Luks-Signal 2>/dev/null && wait && sleep 1
   systemd-cryptsetup detach Luks-Signal 2>/dev/null && wait
 }
-
-if [[ "$1" == *apt.update* ]]; then
-  apt_update
-fi
-if [[ "$1" == *purge.snapd* ]]; then
-  purge_snapd
-fi
 
 if [[ "$1" == *install.docker.cross* ]]; then
   snap install docker --revision=3377
@@ -118,4 +107,44 @@ if [[ "$1" == *cleanup.snaps* ]]; then
     snap install syft --classic 2>/dev/null && wait
     snap install grype --classic 2>/dev/null && wait
   fi
+fi
+
+  $PWD/install.sh cleanup.docker$remove $5
+  $PWD/install.sh cleanup.snaps$remove
+  
+  $PWD/install.sh cleanup.snaps $install
+  $PWD/install.sh cleanup.docker$remove $5
+  $PWD/install.sh install.docker.cross $5 "$(whoami)"
+
+run_install() {
+  if [ "$3" != "yes" ]; then
+    install="install"
+  fi
+  $PWD/install.sh cleanup.snaps $install
+  $PWD/install.sh cleanup.docker$remove $5
+  if [ "$4" = "yes" ]; then
+    $PWD/install.sh install.docker.cross $5 "$(whoami)"
+  else
+    $PWD/install.sh install.docker $5 "$(whoami)"
+  fi
+}
+
+run_uninstall() {
+  $PWD/install.sh cleanup.docker$remove $unmount
+  $PWD/install.sh cleanup.snaps$remove
+}
+
+$PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$5"
+$PWD/install.sh run.uninstall "$remove" "$5"
+
+if [[ "$1" == *apt.update* ]]; then
+  apt_update
+fi
+
+if [[ "$1" == *run.install* ]]; then
+  run_install "$install" "$remove" "$(whoami)" "$cross" "$5"
+fi
+
+if [[ "$1" == *run.uninstall* ]]; then
+  run_uninstall "$install" "$remove" "$(whoami)" "$cross" "$5"
 fi
