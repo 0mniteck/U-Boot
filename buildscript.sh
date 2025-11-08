@@ -177,7 +177,7 @@ pushd Results
   echo "export CR_C=$CROSS" >> .set && echo "export MOUNT=$MOUNT" >> .set && echo "export CHECK=$CHECK" >> .set
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
   sleep 5 && > builder.log && env -i - env -u LS_COLORS -u PWD -u LESSCLOSE -u LESSOPEN -u SHLVL -u _ - env TERM=screen - screen -h 10000 \
-  -c vars.env -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash -c ../re-run.sh
+  -c vars.env -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin SHLVL=1 bash --noprofile --norc -c ../re-run.sh
   cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
