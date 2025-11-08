@@ -22,27 +22,30 @@ fi
 if [ "$4" = "yes" ]; then
   echo "CROSS_COMPILE: $4"
   export CROSS="--platform linux/arm64"
+  export cross="cross"
 fi
 if [ "$3" = "yes" ]; then
   echo "DEV_BUILD: $3"
-  local_cache="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
+  export developer="dev"
+  CACHE="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
   load() { # $1 = Name
-    export LOAD="--load $CROSS $local_cache --target $1 --tag $1"
+    export LOAD="--load $CROSS $CACHE --target $1 --tag $1"
     export NAME=$1
     return
-    }
+  }
 else
+  export BUILDX_METADATA_PROVENANCE=max
+  export install="install"
+  export signing=1
   load() { # $1 Name
     export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
-    export BUILDX_METADATA_PROVENANCE=max
-    export SIGNING=1
     export NAME=$1
     return
-    }
+  }
 fi
 if [ "$2" = "yes" ]; then
   echo "CLEAN_BUILD: $2"
-  export remove=".remove"
+  export remove="remove"
 else
   echo "CLEAN_BUILD: $2"
 fi
@@ -59,10 +62,10 @@ stop() { # $1 = Name
   docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
 }
 
-scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
-  if [ "$3" != "yes" ]; then
+scan_using_grype() { # $1 = Name, $2 = Type:[Name]
+  if [ "$developer" != "dev" ]; then
     pushd Results/$1
-      mkdir -p "/var/snap/docker/syft" && TMPDIR="/var/snap/docker/syft" syft scan $2 -o spdx-json=$1.spdx.json
+      mkdir -p "~/syft" && TMPDIR="~/syft" syft scan $2 -o spdx-json=$1.spdx.json
       script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp.tmp > $1.grype.tmp
       marker() { # $1 = Name, $2 = Order, $3 = Marker/ID
         grep "$3" $1.grype.tmp | tail -n 1 > $1.grype.status.$2
@@ -94,16 +97,7 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name], $3 = $3
 }
 
 pushd ..
-  if [ "$3" != "yes" ]; then
-    install="install"
-  fi
-  $PWD/install.sh cleanup.snaps $install
-  $PWD/install.sh cleanup.docker$remove $5
-  if [ "$4" = "yes" ]; then
-    $PWD/install.sh install.docker.cross $5 "$(whoami)"
-  else
-    $PWD/install.sh install.docker $5 "$(whoami)"
-  fi
+  $PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$5"
   
   docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
   if [ "$4" = "yes" ]; then
@@ -139,7 +133,7 @@ pushd ..
       --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
   
-    scan_using_grype $NAME docker:$NAME $3
+    scan_using_grype $NAME docker:$NAME
   
     docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
@@ -178,7 +172,7 @@ pushd ..
       --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
     
-    scan_using_grype $NAME docker:$NAME $3
+    scan_using_grype $NAME docker:$NAME
     
     docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
@@ -217,7 +211,7 @@ pushd ..
       --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
     
-    scan_using_grype $NAME docker:$NAME $3
+    scan_using_grype $NAME docker:$NAME
     
     docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
@@ -248,7 +242,7 @@ pushd ..
       --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
     
-    scan_using_grype $NAME docker:$NAME $3
+    scan_using_grype $NAME docker:$NAME
     
     docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
@@ -280,18 +274,16 @@ pushd ..
     stop $NAME
   fi
   
-  $PWD/install.sh cleanup.docker$remove $unmount
-  
   load ubuntu
   if [[ "$TARGET" == *$NAME* ]]; then
-    scan_using_grype ubuntu "/ --select-catalogers debian" $3
+    scan_using_grype ubuntu "/ --select-catalogers debian"
   fi
-  
-  $PWD/install.sh cleanup.snaps$remove
-  
+
+  $PWD/install.sh run.uninstall "$remove" "$unmount"
+
   load u-boot
   if [[ "$TARGET" == *$NAME* ]]; then
-    if [ "$3" != "yes" ]; then
+    if [ "$developer" != "dev" ]; then
       mkfs.fat -i 00000000 -n "U-BOOT" --invariant -C /tmp/sdcard.img 35000
       for dev in $LIST
       do
@@ -319,12 +311,10 @@ pushd ..
   fi
 popd
 echo "0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> build.info
-echo "Base Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)"  >> build.info
-cat sys.info >> build.info
+echo "Base Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)" >> build.info && cat sys.info >> build.info
 echo "Build Complete: $(date -u '+on %D at %R UTC')" >> build.info && echo "Build Complete: $(date -u '+on %D at %R UTC')"
 if [ "$check_file" = "1" ]; then
-  cp /tmp/release.last.sha512sum release.last.sha512sum
-  cp /tmp/release.last.sha3sum release.last.sha3sum
+  cp /tmp/release.last.sha512sum release.last.sha512sum && cp /tmp/release.last.sha3sum release.last.sha3sum
   sha512sum -c release.last.sha512sum && REP="ly Reproduced" || wait
 fi
 echo "Successful$REP Build of U-Boot v$UB_VER on $build_message_timestamp W/ TF-A $ATF_VER & OP-TEE v$OPT_VER" > status.info
