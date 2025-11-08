@@ -113,7 +113,7 @@ if [[ "$1" == *cleanup.snaps* ]]; then
     snap remove grype --purge 2>/dev/null && wait
     rm -f -r /root/Library
   fi
-  rm -f -r /root/getter* && rm -f -r /root/grype-scratch* && rm -f -r /root/syft && rm -f -r /root/6 && rm -f -r $HOME/.cache/grype && rm -f -r $HOME/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter* && rm -f $HOME/.grype.yaml
+  rm -f -r /root/getter* && rm -f -r /root/grype-scratch* && rm -f -r /root/syft && rm -f -r /root/6 && rm -f -r ~/.cache/grype && rm -f -r ~/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter* && rm -f ~/.grype.yaml
   if [[ "$2" == *install* ]]; then
     snap install syft --classic 2>/dev/null && wait
     snap install grype --classic 2>/dev/null && wait
