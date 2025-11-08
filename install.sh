@@ -14,7 +14,8 @@ apt_update() {
 add_user() { #1 = $(whoami)
   groupadd docker
   usermod -aG docker $1
-  chown root:docker /var/run/docker.sock
+  echo $1
+  chown $1:docker /var/run/docker.sock
   chmod 660 /var/run/docker.sock
   mkdir -p /var/snap/docker/common/var-lib-docker/tmp/
   mkdir -p /var/snap/docker/common/var-lib-docker/overlay2/l/
