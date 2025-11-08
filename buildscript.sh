@@ -107,14 +107,13 @@ else
 fi
 export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
 export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-# ── Update ───────────────────────────────────────────────────────────────────
+# ── Update + Clean ───────────────────────────────────────────────────────────
 if [[ $(which pkexec) = "" ]]; then
   sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
   sudo -K
 else
   $PWD/install.sh apt.update
 fi
-# ── Clean ────────────────────────────────────────────────────────────────────
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
   ./clean.sh git.cleanup.cache
 elif [ "$CLEAN" = "yes" ]; then
