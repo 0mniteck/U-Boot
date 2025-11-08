@@ -1,6 +1,6 @@
 #!/bin/bash
 source ../defaults 2>/dev/null
-source ../defaults.set 2>/dev/null
+source ../*.set 2>/dev/null && rm -f ../*.set
 env
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
