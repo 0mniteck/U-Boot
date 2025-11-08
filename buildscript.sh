@@ -174,7 +174,7 @@ pushd Results
   echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
   echo "Env Config Sum: $ENVV" && echo "Env Config Sums: $ENVV" >> build.info
   echo "export EPOCH=$EPOCH" > .set && echo "export CLEAN=$CLEAN" >> .set && echo "export DEV=$DEV" >> .set
-  echo "export CROSS=$CROSS" >> .set && echo "export MOUNT=$MOUNT" >> .set && echo "export CHECK=$CHECK" >> .set
+  echo "export CR_C=$CROSS" >> .set && echo "export MOUNT=$MOUNT" >> .set && echo "export CHECK=$CHECK" >> .set
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
   sleep 5 && > builder.log && env -i - env -u LS_COLORS -u PWD -u LESSCLOSE -u LESSOPEN -u SHLVL -u _ - env PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin \
   TERM=screen - screen -h 10000 -c vars.env -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - bash -c ../re-run.sh
