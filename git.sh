@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ## Available Commands:
-# ./clean.sh check
-# ./clean.sh reset
-# ./clean.sh update
+# ./git.sh check
+# ./git.sh reset
+# ./git.sh update
 
 # Host UBoot ## Add to ~/.ssh/config for SSH support, recommend ecdsa-sk or ed25519_sk.
 #    Hostname github.com
