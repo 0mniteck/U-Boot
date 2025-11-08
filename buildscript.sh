@@ -155,7 +155,7 @@ pushd Results
   if [[ $ENV == *9b70b8128aa795bb305fd7e297302963113239322eeaa2a054539ec5085cbc12bd467043d083d1b0be8d475a746359fad4cbf89137efe5e2b3b06adf84fe92a0* ]]; then
     ENVV="MATCHED DEFAULT CONFIG SHA512SUM"
   else
-    sed s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ defaults > defaults.set
+    sed s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ ../defaults > defaults.set
     sed -i s/"$(grep "BUILD_LIST" defaults | awk -F'"' '{print $2}')"/"$BUILD_LIST"/ defaults.set
     sed -i s/"$(grep "LIST" defaults | awk -F'"' '{print $2}')"/"$LIST"/ defaults.set
     sed -i s/"$(grep "ARCHS" defaults | awk -F'"' '{print $2}')"/"$ARCHS"/ defaults.set
