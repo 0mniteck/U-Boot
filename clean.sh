@@ -38,7 +38,7 @@ if [[ "$1" == *git.cleanup* ]]; then
     done
   popd
   pushd Results/
-    rm -f *.info && rm -f release.* && rm -f vars.* && rm -f builder.*
+    rm -f *.info && rm -f release.* && rm -f builder.*
     find . ! -type d -delete # Will be removed
     for con in $TARGETS
       do
@@ -65,7 +65,7 @@ if [ "$1" = "tmp.cleanup" ]; then
   popd
   pushd Results/
     rm -f /tmp/release.last.* && rm -f release.last.*
-    rm -f sys.* && rm -f status.* && rm -f vars.* && rm -f builder.*
+    rm -f sys.* && rm -f status.* && rm -f builder.*
     for con in $TARGETS
     do
       rm -f $con/tmp
