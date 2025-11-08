@@ -17,6 +17,7 @@ add_user() { #1 = $(whoami)
   chown root:docker /var/run/docker.sock
   chmod 660 /var/run/docker.sock
   mkdir -p /var/snap/docker/common/var-lib-docker/tmp/
+  mkdir -p /var/snap/docker/common/var-lib-docker/overlay2/l/
 }
 
 do_check() {
