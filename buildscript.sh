@@ -150,22 +150,28 @@ pushd Results
     printf -- "$lis2 " >> vars.env
   done
   echo "$lis1 \"" >> vars.env
+## ─ Check Variables ──────────────────────────────────────────────────────────
   ENV=$(sha512sum vars.env)
+  MATCH=[[ $ENV = *9b70b8128aa795bb305fd7e297302963113239322eeaa2a054539ec5085cbc12bd467043d083d1b0be8d475a746359fad4cbf89137efe5e2b3b06adf84fe92a0* ]]
+  if [[ $MATCH ]]; then
+    ENVV = "MATCHED DEFAULT CONFIG SHA512SUM"
+  fi
 ## ─ Build Info ───────────────────────────────────────────────────────────────
   > release.sha512sum && > release.sha3sum && > build.info
   sha512sum vars.env >> release.sha512sum && openssl dgst -SHA3-256 vars.env >> release.sha3sum
-  echo "Env Config Sum: $ENV" && echo "Env Config Sums: $ENV" >> build.info
-  echo "Source Date Epoch: $EPOCH" && echo "Source Date Epoch: $EPOCH" >> build.info
   echo "Clean Build: $CLEAN" && echo "Clean Build: $CLEAN" >> build.info
-  echo "Developer Build: $DEV" && echo "Developer Build: $DEV" >> build.info
   echo "Cross-Compile: $CROSS" && echo "Cross-Compile: $CROSS" >> build.info
-  echo "Mounted External: /dev/$MOUNT" && echo "Mounted External: /dev/$MOUNT" >> build.info
-  echo "Check Reporoducibility: $CHECK" && echo "Check Reporoducibility: $CHECK" >> build.info
-  echo "Tag Release: $TAG" && echo "Tag Release: $TAG" >> build.info
+  echo "Developer Build: $DEV" && echo "Developer Build: $DEV" >> build.info
   echo "Using Alternate List: $ALT" && echo "Using Alternate List: $ALT" >> build.info
+  echo "Check Reporoducibility: $CHECK" && echo "Check Reporoducibility: $CHECK" >> build.info
+  echo "Source Date Epoch: $EPOCH" && echo "Source Date Epoch: $EPOCH" >> build.info
+  echo "Mounted External: /dev/$MOUNT" && echo "Mounted External: /dev/$MOUNT" >> build.info
+  echo "Tag Release: $TAG" && echo "Tag Release: $TAG" >> build.info
   echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
+  echo "Env Config Sum: $ENVV" && echo "Env Config Sums: $ENVV" >> build.info
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
-  sleep 5 && > builder.log && env -i - env -u LS_COLORS -u PWD -u LESSCLOSE -u LESSOPEN -u SHLVL -u _ - env PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin TERM=screen - screen -h 10000 -c vars.env -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - bash -c "$PWD'/../re-run.sh '$EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '"
+  sleep 5 && > builder.log && env -i - env -u LS_COLORS -u PWD -u LESSCLOSE -u LESSOPEN -u SHLVL -u _ - env PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin TERM=screen - \
+  screen -h 10000 -c vars.env -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - ../re-run.sh $EPOCH' '$CLEAN' '$DEV' '$CROSS' '$MOUNT' '$CHECK' '
   cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
