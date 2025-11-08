@@ -20,6 +20,7 @@ add_user() { #1 = $(whoami)
   mkdir -p /var/snap/docker/common/var-lib-docker/tmp/
   mkdir -p /var/snap/docker/common/var-lib-docker/overlay2/l/
   mkdir -p /var/snap/docker/common/var-lib-docker/image/overlay2/imagedb/content/sha256/
+  mkdir -p /var/snap/docker/common/var-lib-docker/containers/
 }
 
 do_check() {
