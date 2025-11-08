@@ -11,23 +11,22 @@ if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
   export TARGET="$TARGETS"
 fi
-if [ "$6" = "yes" ]; then
+if [ "$CHECK" = "yes" ]; then
   echo "CHECK REPRODUCIBILITY: $6"
   export check_file=1
 fi
-if [ "$5" != "" ]; then
-  echo "MOUNT: /dev/$5"
-  export MOUNT="/dev/$5"
+if [ "$MOUNT" != "" ]; then
+  echo "MOUNT: /dev/$MOUNT"
+  export mount="$MOUNT"
   export unmount="unmount"
 fi
-if [ "$4" = "yes" ]; then
-  echo "CROSS_COMPILE: $4"
+if [ "$CR_C" = "yes" ]; then
+  echo "CROSS_COMPILE: $CR_C"
   export CROSS="--platform linux/arm64"
   export cross="cross"
 fi
-if [ "$3" = "yes" ]; then
-  echo "DEV_BUILD: $3"
-  export developer="dev"
+if [ "$DEV" = "yes" ]; then
+  echo "DEV_BUILD: $DEV"
   CACHE="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
   load() { # $1 = Name
     export LOAD="--load $CROSS $CACHE --target $1 --tag $1"
@@ -44,15 +43,15 @@ else
     return
   }
 fi
-if [ "$2" = "yes" ]; then
-  echo "CLEAN_BUILD: $2"
+if [ "$CLEAN" = "yes" ]; then
+  echo "CLEAN_BUILD: $CLEAN"
   export remove="remove"
 else
-  echo "CLEAN_BUILD: $2"
+  echo "CLEAN_BUILD: $CLEAN"
 fi
-if [ "$1" != "" ]; then
-  echo "SOURCE_DATE_EPOCH: $1"
-  export source_date_epoch=$1
+if [ "$EPOCH" != "" ]; then
+  echo "SOURCE_DATE_EPOCH: $EPOCH"
+  export source_date_epoch=$EPOCH
   source_date="@$source_date_epoch"
   echo "SOURCE_DATE: $source_date"
   build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
@@ -64,7 +63,7 @@ stop() { # $1 = Name
 }
 
 scan_using_grype() { # $1 = Name, $2 = Type:[Name]
-  if [ "$developer" != "dev" ]; then
+  if [ "$DEV" != "yes" ]; then
     pushd Results/$1
       mkdir -p "~/syft" && TMPDIR="~/syft" syft scan $2 -o spdx-json=$1.spdx.json
       script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp.tmp > $1.grype.tmp
@@ -98,10 +97,10 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
 }
 
 pushd ..
-  $PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$5"
+  $PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$mount"
   
   docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
-  if [ "$4" = "yes" ]; then
+  if [ "$cross" = "cross" ]; then
     docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
   fi
   
@@ -252,7 +251,7 @@ pushd ..
       -e SOURCE_DATE=$source_date \
       -e UB_VER=$UB_VER \
       -e BUILD_LIST="$BUILD_LIST" \
-      -e DEV_BUILD=$3 \
+      -e DEV_BUILD=$DEV \
       $NAME
     
     for dev in $LIST
@@ -284,7 +283,7 @@ pushd ..
 
   load u-boot
   if [[ "$TARGET" == *$NAME* ]]; then
-    if [ "$developer" != "dev" ]; then
+    if [ "$DEV" != "yes" ]; then
       mkfs.fat -i 00000000 -n "U-BOOT" --invariant -C /tmp/sdcard.img 35000
       for dev in $LIST
       do
