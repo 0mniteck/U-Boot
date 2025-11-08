@@ -153,7 +153,7 @@ pushd Results
 ## ─ Check Variables ──────────────────────────────────────────────────────────
   ENV=$(sha512sum vars.env)
   if [[ $ENV == *9b70b8128aa795bb305fd7e297302963113239322eeaa2a054539ec5085cbc12bd467043d083d1b0be8d475a746359fad4cbf89137efe5e2b3b06adf84fe92a0* ]]; then
-    ENVV = "MATCHED DEFAULT CONFIG SHA512SUM"
+    ENVV="MATCHED DEFAULT CONFIG SHA512SUM"
   fi
 ## ─ Build Info ───────────────────────────────────────────────────────────────
   > release.sha512sum && > release.sha3sum && > build.info
