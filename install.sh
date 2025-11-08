@@ -17,10 +17,11 @@ add_user() { #1 = $(whoami)
   echo $1
   chown $1:docker /var/run/docker.sock
   chmod 660 /var/run/docker.sock
+  mkdir -p /var/snap/docker/common/run/
   mkdir -p /var/snap/docker/common/var-lib-docker/tmp/
   mkdir -p /var/snap/docker/common/var-lib-docker/overlay2/l/
-  mkdir -p /var/snap/docker/common/var-lib-docker/image/overlay2/imagedb/content/sha256/
   mkdir -p /var/snap/docker/common/var-lib-docker/containers/
+  mkdir -p /var/snap/docker/common/var-lib-docker/image/overlay2/imagedb/content/sha256/
 }
 
 do_check() {
