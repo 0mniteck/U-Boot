@@ -100,51 +100,36 @@ if [[ "$1" == *cleanup.snaps* ]]; then
   if [[ "$1" == *cleanup.snaps.remove* ]]; then
     snap remove syft --purge 2>/dev/null && wait
     snap remove grype --purge 2>/dev/null && wait
-    rm -f -r /root/Library
+    rm -f -r ~/Library
   fi
-  rm -f -r /root/getter* && rm -f -r /root/grype-scratch* && rm -f -r /root/syft && rm -f -r /root/6 && rm -f -r ~/.cache/grype && rm -f -r ~/.cache/syft && rm -f -r /tmp/grype-scratch* && rm -f -r /tmp/getter* && rm -f ~/.grype.yaml
+  rm -f -r ~/getter* && rm -f -r ~/grype-scratch* && rm -f -r ~/syft && rm -f -r ~/6 && rm -f -r ~/.cache/grype && rm -f -r ~/.cache/syft && rm -f -r /tmp/getter* && rm -f -r /tmp/grype-scratch*
   if [[ "$2" == *install* ]]; then
     snap install syft --classic 2>/dev/null && wait
     snap install grype --classic 2>/dev/null && wait
   fi
 fi
 
-  $PWD/install.sh cleanup.docker$remove $5
-  $PWD/install.sh cleanup.snaps$remove
-  
-  $PWD/install.sh cleanup.snaps $install
-  $PWD/install.sh cleanup.docker$remove $5
-  $PWD/install.sh install.docker.cross $5 "$(whoami)"
-
-run_install() {
-  if [ "$3" != "yes" ]; then
-    install="install"
-  fi
-  $PWD/install.sh cleanup.snaps $install
-  $PWD/install.sh cleanup.docker$remove $5
-  if [ "$4" = "yes" ]; then
-    $PWD/install.sh install.docker.cross $5 "$(whoami)"
-  else
-    $PWD/install.sh install.docker $5 "$(whoami)"
-  fi
+run_install() { #1 = install, #2 = remove #3 = whoami, #4 = cross, #5 = device
+  cleanup.snaps $install
+  cleanup.docker$remove $unmount
+  install.docker$cross $5 "$(whoami)"
 }
 
-run_uninstall() {
-  $PWD/install.sh cleanup.docker$remove $unmount
-  $PWD/install.sh cleanup.snaps$remove
+run_uninstall() { #1 = remove , #2 = unmount
+  cleanup.docker$remove $unmount
+  cleanup.snaps$remove
 }
-
-$PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$5"
-$PWD/install.sh run.uninstall "$remove" "$5"
 
 if [[ "$1" == *apt.update* ]]; then
   apt_update
 fi
 
 if [[ "$1" == *run.install* ]]; then
-  run_install "$install" "$remove" "$(whoami)" "$cross" "$5"
+  #run_install "$install" "$remove" "$(whoami)" "$cross" "$5"
+  run_install "$2" "$3" "$4" "$5" "$6"
 fi
 
 if [[ "$1" == *run.uninstall* ]]; then
-  run_uninstall "$install" "$remove" "$(whoami)" "$cross" "$5"
+  #run_uninstall "$remove" "$unmount"
+  run_uninstall "$2" "$3"
 fi
