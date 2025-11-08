@@ -49,39 +49,38 @@ crypt_unmount() {
   systemd-cryptsetup detach Luks-Signal 2>/dev/null && wait
 }
 
-if [[ "$1" == *install.docker.cross* ]]; then
-  snap install docker --revision=3377
+install.docker() { #1 = cross, #2 = device, #3 = whoami
+  if [[ "$1" == *cross* ]]; then
+    snap install docker --revision=3377
+  elif [[ "$1" != *cross* ]]; then
+    snap install docker --revision=3380
+    systemctl stop snap.docker.nvidia-container-toolkit
+    systemctl disable snap.docker.nvidia-container-toolkit
+  fi
   if [[ "$2" != "" ]]; then
     crypt_mount $2
   fi
   add_user $3
-elif [[ "$1" == *install.docker* ]]; then
-  snap install docker --revision=3380 && systemctl stop snap.docker.nvidia-container-toolkit
-  systemctl disable snap.docker.nvidia-container-toolkit
-  if [[ "$2" != "" ]]; then
-    crypt_mount $2
-  fi
-  add_user $3
-fi
+}
 
-if [[ "$1" == *cleanup.docker* ]]; then
-  if [[ "$1" == *cleanup.docker.remove* ]]; then
+cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
+  if [[ "$1" == *remove* ]]; then
     snap disable docker 2>/dev/null && wait
     rm -f -r /var/snap/docker/*
     rm -f -r /var/lib/snapd/cache/*
     sleep 5
   fi
-  if [[ "$2" != "" ]]; then
+  if [[ "$2" == "unmount" ]]; then
     snap disable docker 2>/dev/null && wait
     crypt_unmount
   fi
-  if [[ "$1" == *cleanup.docker.remove* ]]; then
+  if [[ "$1" == *remove* ]]; then
     snap enable docker 2>/dev/null && wait
     snap remove docker --purge 2>/dev/null && wait
     snap remove docker --purge 2>/dev/null && wait
     snap remove core24 --purge 2>/dev/null && wait
     rm -f -r /var/snap/docker
-    if [[ "$2" == *purge* ]]; then
+    if [[ "$3" == *purge* ]]; then
       purge_snapd
     fi
   else
@@ -94,30 +93,36 @@ if [[ "$1" == *cleanup.docker* ]]; then
   networkctl delete docker0 2>/dev/null && wait
   networkctl delete docker1 2>/dev/null && wait
   mkdir -p /var/snap/docker
-fi
+}
 
-if [[ "$1" == *cleanup.snaps* ]]; then
-  if [[ "$1" == *cleanup.snaps.remove* ]]; then
+cleanup.snaps() { #1 = remove/install
+  if [[ "$1" == *remove* ]]; then
     snap remove syft --purge 2>/dev/null && wait
     snap remove grype --purge 2>/dev/null && wait
     rm -f -r ~/Library
   fi
   rm -f -r ~/getter* && rm -f -r ~/grype-scratch* && rm -f -r ~/syft && rm -f -r ~/6 && rm -f -r ~/.cache/grype && rm -f -r ~/.cache/syft && rm -f -r /tmp/getter* && rm -f -r /tmp/grype-scratch*
-  if [[ "$2" == *install* ]]; then
+  if [[ "$1" == *install* ]]; then
     snap install syft --classic 2>/dev/null && wait
     snap install grype --classic 2>/dev/null && wait
   fi
-fi
+}
 
-run_install() { #1 = install, #2 = remove #3 = whoami, #4 = cross, #5 = device
-  cleanup.snaps $install
-  cleanup.docker$remove $unmount
-  install.docker$cross $5 "$(whoami)"
+run_install() { #1 = install, #2 = remove, #3 = whoami, #4 = cross, #5 = device
+  if [[ "$5" != "" ]]; then
+    unmount="unmount"
+  fi
+  cleanup.snaps "$1"
+  cleanup.docker "$2" "$unmount" "$purge"
+  install.docker "$4" "$5" "$3"
 }
 
 run_uninstall() { #1 = remove , #2 = unmount
-  cleanup.docker$remove $unmount
-  cleanup.snaps$remove
+  if [[ "$2" != "" ]]; then
+    unmount="unmount"
+  fi
+  cleanup.docker "$1" "$unmount" "$purge"
+  cleanup.snaps "$1"
 }
 
 if [[ "$1" == *apt.update* ]]; then
@@ -125,11 +130,11 @@ if [[ "$1" == *apt.update* ]]; then
 fi
 
 if [[ "$1" == *run.install* ]]; then
-  #run_install "$install" "$remove" "$(whoami)" "$cross" "$5"
+  # "$install" "$remove" "$(whoami)" "$cross" "$5"
   run_install "$2" "$3" "$4" "$5" "$6"
 fi
 
 if [[ "$1" == *run.uninstall* ]]; then
-  #run_uninstall "$remove" "$unmount"
+  # "$remove" "$unmount"
   run_uninstall "$2" "$3"
 fi
