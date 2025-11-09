@@ -12,7 +12,7 @@ apt_update() {
 }
 
 add_user() { #1 = $(whoami)
-  groupadd docker
+  groupadd docker 2>/dev/null && wait
   usermod -aG docker $1
   echo $1
   chown $1:docker /var/run/docker.sock
