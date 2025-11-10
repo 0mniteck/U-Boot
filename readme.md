@@ -48,7 +48,7 @@
     * [x] Integrate threat intelligence using syft/grype
     * [x] Build variants in one branch
     * [x] Add local docker build-cache in .git/Cache for dev rebuilds
-    * [x] Target selection using -z
+    * [x] Target selection
     * [x] Make reproducible debian docker images
       * [ ] Sign base images with cosign & verify at buildtime
 
