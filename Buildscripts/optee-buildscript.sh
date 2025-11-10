@@ -19,7 +19,7 @@ __EOF
   ls -la x-tools/
   ls -la x-tools/aarch64-unknown-linux-gnu/bin
 popd
-su who_you_were
+su $who_you_were
 mv /openssl-openssl-$SSL_VER /SSL
 rm -f -r /usr/include/openssl
 pushd /SSL
