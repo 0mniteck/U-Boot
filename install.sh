@@ -1,6 +1,7 @@
 #!/usr/bin/pkexec /bin/bash
-##                                                                                  # WIP
+
 ## Available Commands:
+
 # $PWD/install.sh apt.update
 # $PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$5"
 # $PWD/install.sh run.uninstall "$remove" "$unmount"
@@ -41,7 +42,7 @@ purge_snapd() {
   networkctl delete docker1 2>/dev/null && wait
   apt remove --purge snapd -y
   rm -f -r /var/snap/docker
-  apt install ubuntu-server-minimal -y
+  apt install snapd -y
   snap install ufw
   ufw allow ssh
   printf 'y\n' | ufw enable
@@ -52,6 +53,7 @@ crypt_mount() { #1 = device
   systemd-cryptsetup attach Luks-Signal /dev/$1 && wait && sleep 1
   mount /dev/mapper/Luks-Signal /var/snap/docker && wait
 }
+
 crypt_unmount() {
   umount -f /dev/mapper/Luks-Signal 2>/dev/null && wait && sleep 1
   systemd-cryptsetup detach Luks-Signal 2>/dev/null && wait
