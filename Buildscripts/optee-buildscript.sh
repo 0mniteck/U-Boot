@@ -3,7 +3,10 @@ trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q SSL.zip -d / > /dev/null
 unzip -q CROSS.zip -d / > /dev/null
 mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
+adduser cross
+chown -R cross:cross CROSS/*
 pushd /CROSS
+su cross
   ./bootstrap && ./configure --enable-local && make
   ./ct-ng aarch64-unknown-linux-gnu
   cat >> .config << __EOF
