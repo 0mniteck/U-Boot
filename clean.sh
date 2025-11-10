@@ -20,6 +20,8 @@ if [[ "$1" == *git.cleanup* ]]; then
   chmod -R +x Buildscripts/
   chmod -R +x Configs/
   mkdir -p .git/Cache
+  rm -f defaults.set
+  cp defaults $_
   pushd Builds/
     for dev in $LIST
     do
