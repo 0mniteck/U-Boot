@@ -2,7 +2,7 @@
 # ── Configuration for defaults ─ Source File ─────────────────────────────────
 source defaults
 # ── User Config Inputs ───────────────────────────────────────────────────────
-declare -A opt_map=(
+declare -A options=(
   [a]=ALT # Alternate List (yes/No)
   [c]=CLEAN # Clean Directories (Yes/no)
   [d]=DEV # Developer Build [Skip some steps] (yes/No)
@@ -24,7 +24,7 @@ while getopts ":a:c:d:e:m:t:w:z:" opt; do
       exit 1
       ;;
     *)
-      var=${opt_map[$opt]}
+      var=${options[$opt]}
       [[ -n $var ]] && printf -v "$var" "%s" "$OPTARG"
       ;;
   esac
