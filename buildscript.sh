@@ -2,38 +2,31 @@
 # ── Configuration for defaults ─ Source File ─────────────────────────────────
 source defaults
 # ── User Config Inputs ───────────────────────────────────────────────────────
+declare -A opt_map=(
+  [a]=ALT # Alternate List (yes/No)
+  [c]=CLEAN # Clean Directories (Yes/no)
+  [d]=DEV # Developer Build [Skip some steps] (yes/No)
+  [e]=EPOCH # SOURCE_DATE_EPOCH [For reproducibility] (source_date_epoch/"today"/"^")
+  [m]=MOUNT # Mount External [U2F Backed Luks] Partition ex. "mmcblk1p1"
+  [t]=TAG # Tag Release refs/tags/("tagname") *Required
+  [w]=CROSS # Cross Compile (yes/No)
+  [z]=TARGET # Target Selection ("target1,target2,all")
+)
+
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
   case $opt in
-  a) # Alternate List (yes/No)
-    ALT="$OPTARG"
-    ;;
-  c) # Clean Directories (Yes/no)
-    CLEAN="$OPTARG"
-    ;;
-  d) # Developer Build [Skip some steps] (yes/No)
-    DEV="$OPTARG"
-    ;;
-  e) # SOURCE_DATE_EPOCH [For reproducibility] (source_date_epoch/"today"/"^")
-    EPOCH="$OPTARG"
-    ;;
-  m) # Mount External [U2F Backed Luks] Partition ex. "mmcblk1p1"
-    MOUNT="$OPTARG"
-    ;;
-  t) # Tag Release refs/tags/("tagname") *Required
-    TAG="$OPTARG"
-    ;;
-  w) # Cross Compile (yes/No)
-    CROSS="$OPTARG"
-    ;;
-  z) # Target Selection ("target1,target2,all")
-    TARGET="$OPTARG"
-    ;;
-  \?)
-    echo "Invalid option: -$opt" >&2
-    ;;
-  :)
-    echo "Option -$opt requires an argument." >&2
-    ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+    *)
+      var=${opt_map[$opt]}
+      [[ -n $var ]] && printf -v "$var" "%s" "$OPTARG"
+      ;;
   esac
 done
 # ── Defaults ─────────────────────────────────────────────────────────────────
@@ -80,7 +73,7 @@ fi
 if [ "$CHECK" = "" ]; then
   CHECK="no"
 fi
-rm -f Results/defaults.set
+rm -f defaults.set
 cp defaults $_
 if [ "$ALT" = "" ]; then
   ALT="no"
@@ -89,9 +82,9 @@ if [ "$ALT" = "yes" ]; then
   export BUILD_LIST="PT2-rk3566:pinetab2-rk3566_defconfig"
   export LIST="PT2-rk3566"
   export ARCHS="rk3568"
-  sed -i s/"$(grep "BUILD_LIST" defaults | awk -F'"' '{print $2}')"/"$BUILD_LIST"/ Results/defaults.set
-  sed -i s/"$(grep "LIST" defaults | awk -F'"' '{print $2}')"/"$LIST"/ Results/defaults.set
-  sed -i s/"$(grep "ARCHS" defaults | awk -F'"' '{print $2}')"/"$ARCHS"/ Results/defaults.set
+  sed -i s/"$(grep "BUILD_LIST" defaults | awk -F'"' '{print $2}')"/"$BUILD_LIST"/ defaults.set
+  sed -i s/"$(grep "LIST" defaults | awk -F'"' '{print $2}')"/"$LIST"/ defaults.set
+  sed -i s/"$(grep "ARCHS" defaults | awk -F'"' '{print $2}')"/"$ARCHS"/ defaults.set
 else
   export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
 fi
@@ -105,7 +98,7 @@ elif [[ "$TARGET" =~ $TRGLIST ]]; then
     if [[ "$TRG" =~ $TRGLIST ]]; then
       export TARGETS="$TARGET"
       export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-      sed -i s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ Results/defaults.set
+      sed -i s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ defaults.set
     else
       echo "INVALID TARGET: $TRG"
       exit 1
@@ -129,15 +122,16 @@ elif [ "$CLEAN" = "yes" ]; then
 fi
 # ── Check Variables ──────────────────────────────────────────────────────────
 pushd Results
+  mv ../defaults.set defaults.set
   ENV=$(sha512sum defaults.set)
   if [[ $ENV == *068e37dc74100e179e6a2ff76e6c194aed9974b742aa7481db5000e40246a24273bb98e3a11b7c8538294128411dfeed2223ed5c7e8ddafc883bf637ec8e5914* ]]; then
     ENVV="MATCHED DEFAULTS CONFIG SHA512SUM"
   else
-    echo "ERROR DEFAULTS MISSMATCH"
+    echo "DEFAULTS MISSMATCH"
   fi
 # ── Build Info ───────────────────────────────────────────────────────────────
   > release.sha512sum && > release.sha3sum && > build.info
-  sha512sum ../defaults >> release.sha512sum && openssl dgst -SHA3-256 ../defaults >> release.sha3sum
+  sha512sum defaults.set >> release.sha512sum && openssl dgst -SHA3-256 defaults.set >> release.sha3sum
   echo "Clean Build: $CLEAN" && echo "Clean Build: $CLEAN" >> build.info
   echo "Cross-Compile: $CROSS" && echo "Cross-Compile: $CROSS" >> build.info
   echo "Developer Build: $DEV" && echo "Developer Build: $DEV" >> build.info
@@ -150,6 +144,7 @@ pushd Results
   echo "Env Config Sum: $ENVV" && echo "Env Config Sums: $ENVV" >> build.info
   echo "export EPOCH=$EPOCH" > choices.set && echo "export CLEAN=$CLEAN" >> choices.set && echo "export DEV=$DEV" >> choices.set
   echo "export CR_C=$CROSS" >> choices.set && echo "export MOUNT=$MOUNT" >> choices.set && echo "export CHECK=$CHECK" >> choices.set
+  sha512sum choices.set >> release.sha512sum && openssl dgst -SHA3-256 choices.set >> release.sha3sum
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
   sleep 5 && > builder.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin SHLVL=1 bash --noprofile --norc -c ../re-run.sh
   cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
