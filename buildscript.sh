@@ -80,6 +80,8 @@ fi
 if [ "$CHECK" = "" ]; then
   CHECK="no"
 fi
+rm -f Results/defaults.set
+cp defaults $_
 if [ "$ALT" = "" ]; then
   ALT="no"
 fi
@@ -87,15 +89,23 @@ if [ "$ALT" = "yes" ]; then
   export BUILD_LIST="PT2-rk3566:pinetab2-rk3566_defconfig"
   export LIST="PT2-rk3566"
   export ARCHS="rk3568"
+  sed -i s/"$(grep "BUILD_LIST" defaults | awk -F'"' '{print $2}')"/"$BUILD_LIST"/ Results/defaults.set
+  sed -i s/"$(grep "LIST" defaults | awk -F'"' '{print $2}')"/"$LIST"/ Results/defaults.set
+  sed -i s/"$(grep "ARCHS" defaults | awk -F'"' '{print $2}')"/"$ARCHS"/ Results/defaults.set
+else
+  export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
 fi
 # ── Target Validation ────────────────────────────────────────────────────────
 TRGLIST="(edk2|arm-trusted|optee|u-boot|ubuntu|base|base_extra)"
 if [[ -z "$TARGET" || "$TARGET" == *all* ]]; then
+  export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
   TARGET="$TARGETS"
 elif [[ "$TARGET" =~ $TRGLIST ]]; then
   for TRG in $TARGET; do
     if [[ "$TRG" =~ $TRGLIST ]]; then
       export TARGETS="$TARGET"
+      export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+      sed s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ defaults > Results/defaults.set
     else
       echo "INVALID TARGET: $TRG"
       exit 1
@@ -105,8 +115,6 @@ else
   echo "INVALID TARGET LIST: $TARGET"
   exit 1
 fi
-export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
 # ── Update + Clean ───────────────────────────────────────────────────────────
 if [[ $(which pkexec) = "" ]]; then
   sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
@@ -123,12 +131,9 @@ fi
   ENV=$(sha512sum defaults)
 pushd Results
   if [[ $ENV == *068e37dc74100e179e6a2ff76e6c194aed9974b742aa7481db5000e40246a24273bb98e3a11b7c8538294128411dfeed2223ed5c7e8ddafc883bf637ec8e5914* ]]; then
-    ENVV="MATCHED DEFAULT CONFIG SHA512SUM"
+    ENVV="MATCHED DEFAULTS CONFIG SHA512SUM"
   else
-    sed s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ ../defaults > defaults.set
-    sed -i s/"$(grep "BUILD_LIST" defaults | awk -F'"' '{print $2}')"/"$BUILD_LIST"/ defaults.set
-    sed -i s/"$(grep "LIST" defaults | awk -F'"' '{print $2}')"/"$LIST"/ defaults.set
-    sed -i s/"$(grep "ARCHS" defaults | awk -F'"' '{print $2}')"/"$ARCHS"/ defaults.set
+    echo "ERROR DEFAULTS MISSMATCH"
   fi
 # ── Build Info ───────────────────────────────────────────────────────────────
   > release.sha512sum && > release.sha3sum && > build.info
