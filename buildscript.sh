@@ -105,7 +105,7 @@ elif [[ "$TARGET" =~ $TRGLIST ]]; then
     if [[ "$TRG" =~ $TRGLIST ]]; then
       export TARGETS="$TARGET"
       export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-      sed s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ defaults > Results/defaults.set
+      sed -i s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ Results/defaults.set
     else
       echo "INVALID TARGET: $TRG"
       exit 1
@@ -128,8 +128,8 @@ elif [ "$CLEAN" = "yes" ]; then
   ./clean.sh git.cleanup
 fi
 # ── Check Variables ──────────────────────────────────────────────────────────
-  ENV=$(sha512sum defaults)
 pushd Results
+  ENV=$(sha512sum defaults.set)
   if [[ $ENV == *068e37dc74100e179e6a2ff76e6c194aed9974b742aa7481db5000e40246a24273bb98e3a11b7c8538294128411dfeed2223ed5c7e8ddafc883bf637ec8e5914* ]]; then
     ENVV="MATCHED DEFAULTS CONFIG SHA512SUM"
   else
@@ -148,8 +148,8 @@ pushd Results
   echo "Tag Release: $TAG" && echo "Tag Release: $TAG" >> build.info
   echo "Targeting: $TARGET" && echo "Targeting: $TARGET" >> build.info
   echo "Env Config Sum: $ENVV" && echo "Env Config Sums: $ENVV" >> build.info
-  echo "export EPOCH=$EPOCH" > .set && echo "export CLEAN=$CLEAN" >> .set && echo "export DEV=$DEV" >> .set
-  echo "export CR_C=$CROSS" >> .set && echo "export MOUNT=$MOUNT" >> .set && echo "export CHECK=$CHECK" >> .set
+  echo "export EPOCH=$EPOCH" > choices.set && echo "export CLEAN=$CLEAN" >> choices.set && echo "export DEV=$DEV" >> choices.set
+  echo "export CR_C=$CROSS" >> choices.set && echo "export MOUNT=$MOUNT" >> choices.set && echo "export CHECK=$CHECK" >> choices.set
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
   sleep 5 && > builder.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin SHLVL=1 bash --noprofile --norc -c ../re-run.sh
   cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
