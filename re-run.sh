@@ -1,5 +1,6 @@
 #!/bin/bash
-source ./*.set 2>/dev/null && rm -f *.set
+source ./defaults.set 2>/dev/null && rm -f defaults.set
+source ./choices.set 2>/dev/null && rm -f choices.set
 env | sort
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
