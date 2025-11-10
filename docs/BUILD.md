@@ -4,14 +4,14 @@
 
 ```
 buildscript.sh
- -a {Alternate List: yes/No}
- -c {Clean: Yes/no}
- -d {Developer Build: yes/No}
- -e {Date: source_date_epoch/"today"/" "}
- -m {Mount: mmcblk1p1}
- -t {release-Tag: tagname}
- -w {Cross Compile: yes/No}
- -z {Build Targets: "target1,target2"/"all"}
+  -a ALT # Alternate List (yes/No)
+  -c CLEAN # Clean Directories (Yes/no)
+  -d DEV # Developer Build [Skip some steps] (yes/No)
+  -e EPOCH # SOURCE_DATE_EPOCH [^ for reproducibility] (source_date_epoch/"today"/"^")
+  -m MOUNT # Mount External [U2F Backed Luks] ("mmcblk1p1")
+  -t TAG # Tag Release refs/tags/("tagname")
+  -w CROSS # Cross Compile (yes/No)
+  -z TARGET # Target Selection ("target1,target2,all")
 ```
 
 #### To compile current release run:
