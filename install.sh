@@ -48,6 +48,15 @@ purge_snapd() {
   printf 'y\n' | ufw enable
 }
 
+do_snapd_check() {
+  if [[ $(snap list | grep docker | grep disabled) == *disabled* ]]; then
+    snap list
+    read -p "Purging snapd, couldn't re-enable docker snap.
+Press any key to continue. Press CTRL+C to exit..."
+    purge_snapd
+  fi
+}
+
 crypt_mount() { #1 = device
   do_check
   systemd-cryptsetup attach Luks-Signal /dev/$1 && wait && sleep 1
@@ -86,6 +95,7 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
   fi
   if [[ "$1" == *remove* ]]; then
     snap enable docker 2>/dev/null && wait
+    do_snapd_check
     snap remove docker --purge 2>/dev/null && wait
     snap remove docker --purge 2>/dev/null && wait
     snap remove core24 --purge 2>/dev/null && wait
@@ -95,10 +105,8 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
     fi
   else
     snap enable docker 2>/dev/null && wait
+    do_snapd_check
     snap remove docker 2>/dev/null && wait
-  fi
-  if [[ $(snap list) == *disabled* ]]; then
-    snap list
   fi
   networkctl delete docker0 2>/dev/null && wait
   networkctl delete docker1 2>/dev/null && wait
