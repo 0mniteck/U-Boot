@@ -27,4 +27,4 @@ export LIST="R5B-rk3588 RP64-rk3399 PBP-rk3399"
 export ARCHS="rk3588 rk3399"
 ## ─ Build targets + variants ─────────────────────────────────────────────────
 export TARGETS="edk2 optee arm-trusted u-boot ubuntu"
-export VARIANTS="-SB -TPM-SB -MU-SB"as TF-A had been bumped
+export VARIANTS="-SB -TPM-SB -MU-SB"
