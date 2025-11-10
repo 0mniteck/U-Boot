@@ -14,7 +14,6 @@ apt_update() {
 add_user() { #1 = $(whoami)
   groupadd docker 2>/dev/null && wait
   usermod -aG docker $1
-  echo $1
   chown $1:docker /var/run/docker.sock
   chmod 660 /var/run/docker.sock
   mkdir -p /var/snap/docker/common/run/
@@ -25,7 +24,6 @@ add_user() { #1 = $(whoami)
   chown -R $1:docker /var/snap/docker
   mkdir -p /var/snap/docker/tmp
   chown $1:$1 /var/snap/docker/tmp
-  ls -la /var/snap/docker
 }
 
 do_check() {
