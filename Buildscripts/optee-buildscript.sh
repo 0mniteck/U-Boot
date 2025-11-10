@@ -4,6 +4,7 @@ unzip -q SSL.zip -d / > /dev/null
 unzip -q CROSS.zip -d / > /dev/null
 mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
 who_you_were=$(whoami)
+echo $who_you_were
 printf '\n\n\n\n\ny\n' | adduser --disabled-password --no-create-home cross
 chown -R cross:cross CROSS/*
 pushd /CROSS
