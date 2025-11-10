@@ -6,7 +6,7 @@ declare -A opt_map=(
   [a]=ALT # Alternate List (yes/No)
   [c]=CLEAN # Clean Directories (Yes/no)
   [d]=DEV # Developer Build [Skip some steps] (yes/No)
-  [e]=EPOCH # SOURCE_DATE_EPOCH [For reproducibility] (source_date_epoch/"today"/"^")
+  [e]=EPOCH # SOURCE_DATE_EPOCH [^ for reproducibility] (source_date_epoch/"today"/"^")
   [m]=MOUNT # Mount External [U2F Backed Luks] Partition ex. "mmcblk1p1"
   [t]=TAG # Tag Release refs/tags/("tagname") *Required
   [w]=CROSS # Cross Compile (yes/No)
@@ -29,18 +29,6 @@ while getopts ":a:c:d:e:m:t:w:z:" opt; do
       ;;
   esac
 done
-# ── Update + Clean ───────────────────────────────────────────────────────────
-if [[ $(which pkexec) = "" ]]; then
-  sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
-  sudo -K
-else
-  $PWD/install.sh apt.update
-fi
-if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
-  ./clean.sh git.cleanup.cache
-elif [ "$CLEAN" = "yes" ]; then
-  ./clean.sh git.cleanup
-fi
 # ── Defaults ─────────────────────────────────────────────────────────────────
 if [ "$MOUNT" != "" ]; then
   echo "MOUNT: /dev/$MOUNT"
@@ -85,8 +73,18 @@ fi
 if [ "$CHECK" = "" ]; then
   CHECK="no"
 fi
-rm -f defaults.set
-cp defaults $_
+# ── Update + Clean ───────────────────────────────────────────────────────────
+if [[ $(which pkexec) = "" ]]; then
+  sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
+  sudo -K
+else
+  $PWD/install.sh apt.update
+fi
+if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
+  ./clean.sh git.cleanup.cache
+elif [ "$CLEAN" = "yes" ]; then
+  ./clean.sh git.cleanup
+fi
 if [ "$ALT" = "" ]; then
   ALT="no"
 fi
