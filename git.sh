@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ## Available Commands:
+
 # ./git.sh check
 # ./git.sh reset
 # ./git.sh update
@@ -9,21 +10,24 @@
 #    Hostname github.com
 #    IdentityFile ~/.ssh/id_ecdsa_sk
 #    IdentitiesOnly yes
+
 yubi_check() {
   while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
   if [[ $(ls -la /dev/hidraw0) = *root* ]]; then
     pkexec chown $(whoami):$(whoami) /dev/hidraw*
   fi
 }
+
 git_reset() {
   git reset --hard
   git clean -xfd
-if [[ $(<~/.ssh/config) == *UBoot* ]]; then
-  export GPG_TTY=$(tty)
-  eval `ssh-agent -s`
-  ssh-add ~/.ssh/id_ecdsa_s*[!.pub]
-fi
+  if [[ $(<~/.ssh/config) == *UBoot* ]]; then
+    export GPG_TTY=$(tty)
+    eval `ssh-agent -s`
+    ssh-add ~/.ssh/id_ecdsa_s*[!.pub]
+  fi
 }
+
 git_update() {
   echo "Fetching recent changes..."
   if [[ $(<~/.ssh/config) == *UBoot* ]]; then
@@ -49,6 +53,7 @@ git status && git add -A && git status
 if [[ $(<~/.ssh/config) == *UBoot* ]]; then
   yubi_check
 fi
+
 pkexec --keep-cwd git commit -a -S -m "$1" && sleep 5 && git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD):Docker
 if [ "$2" != "" ]; then
   pkexec --keep-cwd git tag -a "$2" -s -m "Tagged Release $2" && sleep 5 && git push origin "refs/tags/$2"
