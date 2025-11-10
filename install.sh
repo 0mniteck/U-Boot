@@ -23,6 +23,8 @@ add_user() { #1 = $(whoami)
   mkdir -p /var/snap/docker/common/var-lib-docker/containers/
   mkdir -p /var/snap/docker/common/var-lib-docker/image/overlay2/imagedb/content/sha256/
   chown -R $1:docker /var/snap/docker
+  mkdir -p /var/snap/docker/tmp
+  chown $1:$1 /var/snap/docker/tmp
   ls -la /var/snap/docker
 }
 
