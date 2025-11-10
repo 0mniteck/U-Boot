@@ -146,7 +146,7 @@ pushd Results
   echo "export CR_C=$CROSS" >> choices.set && echo "export MOUNT=$MOUNT" >> choices.set && echo "export CHECK=$CHECK" >> choices.set
   sha512sum choices.set >> release.sha512sum && openssl dgst -SHA3-256 choices.set >> release.sha3sum
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
-  sleep 5 && > builder.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin SHLVL=1 bash --noprofile --norc -c ../re-run.sh
+  sleep 5 && > builder.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c ../re-run.sh
   cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
