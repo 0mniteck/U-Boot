@@ -66,7 +66,7 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
   if [ "$DEV" != "yes" ]; then
     pushd Results/$1
       TMPDIR="/var/snap/docker/tmp" SYFT_CACHE_DIR="/var/snap/docker/tmp" syft scan $2 -o spdx-json=$1.spdx.json
-      script -q -c "grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp.tmp > $1.grype.tmp
+      script -q -c "TMPDIR='/var/snap/docker/tmp' GRYPE_DB_CACHE_DIR='/var/snap/docker/tmp' grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp.tmp > $1.grype.tmp
       marker() { # $1 = Name, $2 = Order, $3 = Marker/ID
         grep "$3" $1.grype.tmp | tail -n 1 > $1.grype.status.$2
         tr -d '\000-\037\177' < $1.grype.status.$2 | sed '/^$/d' > $1.grype.status.$2.tmp
