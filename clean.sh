@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ## Available Commands:
+
 # ./clean.sh git.cleanup
 # ./clean.sh git.cleanup.(cache)
 # ./clean.sh tmp.cleanup
@@ -11,6 +12,7 @@ do_clean() {
 do_update() {
   ./git.sh update
 }
+
 if [[ "$1" == *git.cleanup* ]]; then
   do_clean
   do_update
@@ -50,6 +52,7 @@ if [[ "$1" == *git.cleanup* ]]; then
       done
   popd
 fi
+
 if [ "$1" = "tmp.cleanup" ]; then
   pushd Builds/
     for dev in $LIST
