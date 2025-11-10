@@ -77,7 +77,7 @@ fi
 if [[ $(which pkexec) = "" ]]; then
   sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
   sudo -K
-elif [[ $(which bc) != "" && $(which dosfstools) != "" && $(which parted) != "" && $(which screen) != "" && $(which snapd) != "" && $(which systemd-cryptsetup) != "" && "$CLEAN" = "no"]]; then
+elif [[ $(which bc) != "" && $(which dosfstools) != "" && $(which parted) != "" && $(which screen) != "" && $(which snapd) != "" && $(which systemd-cryptsetup) != "" && "$CLEAN" = "no" ]]; then
   wait
 else
   $PWD/install.sh apt.update
