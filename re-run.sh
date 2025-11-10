@@ -136,7 +136,6 @@ pushd ..
   
     docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
-      --user "$(id -u):$(id -g)" \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e EDKP_VER=$EDKP_VER \
       -e EDK_VER=$EDK_VER \
@@ -175,7 +174,6 @@ pushd ..
     
     docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
-      --user "$(id -u):$(id -g)" \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e OPT_VER=$OPT_VER \
       -e SSL_VER=$SSL_VER \
@@ -214,7 +212,6 @@ pushd ..
     
     docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
-      --user "$(id -u):$(id -g)" \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
       -e ATF_VER=$ATF_VER \
@@ -245,7 +242,6 @@ pushd ..
     
     docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
-      --user "$(id -u):$(id -g)" \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e SOURCE_DATE=$source_date \
       -e UB_VER=$UB_VER \
