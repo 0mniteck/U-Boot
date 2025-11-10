@@ -127,7 +127,7 @@ pushd Results
   if [[ $ENV == *068e37dc74100e179e6a2ff76e6c194aed9974b742aa7481db5000e40246a24273bb98e3a11b7c8538294128411dfeed2223ed5c7e8ddafc883bf637ec8e5914* ]]; then
     ENVV="MATCHED DEFAULTS CONFIG SHA512SUM"
   else
-    echo "DEFAULTS MISSMATCH"
+    ENVV="DEFAULTS MISSMATCH"
   fi
 # ── Build Info ───────────────────────────────────────────────────────────────
   > release.sha512sum && > release.sha3sum && > build.info
