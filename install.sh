@@ -45,7 +45,7 @@ purge_snapd() {
   apt install snapd -y
   snap install ufw
   ufw allow ssh
-  printf 'y\n' | ufw enable
+  ufw --force enable
 }
 
 do_snapd_check() {
