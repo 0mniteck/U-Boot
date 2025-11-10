@@ -70,7 +70,7 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
       marker() { # $1 = Name, $2 = Order, $3 = Marker/ID
         grep "$3" $1.grype.tmp | tail -n 1 > $1.grype.status.$2
         tr -d '\000-\037\177' < $1.grype.status.$2 | sed '/^$/d' > $1.grype.status.$2.tmp
-        line1=$(<"${1}.grype.status.${2}.tmp")
+        line1=$(<"$1.grype.status.$2.tmp")
         left1="${line1%%' [K[2A'*}"
         right1="${line1#*' [K[2A'}"
         if [[ "$right1" == *$3* ]]; then
