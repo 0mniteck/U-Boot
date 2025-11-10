@@ -1,6 +1,6 @@
 #!/bin/bash
 source ./*.set 2>/dev/null && rm -f *.set
-env
+env | sort
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
