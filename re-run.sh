@@ -98,7 +98,6 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
 
 pushd ..
   $PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$mount"
-  
   docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
   if [ "$cross" = "cross" ]; then
     docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
