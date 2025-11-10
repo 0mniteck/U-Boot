@@ -59,7 +59,7 @@ Press any key to continue. Press CTRL+C to exit..."
 
 crypt_mount() { #1 = device
   do_check
-  systemd-cryptsetup attach Luks-Signal /dev/$1 && wait && sleep 1
+  printf '\t' | systemd-cryptsetup attach Luks-Signal /dev/$1 && wait && sleep 1
   mount /dev/mapper/Luks-Signal /var/snap/docker && wait
 }
 
