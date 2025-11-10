@@ -7,8 +7,8 @@ declare -A opt_map=(
   [c]=CLEAN # Clean Directories (Yes/no)
   [d]=DEV # Developer Build [Skip some steps] (yes/No)
   [e]=EPOCH # SOURCE_DATE_EPOCH [^ for reproducibility] (source_date_epoch/"today"/"^")
-  [m]=MOUNT # Mount External [U2F Backed Luks] Partition ex. "mmcblk1p1"
-  [t]=TAG # Tag Release refs/tags/("tagname") *Required
+  [m]=MOUNT # Mount External [U2F Backed Luks] ("mmcblk1p1")
+  [t]=TAG # Tag Release refs/tags/("tagname")
   [w]=CROSS # Cross Compile (yes/No)
   [z]=TARGET # Target Selection ("target1,target2,all")
 )
