@@ -6,10 +6,10 @@ mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
 pushd /CROSS
   ./bootstrap && ./configure --enable-local && make
   ./ct-ng aarch64-unknown-linux-gnu
-  cat >>.config <<_EOF_
+  cat >> .config << __EOF
   CT_CC_GCC_EXTRA_CONFIG_ARRAY="--enable-standard-branch-protection"
   CT_CC_GCC_CORE_EXTRA_CONFIG_ARRAY="--enable-standard-branch-protection"
-  _EOF_
+__EOF
   ./ct-ng build.$(nproc)
   ls -la x-tools/
   ls -la x-tools/aarch64-unknown-linux-gnu/bin
