@@ -3,17 +3,23 @@ trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q SSL.zip -d / > /dev/null
 unzip -q CROSS.zip -d / > /dev/null
 mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
+who_you_were=$(whoami)
+echo $who_you_were
+printf '\n\n\n\n\ny\n' | adduser --disabled-password --no-create-home cross
+chown -R cross:cross CROSS/*
 pushd /CROSS
+su cross
   ./bootstrap && ./configure --enable-local && make
   ./ct-ng aarch64-unknown-linux-gnu
-  cat >>.config <<_EOF_
+  cat >> .config << __EOF
   CT_CC_GCC_EXTRA_CONFIG_ARRAY="--enable-standard-branch-protection"
   CT_CC_GCC_CORE_EXTRA_CONFIG_ARRAY="--enable-standard-branch-protection"
-  _EOF_
+__EOF
   ./ct-ng build.$(nproc)
   ls -la x-tools/
   ls -la x-tools/aarch64-unknown-linux-gnu/bin
 popd
+su who_you_were
 mv /openssl-openssl-$SSL_VER /SSL
 rm -f -r /usr/include/openssl
 pushd /SSL

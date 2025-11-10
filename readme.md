@@ -19,7 +19,7 @@
   * [ ] Resolve rk3568 issues - SPL_MAX
 * [x] Enable Self Signing of UEFI Secure Boot with Root CA only on a Yubikey
   * [ ] Use-once model for next secure boot signing (Reset Yubikey after initial signing)
-    * [ ] 2025 Q4 signing
+    * [ ] 2025 Q4 signing est. 12/01/2025
       * [ ] Debian from trixie ISO shimaa64efi/bootaa64.efi
       * [ ] Ubuntu from 25.10 ISO shimaa64.efi/bootaa64.efi
         * [ ] Update autoinstall to Questing release
@@ -38,18 +38,21 @@
     * [x] Change BOOTCMD to `efiload; reset;`
     * [x] Enable STACKPROTECTOR
     * [ ] DISABLE_CONSOLE
-* [x] Add local docker build-cache 
-* [x] Generate SBOM at buildtime
-  * [x] Scan with Grype
-  * [x] Display Status
 * [x] Fine tune for reproducibility and ephemerality
   * [x] Always erase & flash from ring-0
+  * [x] Generate SBOM at buildtime
+    * [x] Scan with Grype
+    * [x] Display Results/*.grype.status
+      * [x] Stabilize stdout
   * [x] Convert to docker build
+    * [x] Integrate threat intelligence using syft/grype
     * [x] Build variants in one branch
+    * [x] Add local docker build-cache in .git/Cache for dev rebuilds
+    * [x] Target selection
     * [x] Make reproducible debian docker images
       * [ ] Sign base images with cosign & verify at buildtime
 
-## 
+##
 
 ### [Docs:](https://github.com/0mniteck/U-Boot/tree/Docs/docs)
 
@@ -59,4 +62,4 @@
 
 --> [SIGNING YOUR OWN](https://github.com/0mniteck/U-Boot/blob/Docs/docs/SIGN.md)
 
---> [The Sovereignty Ephemerality Reproducibility (SER) framework](https://omniteck.com/?p=1104)
+--> [SER FRAMEWORK (Sovereignty Ephemerality Reproducibility)](https://omniteck.com/?p=1104)
