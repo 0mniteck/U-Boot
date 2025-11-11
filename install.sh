@@ -94,7 +94,7 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
     crypt_unmount
   fi
   if [[ "$1" == *remove* ]]; then
-    snap enable docker 2>/dev/null && wait
+    snap enable docker 2>/dev/null && wait && sleep 1
     do_snapd_check
     snap remove docker --purge 2>/dev/null && wait
     snap remove docker --purge 2>/dev/null && wait
@@ -104,7 +104,7 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
       purge_snapd
     fi
   else
-    snap enable docker 2>/dev/null && wait
+    snap enable docker 2>/dev/null && wait && sleep 1
     do_snapd_check
     snap remove docker 2>/dev/null && wait
   fi
