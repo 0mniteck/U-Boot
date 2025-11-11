@@ -124,7 +124,7 @@ fi
 pushd Results
   mv ../defaults.set defaults.set
   ENV=$(sha512sum defaults.set)
-  if [[ $ENV == *068e37dc74100e179e6a2ff76e6c194aed9974b742aa7481db5000e40246a24273bb98e3a11b7c8538294128411dfeed2223ed5c7e8ddafc883bf637ec8e5914* ]]; then
+  if [[ $ENV == *3446b556126a630736619e6e9b979059a7635109e02ffa20a5780de88ea1e6119d5af61050b7819c51d0c872413b68d748c6a49664a3f8580bfcf2ebabb0254c* ]]; then
     ENVV="MATCHED DEFAULTS CONFIG SHA512SUM"
   else
     ENVV="DEFAULTS MISSMATCH"
