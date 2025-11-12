@@ -9,7 +9,7 @@
 apt_update() {
   apt update
   apt upgrade -y
-  apt install -y bc dosfstools parted screen snapd systemd-cryptsetup
+  apt install -y bc dosfstools parted screen snapd systemd-cryptsetup uidmap
 }
 
 add_user() { #1 = $(whoami)
