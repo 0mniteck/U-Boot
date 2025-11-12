@@ -69,6 +69,9 @@ crypt_unmount() {
 }
 
 install.docker() { #1 = cross, #2 = device, #3 = whoami
+  if [[ "$2" != "" ]]; then
+    crypt_mount $2
+  fi
   if [[ "$1" == *cross* ]]; then
     snap install docker --revision=3377
   elif [[ "$1" != *cross* ]]; then
@@ -76,10 +79,7 @@ install.docker() { #1 = cross, #2 = device, #3 = whoami
     systemctl stop snap.docker.nvidia-container-toolkit
     systemctl disable snap.docker.nvidia-container-toolkit
   fi
-  if [[ "$2" != "" ]]; then
-    crypt_mount $2
-  fi
-  add_user $3
+  # add_user $3
 }
 
 cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
