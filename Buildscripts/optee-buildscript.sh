@@ -5,16 +5,22 @@ unzip -q CROSS.zip -d / > /dev/null
 mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
 echo $(whoami)
 printf '\n\n\n\n\ny\n' | adduser --disabled-password --no-create-home cross && echo "USER CROSS ADDED"
-chown -R cross:cross CROSS/*
+chown -R cross:cross /CROSS
+ls -la /CROSS
+chmod -R 755 /CROSS
+ls -la /CROSS
 pushd /CROSS
 su cross -c "
   echo \$(whoami)
-  ./bootstrap && ./configure --enable-local && make
+  ./bootstrap
+  ./configure --enable-local
+  make
   ./ct-ng aarch64-unknown-linux-gnu
   cat >> .config << __EOF
   CT_CC_GCC_EXTRA_CONFIG_ARRAY='--enable-standard-branch-protection'
   CT_CC_GCC_CORE_EXTRA_CONFIG_ARRAY='--enable-standard-branch-protection'
 __EOF
+  cat .config
   ./ct-ng build.$(nproc)
   ls -la x-tools/
   ls -la x-tools/aarch64-unknown-linux-gnu/bin"
@@ -382,7 +388,6 @@ srcs_ext-y += support/TableMarshalData.c
 srcs_ext-y += support/TpmFail.c
 srcs_ext-y += support/TpmSizeChecks.c" >> sub.mk
     cat sub.mk
-    ls -la /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64
     make -j $(nproc) PLATFORM=rockchip-$plat CFG_OPTEE_CONFIG=mk/config.mk CFG_CORE_BTI=y CFG_TA_BTI=y CFG_USER_TA_TARGETS=ta_arm64 CFG_ARM64_ta_arm64=y AARCH64_CROSS_COMPILE=/CROSS/x-tools/aarch64-unknown-linux-gnu/bin/aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200 CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM
     read -p "Waiting for user..."
   popd
