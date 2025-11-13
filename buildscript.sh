@@ -101,7 +101,7 @@ else
   export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
 fi
 # ── Target Validation ────────────────────────────────────────────────────────
-TRGLIST="(edk2|arm-trusted|optee|u-boot|ubuntu|base|base_extra)"
+TRGLIST="(crosstool-ng|openssl|edk2|arm-trusted|optee|u-boot|ubuntu|base|base_extra)"
 if [[ -z "$TARGET" || "$TARGET" == *all* ]]; then
   export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
   TARGET="$TARGETS"
