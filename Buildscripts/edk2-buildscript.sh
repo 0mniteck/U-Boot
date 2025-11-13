@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q $EDKP_VER.zip > /dev/null
 pushd /edk2-$EDK_VER
   sed -i "19,20d;22,24d" BaseTools/Source/C/VfrCompile/GNUmakefile
