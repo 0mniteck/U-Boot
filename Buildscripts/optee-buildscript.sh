@@ -1,41 +1,4 @@
 #!/usr/bin/env bash
-trap '[[ $pid ]] && kill $pid; exit' EXIT
-unzip -q SSL.zip -d / > /dev/null
-unzip -q CROSS.zip -d / > /dev/null
-mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
-printf '\n\n\n\n\ny\n' | adduser --disabled-password --no-create-home cross && echo "USER CROSS ADDED"
-chown -R cross:cross /CROSS
-chmod -R 755 $_
-mkdir -p /home/cross/src
-chown -R cross:cross /home/cross
-chmod -R 755 $_
-pushd /CROSS
-su cross -c "
-  echo \$(whoami)
-  ./bootstrap
-  ./configure --enable-local
-  make
-  ./ct-ng aarch64-unknown-linux-gnu
-  cat >> .config << __EOF
-CT_CC_GCC_EXTRA_CONFIG_ARRAY='--enable-standard-branch-protection'
-CT_CC_GCC_CORE_EXTRA_CONFIG_ARRAY='--enable-standard-branch-protection'
-__EOF
-  ./ct-ng build.$(nproc)
-  ls -la x-tools/
-  ls -la x-tools/aarch64-unknown-linux-gnu/bin"
-popd
-mv /openssl-openssl-$SSL_VER /SSL
-rm -f -r /usr/include/openssl
-pushd /SSL
-  sed -i "1,15d" build.info
-  sed -i "s'MAJOR=.'MAJOR=1'" VERSION.dat
-  sed -i "s'MINOR=.'MINOR=1'" VERSION.dat
-  sed -i "s'PATCH=.'PATCH=0'" VERSION.dat
-  ./Configure --api=1.1.0 linux-aarch64
-  make
-  cp include/crypto/sm4.h include/openssl/sm4.h
-popd
-mv /SSL/include /usr/include/openssl
 # sed -i "s'#define __ONCE_ALIGNMENT'#define __ONCE_ALIGNMENT __attribute__((aligned(8)))'" /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
 for plat in $ARCHS
 do
