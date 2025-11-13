@@ -12,19 +12,11 @@ apt_update() {
   apt install -y bc dosfstools parted screen snapd systemd-cryptsetup uidmap
 }
 
-add_user() { #1 = $(whoami)
-  groupadd docker 2>/dev/null && wait
-  usermod -aG docker $1
-  chown $1:docker /var/run/docker.sock
-  chmod 660 /var/run/docker.sock
-  mkdir -p /var/snap/docker/common/run/
-  mkdir -p /var/snap/docker/common/var-lib-docker/tmp/
-  mkdir -p /var/snap/docker/common/var-lib-docker/overlay2/l/
-  mkdir -p /var/snap/docker/common/var-lib-docker/containers/
-  mkdir -p /var/snap/docker/common/var-lib-docker/image/overlay2/imagedb/content/sha256/
-  chown -R $1:docker /var/snap/docker
-  mkdir -p /var/snap/docker/tmp
-  chown $1:$1 /var/snap/docker/tmp
+add_group() { #1 = $(whoami)
+  if [[ $(<"/etc/group") != *docker* ]]; then
+    groupadd docker 2>/dev/null && wait
+    usermod -aG docker $1
+  fi
 }
 
 do_check() {
@@ -79,7 +71,7 @@ install.docker() { #1 = cross, #2 = device, #3 = whoami
     systemctl stop snap.docker.nvidia-container-toolkit
     systemctl disable snap.docker.nvidia-container-toolkit
   fi
-  # add_user $3
+  add_group $3
 }
 
 cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
