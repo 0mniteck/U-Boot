@@ -3,8 +3,8 @@ trap '[[ $pid ]] && kill $pid; exit' EXIT
 unzip -q SSL.zip -d / > /dev/null
 unzip -q CROSS.zip -d / > /dev/null
 mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
-echo $(whoami)
 printf '\n\n\n\n\ny\n' | adduser --disabled-password --no-create-home cross && echo "USER CROSS ADDED"
+ls -la /CROSS
 chown -R cross:cross /CROSS
 ls -la /CROSS
 chmod -R 755 /CROSS
@@ -25,7 +25,6 @@ __EOF
   ls -la x-tools/
   ls -la x-tools/aarch64-unknown-linux-gnu/bin"
 popd
-echo $(whoami)
 mv /openssl-openssl-$SSL_VER /SSL
 rm -f -r /usr/include/openssl
 pushd /SSL
