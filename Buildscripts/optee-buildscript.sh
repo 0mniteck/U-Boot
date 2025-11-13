@@ -4,11 +4,11 @@ unzip -q SSL.zip -d / > /dev/null
 unzip -q CROSS.zip -d / > /dev/null
 mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
 printf '\n\n\n\n\ny\n' | adduser --disabled-password --no-create-home cross && echo "USER CROSS ADDED"
-ls -la /CROSS
 chown -R cross:cross /CROSS
-ls -la /CROSS
-chmod -R 755 /CROSS
-ls -la /CROSS
+chmod -R 755 $_
+mkdir -p /home/cross/src
+chown -R cross:cross /home/cross
+chmod -R 755 $_
 pushd /CROSS
 su cross -c "
   echo \$(whoami)
@@ -17,10 +17,9 @@ su cross -c "
   make
   ./ct-ng aarch64-unknown-linux-gnu
   cat >> .config << __EOF
-  CT_CC_GCC_EXTRA_CONFIG_ARRAY='--enable-standard-branch-protection'
-  CT_CC_GCC_CORE_EXTRA_CONFIG_ARRAY='--enable-standard-branch-protection'
+CT_CC_GCC_EXTRA_CONFIG_ARRAY='--enable-standard-branch-protection'
+CT_CC_GCC_CORE_EXTRA_CONFIG_ARRAY='--enable-standard-branch-protection'
 __EOF
-  cat .config
   ./ct-ng build.$(nproc)
   ls -la x-tools/
   ls -la x-tools/aarch64-unknown-linux-gnu/bin"
