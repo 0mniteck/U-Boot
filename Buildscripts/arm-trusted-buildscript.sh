@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-trap '[[ $pid ]] && kill $pid; exit' EXIT
 for plat in $ARCHS
 do
   unzip -q $ATF_VER.zip -d /$plat > /dev/null
