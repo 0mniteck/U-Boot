@@ -1,5 +1,6 @@
 #!/usr/bin/pkexec /bin/bash
-env | sort
+env | sort >> Results/Env/install.env
+echo "" $_
 ## Available Commands:
 
 # $PWD/install.sh apt.update
@@ -54,7 +55,6 @@ crypt_mount() { #1 = device
   systemd-cryptsetup attach Luks-Signal /dev/$1 && wait && sleep 1
   mount /dev/mapper/Luks-Signal /var/snap/docker && wait
 }
-
 crypt_unmount() {
   umount -f /dev/mapper/Luks-Signal 2>/dev/null && wait && sleep 1
   systemd-cryptsetup detach Luks-Signal 2>/dev/null && wait
