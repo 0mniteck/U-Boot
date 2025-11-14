@@ -2,8 +2,11 @@ ARG HUB=0mniteck/debian BASE=latest BASE_EXTRA=latest SOURCE_DATE_EPOCH ENTRYPOI
 FROM $HUB:$BASE AS base
 ARG HUB BASE ENTRYPOINT
 ONBUILD RUN echo "U-Boot-Builder for $ENTRYPOINT starting: Using base image $HUB $BASE"; sleep 5
+
 FROM $HUB-extra:$BASE_EXTRA AS base_extra
 ARG HUB BASE ENTRYPOINT
+RUN apt install -y bzip2 clang cmake codespell gawk gcc g++ gdb-multiarch gettext gperf help2man libclang-rt-dev libstdc++6 \
+libtool-bin lld meson patch python3-pycryptodome python3-pycodestyle texinfo
 ONBUILD RUN echo "U-Boot-Builder for $ENTRYPOINT starting: Using base image $HUB-extra $BASE_EXTRA"; sleep 5
 
 FROM base_extra AS crosstool-ng
@@ -41,8 +44,6 @@ ADD --link https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /OP
 ADD --link https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_OPTEE.zip
 ADD --link https://github.com/microsoft/ms-tpm-20-ref/archive/refs/tags/v1.83r1.zip /TPM.zip
 ADD --link https://github.com/ARM-software/arm-trusted-firmware/raw/refs/heads/master/plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem /
-RUN apt install -y bzip2 clang cmake codespell gawk gcc g++ gdb-multiarch gettext gperf help2man libclang-rt-dev libstdc++6 \
-libtool-bin lld meson patch python3-pycryptodome python3-pycodestyle texinfo
 RUN echo "$OPT_SUM  $OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE Checksum Matched!" || exit 1; sleep 5
 RUN echo "$OPT_SUM2  ftpm_$OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE fTPM Checksum Matched!" || exit 1; sleep 5
 RUN echo "$TPM_SUM  TPM.zip" | sha512sum --status -c - && echo "TPM Checksum Matched!" || exit 1; sleep 5
