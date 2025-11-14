@@ -39,11 +39,13 @@ else
   export install="install"
   export signing=1
   load() { # $1 Name
-    if [[ "$cross" == "" ]]; then
-      docker buildx create $BUILDK --node u-boot-builder-$1 --bootstrap --use
+    if [[ "$TARGET" == *$1* ]]; then
+      if [ "$cross" = "" ]; then
+        docker buildx create $BUILDK --node u-boot-builder-$1 --bootstrap --use
+      fi
+      export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
+      export NAME=$1
     fi
-    export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
-    export NAME=$1
     return
   }
 fi
