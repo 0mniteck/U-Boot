@@ -2,7 +2,6 @@ ARG HUB=0mniteck/debian BASE=latest BASE_EXTRA=latest SOURCE_DATE_EPOCH ENTRYPOI
 FROM $HUB:$BASE AS base
 ARG HUB BASE ENTRYPOINT
 ONBUILD RUN echo "U-Boot-Builder for $ENTRYPOINT starting: Using base image $HUB $BASE"; sleep 5
-
 FROM $HUB-extra:$BASE_EXTRA AS base_extra
 ARG HUB BASE_EXTRA ENTRYPOINT
 RUN apt install -y clang cmake gcc g++ libclang-rt-dev libstdc++6 lld patch python3-pycryptodome python3-pycodestyle 
@@ -38,6 +37,8 @@ ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 FROM base_extra AS optee
 ARG SOURCE_DATE_EPOCH OPT_VER OPT_SUM OPT_SUM2 TPM_SUM ROT_SUM ENTRYPOINT
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH OPT_VER=$OPT_VER ENTRYPOINT=$ENTRYPOINT
+COPT --link Builds/rk3399/include /SSL/
+COPT --link Builds/rk3399/aarch64-* /CROSS/
 COPY --link Builds/rk3399/BL32_AP_MM.fd Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /OPTEE.zip
 ADD --link https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_OPTEE.zip
