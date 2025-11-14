@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+env | sort
 for plat in $ARCHS
 do
   unzip -q $ATF_VER.zip -d /$plat > /dev/null
