@@ -4,8 +4,8 @@ mv /SSL/include /usr/include/openssl
 # sed -i "s'#define __ONCE_ALIGNMENT'#define __ONCE_ALIGNMENT __attribute__((aligned(8)))'" /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
 for plat in $ARCHS
 do
-  unzip -q $OPT_VER.zip -d /$plat > /dev/null
-  unzip -q ftpm_$OPT_VER.zip -d /$plat > /dev/null
+  unzip -q OPTEE.zip -d /$plat > /dev/null
+  unzip -q ftpm_OPTEE.zip -d /$plat > /dev/null
   unzip -q TPM.zip -d /$plat > /dev/null
   mv /$plat/ms-tpm-20-ref-1.83r1 /$plat/TPM
   pushd /$plat/optee_os-$OPT_VER
