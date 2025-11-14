@@ -1,5 +1,5 @@
 #!/usr/bin/pkexec /bin/bash
-
+env | sort
 ## Available Commands:
 
 # $PWD/install.sh apt.update
