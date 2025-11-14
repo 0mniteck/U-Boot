@@ -6,6 +6,15 @@ FROM $HUB-extra:$BASE_EXTRA AS base_extra
 ARG HUB BASE ENTRYPOINT
 ONBUILD RUN echo "U-Boot-Builder for $ENTRYPOINT starting: Using base image $HUB-extra $BASE_EXTRA"; sleep 5
 
+FROM base_extra AS crosstool-ng
+ARG SOURCE_DATE_EPOCH CROSS_VER CROSS_SUM ENTRYPOINT
+ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH CROSS_VER=$CROSS_VER ENTRYPOINT=$ENTRYPOINT
+COPY --link Buildscripts/$ENTRYPOINT-buildscript.sh /
+ADD --link https://github.com/crosstool-ng/crosstool-ng/archive/refs/tags/crosstool-ng-$CROSS_VER.zip /CROSS.zip
+RUN apt install -y adduser
+RUN echo "$CROSS_SUM  CROSS.zip" | sha512sum --status -c - && echo "Crosstool-ng Checksum Matched!" || exit 1; sleep 5
+ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
+
 FROM base AS edk2
 ARG SOURCE_DATE_EPOCH EDK_VER EDKP_VER EDKP_SUM ENTRYPOINT
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH EDK_VER=$EDK_VER EDKP_VER=$EDKP_VER ENTRYPOINT=$ENTRYPOINT
@@ -16,23 +25,27 @@ RUN apt install -y nasm
 RUN echo "$EDKP_SUM  $EDKP_VER.zip" | sha512sum --status -c - && echo "EDK2 Platform Checksum Matched!" || exit 1; sleep 5
 ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 
-FROM base_extra AS optee
-ARG SOURCE_DATE_EPOCH OPT_VER OPT_SUM OPT_SUM2 TPM_SUM SSL_VER SSL_SUM CROSS_VER CROSS_SUM ROT_SUM ENTRYPOINT
-ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH OPT_VER=$OPT_VER SSL_VER=$SSL_VER CROSS_VER=$CROSS_VER ENTRYPOINT=$ENTRYPOINT
-COPY --link Builds/rk3399/BL32_AP_MM.fd Buildscripts/$ENTRYPOINT-buildscript.sh /
-ADD --link https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /$OPT_VER.zip
-ADD --link https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_$OPT_VER.zip
-ADD --link https://github.com/microsoft/ms-tpm-20-ref/archive/refs/tags/v1.83r1.zip /TPM.zip
+FROM base AS openssl
+ARG SOURCE_DATE_EPOCH SSL_VER SSL_SUM ENTRYPOINT
+ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH SSL_VER=$SSL_VER ENTRYPOINT=$ENTRYPOINT
+COPY --link Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/openssl/openssl/archive/refs/tags/openssl-$SSL_VER.zip /SSL.zip
-ADD --link https://github.com/crosstool-ng/crosstool-ng/archive/refs/tags/crosstool-ng-$CROSS_VER.zip /CROSS.zip
+RUN echo "$SSL_SUM  SSL.zip" | sha512sum --status -c - && echo "OpenSSL Checksum Matched!" || exit 1; sleep 5
+ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
+
+FROM base_extra AS optee
+ARG SOURCE_DATE_EPOCH OPT_VER OPT_SUM OPT_SUM2 TPM_SUM ROT_SUM ENTRYPOINT
+ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH OPT_VER=$OPT_VER ENTRYPOINT=$ENTRYPOINT
+COPY --link Builds/rk3399/BL32_AP_MM.fd Buildscripts/$ENTRYPOINT-buildscript.sh /
+ADD --link https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /OPTEE.zip
+ADD --link https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_OPTEE.zip
+ADD --link https://github.com/microsoft/ms-tpm-20-ref/archive/refs/tags/v1.83r1.zip /TPM.zip
 ADD --link https://github.com/ARM-software/arm-trusted-firmware/raw/refs/heads/master/plat/arm/board/common/rotpk/arm_rotprivk_rsa.pem /
-RUN apt install -y adduser bzip2 clang cmake codespell gawk gcc g++ gdb-multiarch gettext gperf help2man libclang-rt-dev libstdc++6 \
+RUN apt install -y bzip2 clang cmake codespell gawk gcc g++ gdb-multiarch gettext gperf help2man libclang-rt-dev libstdc++6 \
 libtool-bin lld meson patch python3-pycryptodome python3-pycodestyle texinfo
 RUN echo "$OPT_SUM  $OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE Checksum Matched!" || exit 1; sleep 5
 RUN echo "$OPT_SUM2  ftpm_$OPT_VER.zip" | sha512sum --status -c - && echo "OP-TEE fTPM Checksum Matched!" || exit 1; sleep 5
 RUN echo "$TPM_SUM  TPM.zip" | sha512sum --status -c - && echo "TPM Checksum Matched!" || exit 1; sleep 5
-RUN echo "$SSL_SUM  SSL.zip" | sha512sum --status -c - && echo "OpenSSL Checksum Matched!" || exit 1; sleep 5
-RUN echo "$CROSS_SUM  CROSS.zip" | sha512sum --status -c - && echo "Crosstool-ng Checksum Matched!" || exit 1; sleep 5
 RUN echo "$ROT_SUM  arm_rotprivk_rsa.pem" | sha512sum --status -c - && echo "ATF ROT Key Checksum Matched!" || exit 1; sleep 5
 ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 
