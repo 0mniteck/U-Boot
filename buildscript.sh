@@ -1,5 +1,5 @@
 #!/bin/bash
-
+mkdir -p Results/Env/
 # ── Configuration for defaults ─ Source File ─────────────────────────────────
 source defaults
 # ── User Config Inputs ───────────────────────────────────────────────────────
