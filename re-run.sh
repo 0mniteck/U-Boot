@@ -2,6 +2,7 @@
 source ./defaults.set 2>/dev/null && rm -f defaults.set
 source ./choices.set 2>/dev/null && rm -f choices.set
 env | sort
+
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
@@ -30,8 +31,11 @@ if [ "$DEV" = "yes" ]; then
   echo "DEV_BUILD: $DEV"
   CACHE="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
   load() { # $1 = Name
-    export LOAD="--load $CROSS $CACHE --target $1 --tag $1"
-    export NAME=$1
+    if [[ "$TARGET" == *$1* ]]; then
+      stop $NAME  
+      export LOAD="--load $CROSS $CACHE --target $1 --tag $1"
+      export NAME=$1
+    fi
     return
   }
 else
@@ -40,10 +44,10 @@ else
   export signing=1
   load() { # $1 Name
     if [[ "$TARGET" == *$1* ]]; then
-      stop $NAME
       if [ "$cross" = "" ]; then
         docker buildx create $BUILDK --node u-boot-builder-$1 --bootstrap --use
       fi
+      stop $NAME
       export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
       export NAME=$1
     fi
@@ -119,14 +123,15 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
 pushd ..
   $PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$mount"
   init_runner
+  
   load base
   if [[ "$TARGET" == *$NAME* ]]; then
     docker buildx build $LOAD \
       --build-arg HUB=$HUB \
       --build-arg BASE=$BASE \
       -f Dockerfile .
-    stop $NAME
   fi
+  
   load base_extra
   if [[ "$TARGET" == *$NAME* ]]; then
     docker buildx build $LOAD \
@@ -134,7 +139,6 @@ pushd ..
       --build-arg BASE=$BASE \
       --build-arg BASE_EXTRA=$BASE_EXTRA \
       -f Dockerfile .
-    stop $NAME
   fi
 
   load crosstool-ng
@@ -160,7 +164,6 @@ pushd ..
     docker cp $NAME:/CROSS/x-tools/aarch64-unknown-linux-gnu/bin/ Builds/rk3399/
     sha512sum Builds/rk3399/aarch64-* && sha512sum Builds/rk3399/aarch64-* >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/aarch64-* && openssl dgst -SHA3-256 Builds/rk3399/aarch64-* >> Results/release.sha3sum
-    stop $NAME
   fi
   
   load edk2
@@ -191,7 +194,6 @@ pushd ..
     docker cp $NAME:/Build/MmStandaloneRpmb/RELEASE_GCC5/FV/BL32_AP_MM.fd Builds/rk3399/BL32_AP_MM.fd
     sha512sum Builds/rk3399/BL32_AP_MM.fd && sha512sum Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd && openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha3sum
-    stop $NAME
   fi
 
   load openssl
@@ -216,7 +218,6 @@ pushd ..
     docker cp $NAME:/SSL/include Builds/rk3399/include
     sha512sum Builds/rk3399/include/* && sha512sum Builds/rk3399/include/* >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/include/*&& openssl dgst -SHA3-256 Builds/rk3399/include/* >> Results/release.sha3sum
-    stop $NAME
   fi
   
   load optee
@@ -252,7 +253,6 @@ pushd ..
         openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
       done
     done
-    stop $NAME
   fi
   
   load arm-trusted
@@ -285,7 +285,6 @@ pushd ..
       sha512sum Builds/$arch/bl31.elf && sha512sum Builds/$arch/bl31.elf >> Results/release.sha512sum
       openssl dgst -SHA3-256 Builds/$arch/bl31.elf && openssl dgst -SHA3-256 Builds/$arch/bl31.elf >> Results/release.sha3sum
     done
-    stop $NAME
   fi
   
   load u-boot
@@ -327,7 +326,6 @@ pushd ..
       openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip-spi.bin >> Results/release.sha3sum
     done
     docker cp $NAME:/sys.info Results/sys.info
-    stop $NAME
   fi
   
   load ubuntu
@@ -365,6 +363,7 @@ pushd ..
       rm -f /tmp/sdcard.img
     fi
   fi
+  stop $NAME
 popd
 echo "0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> build.info
 echo "Base Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)" >> build.info && cat sys.info >> build.info
