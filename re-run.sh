@@ -119,6 +119,32 @@ pushd ..
       --build-arg BASE_EXTRA=$BASE_EXTRA \
       -f Dockerfile .
   fi
+
+  load crosstool-ng
+  if [[ "$TARGET" == *$NAME* ]]; then
+    docker buildx build $LOAD \
+      --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+      --build-arg CROSS_VER=$CROSS_VER \
+      --build-arg CROSS_SUM=$CROSS_SUM \
+      --build-arg HUB=$HUB \
+      --build-arg BASE=$BASE \
+      --build-arg ENTRYPOINT=$NAME \
+      -f Dockerfile .
+  
+    scan_using_grype $NAME docker:$NAME
+  
+    docker run -it --cpus=$(nproc) \
+      --name $NAME $CROSS \
+      --network=name=host,\"driver-opt=network=host\" \
+      -e SOURCE_DATE_EPOCH=$source_date_epoch \
+      -e CROSS_VER=$CROSS_VER \
+      $NAME
+
+    docker cp $NAME:/CROSS/x-tools/aarch64-unknown-linux-gnu/bin/ Builds/rk3399/
+    sha512sum Builds/rk3399/aarch64-* && sha512sum Builds/rk3399/aarch64-* >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/rk3399/aarch64-* && openssl dgst -SHA3-256 Builds/rk3399/aarch64-* >> Results/release.sha3sum
+    stop $NAME
+  fi
   
   load edk2
   if [[ "$TARGET" == *$NAME* ]]; then
@@ -150,6 +176,31 @@ pushd ..
     openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd && openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha3sum
     stop $NAME
   fi
+
+  load openssl
+  if [[ "$TARGET" == *$NAME* ]]; then
+    docker buildx build $LOAD \
+      --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+      --build-arg SSL_VER=$SSL_VER \
+      --build-arg SSL_SUM=$SSL_SUM \
+      --build-arg HUB=$HUB \
+      --build-arg BASE=$BASE \
+      --build-arg ENTRYPOINT=$NAME \
+      -f Dockerfile .
+  
+    scan_using_grype $NAME docker:$NAME
+  
+    docker run -it --cpus=$(nproc) \
+      --name $NAME $CROSS \
+      -e SOURCE_DATE_EPOCH=$source_date_epoch \
+      -e SSL_VER=$SSL_VER \
+      $NAME
+  
+    docker cp $NAME:/SSL/include Builds/rk3399/include
+    sha512sum Builds/rk3399/include/* && sha512sum Builds/rk3399/include/* >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/rk3399/include/*&& openssl dgst -SHA3-256 Builds/rk3399/include/* >> Results/release.sha3sum
+    stop $NAME
+  fi
   
   load optee
   if [[ "$TARGET" == *$NAME* ]]; then
@@ -159,10 +210,6 @@ pushd ..
       --build-arg OPT_SUM=$OPT_SUM \
       --build-arg OPT_SUM2=$OPT_SUM2 \
       --build-arg TPM_SUM=$TPM_SUM \
-      --build-arg SSL_VER=$SSL_VER \
-      --build-arg SSL_SUM=$SSL_SUM \
-      --build-arg CROSS_VER=$CROSS_VER \
-      --build-arg CROSS_SUM=$CROSS_SUM \
       --build-arg ROT_SUM=$ROT_SUM \
       --build-arg HUB=$HUB \
       --build-arg BASE=$BASE \
@@ -176,8 +223,6 @@ pushd ..
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e OPT_VER=$OPT_VER \
-      -e SSL_VER=$SSL_VER \
-      -e CROSS_VER=$CROSS_VER \
       -e ARCHS="$ARCHS" \
       $NAME
     
