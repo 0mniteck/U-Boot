@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 unzip -q SSL.zip -d / > /dev/null
 mv /openssl-openssl-$SSL_VER /SSL
-rm -f -r /usr/include/openssl
 pushd /SSL
   sed -i "1,15d" build.info
   sed -i "s'MAJOR=.'MAJOR=1'" VERSION.dat
