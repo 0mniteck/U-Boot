@@ -11,6 +11,7 @@ apt_update() {
   apt update
   apt upgrade -y
   apt install -y bc dosfstools parted screen snapd systemd-cryptsetup uidmap
+  if [[ $(which fan) != "" ]]; then fan 250; fi
 }
 
 add_group() { #1 = $(whoami)
