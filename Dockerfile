@@ -5,8 +5,7 @@ ONBUILD RUN echo "U-Boot-Builder for $ENTRYPOINT starting: Using base image $HUB
 
 FROM $HUB-extra:$BASE_EXTRA AS base_extra
 ARG HUB BASE ENTRYPOINT
-RUN apt install -y bzip2 clang cmake codespell gawk gcc g++ gdb-multiarch gettext gperf help2man libclang-rt-dev libstdc++6 \
-libtool-bin lld meson patch python3-pycryptodome python3-pycodestyle texinfo
+RUN apt install -y clang cmake gcc g++ libclang-rt-dev libstdc++6 lld patch python3-pycryptodome python3-pycodestyle 
 ONBUILD RUN echo "U-Boot-Builder for $ENTRYPOINT starting: Using base image $HUB-extra $BASE_EXTRA"; sleep 5
 
 FROM base_extra AS crosstool-ng
@@ -14,7 +13,7 @@ ARG SOURCE_DATE_EPOCH CROSS_VER CROSS_SUM ENTRYPOINT
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH CROSS_VER=$CROSS_VER ENTRYPOINT=$ENTRYPOINT
 COPY --link Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/crosstool-ng/crosstool-ng/archive/refs/tags/crosstool-ng-$CROSS_VER.zip /CROSS.zip
-RUN apt install -y adduser
+RUN apt install -y adduser bzip2 codespell gdb-multiarch gettext gperf help2man libtool-bin gawk texinfo meson
 RUN echo "$CROSS_SUM  CROSS.zip" | sha512sum --status -c - && echo "Crosstool-ng Checksum Matched!" || exit 1; sleep 5
 ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 
