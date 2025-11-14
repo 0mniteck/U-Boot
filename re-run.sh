@@ -2,7 +2,6 @@
 source ./defaults.set 2>/dev/null && rm -f defaults.set
 source ./choices.set 2>/dev/null && rm -f choices.set
 env | sort
-
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
@@ -133,7 +132,6 @@ pushd ..
       --build-arg BASE=$BASE \
       -f Dockerfile .
   fi
-  
   load base_extra
   if [[ "$TARGET" == *$NAME* ]]; then
     docker buildx build $LOAD \
@@ -142,7 +140,7 @@ pushd ..
       --build-arg BASE_EXTRA=$BASE_EXTRA \
       -f Dockerfile .
   fi
-
+  
   load crosstool-ng
   if [[ "$TARGET" == *$NAME* ]]; then
     docker buildx build $LOAD \
@@ -163,7 +161,7 @@ pushd ..
       -e CROSS_VER=$CROSS_VER \
       $NAME
 
-    docker cp $NAME:/CROSS/x-tools/aarch64-unknown-linux-gnu/bin/ Builds/rk3399/
+    docker cp $NAME:/home/cross/x-tools/aarch64-unknown-linux-gnu/bin/. Builds/rk3399/
     sha512sum Builds/rk3399/aarch64-* && sha512sum Builds/rk3399/aarch64-* >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/aarch64-* && openssl dgst -SHA3-256 Builds/rk3399/aarch64-* >> Results/release.sha3sum
   fi
@@ -217,7 +215,7 @@ pushd ..
       -e SSL_VER=$SSL_VER \
       $NAME
   
-    docker cp $NAME:/SSL/include Builds/rk3399/include
+    docker cp $NAME:/SSL/include/. Builds/rk3399/include/
     sha512sum Builds/rk3399/include/* && sha512sum Builds/rk3399/include/* >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/include/*&& openssl dgst -SHA3-256 Builds/rk3399/include/* >> Results/release.sha3sum
   fi
@@ -315,13 +313,13 @@ pushd ..
     do
       for loc in $VARIANTS
       do
-        docker cp $NAME:/$dev$loc/ Builds
+        docker cp $NAME:/$dev$loc/. Builds/
         sha512sum Builds/$dev$loc/u-boot-rockchip.bin && sha512sum Builds/$dev$loc/u-boot-rockchip.bin >> Results/release.sha512sum
         openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip.bin >> Results/release.sha3sum
         sha512sum Builds/$dev$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$dev$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
         openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
       done
-      docker cp $NAME:/$dev/ Builds
+      docker cp $NAME:/$dev/. Builds/
       sha512sum Builds/$dev/u-boot-rockchip.bin && sha512sum Builds/$dev/u-boot-rockchip.bin >> Results/release.sha512sum
       openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip.bin >> Results/release.sha3sum
       sha512sum Builds/$dev/u-boot-rockchip-spi.bin && sha512sum Builds/$dev/u-boot-rockchip-spi.bin >> Results/release.sha512sum
