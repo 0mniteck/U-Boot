@@ -1,10 +1,11 @@
 #!/bin/bash
-env | sort
+env | sort >> Results/Env/git.env
+echo "" $_
 ## Available Commands:
 
-# ./git.sh check
-# ./git.sh reset
-# ./git.sh update
+# $PWD/git.sh check
+# $PWD/git.sh reset
+# $PWD/git.sh update
 
 # Host UBoot ## Add to ~/.ssh/config for SSH support, recommend ecdsa-sk or ed25519_sk.
 #    Hostname github.com
@@ -53,7 +54,6 @@ git status && git add -A && git status
 if [[ $(<~/.ssh/config) == *UBoot* ]]; then
   yubi_check
 fi
-
 pkexec --keep-cwd git commit -a -S -m "$1" && sleep 5 && git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD):Docker
 if [ "$2" != "" ]; then
   pkexec --keep-cwd git tag -a "$2" -s -m "Tagged Release $2" && sleep 5 && git push origin "refs/tags/$2"
