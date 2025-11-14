@@ -4,7 +4,7 @@ ARG HUB BASE ENTRYPOINT
 ONBUILD RUN echo "U-Boot-Builder for $ENTRYPOINT starting: Using base image $HUB $BASE"; sleep 5
 
 FROM $HUB-extra:$BASE_EXTRA AS base_extra
-ARG HUB BASE ENTRYPOINT
+ARG HUB BASE_EXTRA ENTRYPOINT
 RUN apt install -y clang cmake gcc g++ libclang-rt-dev libstdc++6 lld patch python3-pycryptodome python3-pycodestyle 
 ONBUILD RUN echo "U-Boot-Builder for $ENTRYPOINT starting: Using base image $HUB-extra $BASE_EXTRA"; sleep 5
 
