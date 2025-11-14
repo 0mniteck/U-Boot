@@ -1,16 +1,15 @@
 #!/bin/bash
 env | sort >> Results/Env/clean.env
 echo "" $_
-
-env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
-  sleep 5 && > $2.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c $1
-}
-
 ## Available Commands:
 
 # $PWD/clean.sh git.cleanup
 # $PWD/clean.sh git.cleanup.(cache)
 # $PWD/clean.sh tmp.cleanup
+
+env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
+  sleep 5 && > $2.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c $1
+}
 
 do_clean() {
   env_elimnator "$PWD/git.sh reset" Results/git
