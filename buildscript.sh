@@ -1,6 +1,9 @@
 #!/bin/bash
 # ── Configuration for defaults ─ Source File ─────────────────────────────────
 source defaults
+env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
+  sleep 5 && > $2.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c $1
+}
 # ── User Config Inputs ───────────────────────────────────────────────────────
 declare -A options=(
   [a]=ALT    # Alternate List (yes/No)
@@ -83,9 +86,9 @@ else
   $PWD/install.sh apt.update
 fi
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
-  ./clean.sh git.cleanup.cache
+  env_elimnator "$PWD/clean.sh git.cleanup.cache" clean
 elif [ "$CLEAN" = "yes" ]; then
-  ./clean.sh git.cleanup
+  env_elimnator "$PWD/clean.sh git.cleanup" clean
 fi
 if [ "$ALT" = "" ]; then
   ALT="no"
@@ -124,7 +127,7 @@ fi
 pushd Results
   mv ../defaults.set defaults.set
   ENV=$(sha512sum defaults.set)
-  if [[ $ENV == *3446b556126a630736619e6e9b979059a7635109e02ffa20a5780de88ea1e6119d5af61050b7819c51d0c872413b68d748c6a49664a3f8580bfcf2ebabb0254c* ]]; then
+  if [[ $ENV == *e795c85d93a484080d0605128f9274259b0ec169a06c9948de196f2dc20d420cdcce885882bcd7b7b4c2e02661a18b9103e65d0e5f1eaa720d521851c745e126* ]]; then
     ENVV="MATCHED DEFAULTS CONFIG SHA512SUM"
   else
     ENVV="DEFAULTS MISSMATCH"
@@ -146,15 +149,15 @@ pushd Results
   echo "export CR_C=$CROSS" >> choices.set && echo "export MOUNT=$MOUNT" >> choices.set && echo "export CHECK=$CHECK" >> choices.set
   sha512sum choices.set >> release.sha512sum && openssl dgst -SHA3-256 choices.set >> release.sha3sum
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
-  sleep 5 && > builder.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c ../re-run.sh
+  env_elimnator $PWD/../re-run.sh builder
   cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
 # ── Clean + Git ──────────────────────────────────────────────────────────────
 if [ "$CLEAN" = "yes" ]; then
-  ./clean.sh tmp.cleanup && ls -la Builds/*
+  env_elimnator "$PWD/clean.sh tmp.cleanup" clean && ls -la Builds/*
   read -p "$status: --> Continue"
   if [ "$DEV" != "yes" ]; then
-    ./git.sh "$status" "$TAG"
+    env_elimnator "$PWD/git.sh '$status' '$TAG'" git
   fi
 fi
