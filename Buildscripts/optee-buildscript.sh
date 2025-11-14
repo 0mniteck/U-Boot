@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-env | sort
+env | sort >> /.env
+echo "" >> $_
 rm -f -r /usr/include/openssl
 mv /SSL/include /usr/include/openssl
 # sed -i "s'#define __ONCE_ALIGNMENT'#define __ONCE_ALIGNMENT __attribute__((aligned(8)))'" /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
