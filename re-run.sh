@@ -75,6 +75,7 @@ env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
 
 stop() { # $1 = Name
   if [ "$1" != "" ]; then
+    docker cp $1:/.env Results/Env/$1.env
     docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
     if [[ "$cross" == ""  && "$DEV" == *no* ]]; then
       docker buildx create $BUILDK --node u-boot-builder-$1 --leave
@@ -156,16 +157,16 @@ pushd ..
       --build-arg BASE_EXTRA=$BASE_EXTRA \
       --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
-  
+    
     scan_using_grype $NAME docker:$NAME
-  
+    
     docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       --network=name=host,\"driver-opt=network=host\" \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e CROSS_VER=$CROSS_VER \
       $NAME
-
+    
     docker cp $NAME:/home/cross/x-tools/aarch64-unknown-linux-gnu/bin/. Builds/rk3399/
     sha512sum Builds/rk3399/aarch64-* && sha512sum Builds/rk3399/aarch64-* >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/aarch64-* && openssl dgst -SHA3-256 Builds/rk3399/aarch64-* >> Results/release.sha3sum
@@ -182,9 +183,9 @@ pushd ..
       --build-arg BASE=$BASE \
       --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
-  
+    
     scan_using_grype $NAME docker:$NAME
-  
+    
     docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
@@ -195,12 +196,12 @@ pushd ..
       -e ACTIVE_PLATFORM="Platform/StandaloneMm/PlatformStandaloneMmPkg/PlatformStandaloneMmRpmb.dsc" \
       -e GCC5_AARCH64_PREFIX="aarch64-linux-gnu-" \
       $NAME
-  
+    
     docker cp $NAME:/Build/MmStandaloneRpmb/RELEASE_GCC5/FV/BL32_AP_MM.fd Builds/rk3399/BL32_AP_MM.fd
     sha512sum Builds/rk3399/BL32_AP_MM.fd && sha512sum Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd && openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha3sum
   fi
-
+  
   load openssl
   if [[ "$TARGET" == *$NAME* ]]; then
     docker buildx build $LOAD \
@@ -211,15 +212,15 @@ pushd ..
       --build-arg BASE=$BASE \
       --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
-  
+    
     scan_using_grype $NAME docker:$NAME
-  
+    
     docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e SSL_VER=$SSL_VER \
       $NAME
-  
+    
     docker cp $NAME:/SSL/include/. Builds/rk3399/include/
     sha512sum Builds/rk3399/include/* && sha512sum Builds/rk3399/include/* >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/include/*&& openssl dgst -SHA3-256 Builds/rk3399/include/* >> Results/release.sha3sum
@@ -337,9 +338,8 @@ pushd ..
   if [[ "$TARGET" == *$NAME* ]]; then
     scan_using_grype ubuntu "/ --select-catalogers debian"
   fi
-
   $PWD/install.sh run.uninstall "$remove" "$unmount"
-
+  
   load u-boot
   if [[ "$TARGET" == *$NAME* ]]; then
     if [ "$DEV" != "yes" ]; then
