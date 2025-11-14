@@ -6,6 +6,7 @@ mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > buil
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+BUILDK='--buildkitd-config "Includes/buildkitd.toml" --driver-opt "network=host,image=moby/buildkit:v0.25.1-rootless" --name U-Boot-Builder'
 
 if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
@@ -38,6 +39,9 @@ else
   export install="install"
   export signing=1
   load() { # $1 Name
+    if [[ "$cross" == "" ]]; then
+      docker buildx create $BUILDK --node u-boot-builder-$1 --bootstrap --use
+    fi
     export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
     export NAME=$1
     return
@@ -60,6 +64,19 @@ fi
 
 stop() { # $1 = Name
   docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
+  if [[ "$cross" == ""  && "$DEV" == *no* ]]; then
+    docker buildx create $BUILDK --node u-boot-builder-$1 --leave
+    docker buildx rm --all-inactive --force
+  fi
+}
+
+init_runner() {
+  if [[ "$cross" == "cross" || "$DEV" == *yes* ]]; then
+    docker buildx create $CROSS $BUILDK --node u-boot-builder-0 --bootstrap --use
+    if [[ "$cross" = "cross" ]]; then
+      docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install arm64
+    fi
+  fi
 }
 
 scan_using_grype() { # $1 = Name, $2 = Type:[Name]
@@ -98,19 +115,15 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
 
 pushd ..
   $PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$mount"
-  docker buildx create --buildkitd-config "Includes/buildkitd.toml" --name U-Boot-Builder $CROSS --driver-opt "network=host,image=moby/buildkit:v0.25.1-rootless" --bootstrap --use
-  if [ "$cross" = "cross" ]; then
-    docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
-  fi
-  
+  init_runner
   load base
   if [[ "$TARGET" == *$NAME* ]]; then
     docker buildx build $LOAD \
       --build-arg HUB=$HUB \
       --build-arg BASE=$BASE \
       -f Dockerfile .
+    stop $NAME
   fi
-  
   load base_extra
   if [[ "$TARGET" == *$NAME* ]]; then
     docker buildx build $LOAD \
@@ -118,6 +131,7 @@ pushd ..
       --build-arg BASE=$BASE \
       --build-arg BASE_EXTRA=$BASE_EXTRA \
       -f Dockerfile .
+    stop $NAME
   fi
 
   load crosstool-ng
