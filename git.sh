@@ -1,6 +1,6 @@
 #!/bin/bash
 env | sort >> Results/Env/git.env
-echo "" $_
+echo "" >> $_
 ## Available Commands:
 
 # $PWD/git.sh check
