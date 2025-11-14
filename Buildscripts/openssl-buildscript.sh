@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-env | sort
+env | sort >> /.env
+echo "" >> $_
 unzip -q SSL.zip -d / > /dev/null
 mv /openssl-openssl-$SSL_VER /SSL
 pushd /SSL
