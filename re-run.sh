@@ -127,7 +127,7 @@ pushd ..
       --build-arg CROSS_VER=$CROSS_VER \
       --build-arg CROSS_SUM=$CROSS_SUM \
       --build-arg HUB=$HUB \
-      --build-arg BASE=$BASE \
+      --build-arg BASE_EXTRA=$BASE_EXTRA \
       --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
   
@@ -212,7 +212,6 @@ pushd ..
       --build-arg TPM_SUM=$TPM_SUM \
       --build-arg ROT_SUM=$ROT_SUM \
       --build-arg HUB=$HUB \
-      --build-arg BASE=$BASE \
       --build-arg BASE_EXTRA=$BASE_EXTRA \
       --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
