@@ -88,9 +88,9 @@ else
   $PWD/install.sh apt.update
 fi
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
-  env_elimnator "$PWD/clean.sh git.cleanup.cache" clean
+  env_elimnator "$PWD/clean.sh git.cleanup.cache" Results/clean
 elif [ "$CLEAN" = "yes" ]; then
-  env_elimnator "$PWD/clean.sh git.cleanup" clean
+  env_elimnator "$PWD/clean.sh git.cleanup" Results/clean
 fi
 if [ "$ALT" = "" ]; then
   ALT="no"
@@ -157,9 +157,9 @@ pushd Results
 popd
 # ── Clean + Git ──────────────────────────────────────────────────────────────
 if [ "$CLEAN" = "yes" ]; then
-  env_elimnator "$PWD/clean.sh tmp.cleanup" clean && ls -la Builds/*
+  env_elimnator "$PWD/clean.sh tmp.cleanup" Results/clean && ls -la Builds/*
   read -p "$status: --> Continue"
   if [ "$DEV" != "yes" ]; then
-    env_elimnator "$PWD/git.sh '$status' '$TAG'" git
+    env_elimnator "$PWD/git.sh '$status' '$TAG'" Results/git
   fi
 fi
