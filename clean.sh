@@ -1,5 +1,10 @@
 #!/bin/bash
-env | sort
+env | sort > /.env
+
+env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
+  sleep 5 && > $2.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c $1
+}
+
 ## Available Commands:
 
 # ./clean.sh git.cleanup
@@ -7,10 +12,10 @@ env | sort
 # ./clean.sh tmp.cleanup
 
 do_clean() {
-  ./git.sh reset
+  env_elimnator "$PWD/git.sh reset" Results/git
 }
 do_update() {
-  ./git.sh update
+  env_elimnator "$PWD/git.sh update" Results/git
 }
 
 if [[ "$1" == *git.cleanup* ]]; then
