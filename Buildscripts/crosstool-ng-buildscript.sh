@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-env | sort
+env | sort >> /.env
+echo "" >> $_
 unzip -q CROSS.zip -d / > /dev/null
 mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
 printf '\n\n\n\n\ny\n' | adduser --disabled-password --no-create-home cross && echo "USER CROSS ADDED"
