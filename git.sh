@@ -1,5 +1,5 @@
 #!/bin/bash
-
+env | sort
 ## Available Commands:
 
 # ./git.sh check
