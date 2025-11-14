@@ -1,9 +1,7 @@
 #!/bin/bash
+
 # ── Configuration for defaults ─ Source File ─────────────────────────────────
 source defaults
-env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
-  sleep 5 && > $2.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c $1
-}
 # ── User Config Inputs ───────────────────────────────────────────────────────
 declare -A options=(
   [a]=ALT    # Alternate List (yes/No)
@@ -76,6 +74,10 @@ fi
 if [ "$CHECK" = "" ]; then
   CHECK="no"
 fi
+# ── Clean Environment Variables ──────────────────────────────────────────────
+env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
+  sleep 5 && > $2.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c $1
+}
 # ── Update + Clean ───────────────────────────────────────────────────────────
 if [[ $(which pkexec) = "" ]]; then
   sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup uidmap
