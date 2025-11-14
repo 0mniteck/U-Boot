@@ -14,6 +14,7 @@ env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
 do_clean() {
   env_elimnator "$PWD/git.sh reset" Results/git
 }
+
 do_update() {
   env_elimnator "$PWD/git.sh update" Results/git
 }
@@ -47,14 +48,19 @@ if [[ "$1" == *git.cleanup* ]]; then
     done
   popd
   pushd Results/
-    rm -f *.info && rm -f release.* && rm -f builder.*
+    rm -f *.info && rm -f release.* && rm -f *.log
     find . ! -type d -delete # Will be removed
     for con in $TARGETS
-      do
-        mkdir -p $con
-        find $con/. ! -type d -delete
-        touch $con/tmp
-      done
+    do
+      mkdir -p $con
+      find $con/. ! -type d -delete
+      touch $con/tmp
+    done
+    mkdir -p Env
+    pushd Env
+      find . ! -type d -delete
+      touch tmp
+    popd
   popd
 fi
 
@@ -75,11 +81,14 @@ if [ "$1" = "tmp.cleanup" ]; then
   popd
   pushd Results/
     rm -f /tmp/release.last.* && rm -f release.last.*
-    rm -f sys.* && rm -f status.* && rm -f builder.*
+    rm -f sys.* && rm -f status.* && rm -f *.log
     for con in $TARGETS
     do
       rm -f $con/tmp
     done
+    pushd Env
+      rm -f tmp
+    popd
   popd
 fi
 exit 0
