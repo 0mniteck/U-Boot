@@ -40,6 +40,7 @@ else
   export signing=1
   load() { # $1 Name
     if [[ "$TARGET" == *$1* ]]; then
+      stop $NAME
       if [ "$cross" = "" ]; then
         docker buildx create $BUILDK --node u-boot-builder-$1 --bootstrap --use
       fi
