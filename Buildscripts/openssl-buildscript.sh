@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+env | sort
 unzip -q SSL.zip -d / > /dev/null
 mv /openssl-openssl-$SSL_VER /SSL
 pushd /SSL
