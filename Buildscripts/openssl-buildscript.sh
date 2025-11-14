@@ -11,4 +11,3 @@ pushd /SSL
   make
   cp include/crypto/sm4.h include/openssl/sm4.h
 popd
-mv /SSL/include /usr/include/openssl
