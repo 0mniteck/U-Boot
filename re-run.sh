@@ -59,9 +59,8 @@ if [ "$DEV" = "yes" ]; then
     if [[ "$TARGET" == *$1* ]]; then
       stop $NAME  
       export LOAD="--load $CROSS $CACHE --target $1 --tag $1"
-      export NAME=$1
     fi
-    return
+    export NAME=$1
   }
 else
   export BUILDX_METADATA_PROVENANCE=max
@@ -74,9 +73,8 @@ else
       fi
       stop $NAME
       export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
-      export NAME=$1
     fi
-    return
+    export NAME=$1
   }
 fi
 
@@ -119,7 +117,7 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
       cat $1.grype.status
     popd
   else
-    return
+    wait
   fi
 }
 
