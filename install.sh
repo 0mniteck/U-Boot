@@ -1,4 +1,4 @@
-#!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /bin/bash -c "/usr/bin/env HOME=\"$HOME\" /bin/bash -c \". $PWD/\$0\""
+#!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /bin/bash -c "/usr/bin/env HOME=$HOME /bin/bash -c \". $PWD/\$0\" \$1 \$2 \$3 \$4 \$5 \$6"
 env | sort >> Results/env/install.env && echo "" >> Results/env/install.env
 ## Available Commands:
 
@@ -105,7 +105,14 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
   mkdir -p /var/snap/docker
 }
 
-cleanup.snaps() { #1 = remove/install
+cleanup.snaps() { #1 = remove/install, #2 = whoami
+  if [[ "$HOME" == "" ]]; then
+    if [[ "$2" == *root* ]]; then
+      HOME=/root
+    else
+      HOME=/home/$2
+    fi
+  fi
   if [[ "$1" == *remove* ]]; then
     snap remove syft --purge 2>/dev/null && wait
     snap remove grype --purge 2>/dev/null && wait
@@ -122,7 +129,7 @@ run_install() { #1 = install, #2 = remove, #3 = whoami, #4 = cross, #5 = device
   if [[ "$5" != "" ]]; then
     unmount="unmount"
   fi
-  cleanup.snaps "$1"
+  cleanup.snaps "$1" "$3"
   cleanup.docker "$2" "$unmount" "$purge"
   install.docker "$4" "$5" "$3"
 }
