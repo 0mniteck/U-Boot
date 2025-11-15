@@ -37,8 +37,8 @@ ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 FROM base_extra AS optee
 ARG SOURCE_DATE_EPOCH OPT_VER OPT_SUM OPT_SUM2 TPM_SUM ROT_SUM ENTRYPOINT
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH OPT_VER=$OPT_VER ENTRYPOINT=$ENTRYPOINT
-COPT --link Builds/rk3399/include /SSL/
-COPT --link Builds/rk3399/aarch64-* /CROSS/
+COPY --link Builds/rk3399/include /SSL/
+COPY --link Builds/rk3399/aarch64-* /CROSS/
 COPY --link Builds/rk3399/BL32_AP_MM.fd Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /OPTEE.zip
 ADD --link https://github.com/OP-TEE/optee_ftpm/archive/refs/tags/$OPT_VER.zip /ftpm_OPTEE.zip
