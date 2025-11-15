@@ -131,14 +131,15 @@ pushd ..
     docker buildx build $LOAD \
       --build-arg HUB=$HUB \
       --build-arg BASE=$BASE \
+      --build-arg ENTRYPOINT=u-boot \
       -f Dockerfile .
   fi
   load base_extra
   if [[ "$TARGET" == *$NAME* ]]; then
     docker buildx build $LOAD \
       --build-arg HUB=$HUB \
-      --build-arg BASE=$BASE \
       --build-arg BASE_EXTRA=$BASE_EXTRA \
+      --build-arg ENTRYPOINT=u-boot \
       -f Dockerfile .
   fi
   
