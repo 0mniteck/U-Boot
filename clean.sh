@@ -42,7 +42,7 @@ if [[ "$1" == *git.cleanup* ]]; then
     done
   popd
   pushd Results/
-    rm -f *.info && rm -f release.* && && rm -f *.set && rm -f logs/*.log && rm -f env/*.env
+    rm -f *.info && rm -f release.* && rm -f *.set && rm -f logs/*.log && rm -f env/*.env
     find . ! -type d -delete # Will be removed
     cp ../defaults defaults.set
     for con in $TARGETS
