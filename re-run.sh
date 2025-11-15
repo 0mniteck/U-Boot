@@ -2,12 +2,13 @@
 source $PWD/defaults.set 2>/dev/null && rm -f defaults.set
 source $PWD/choices.set 2>/dev/null && rm -f choices.set
 env | sort >> env/re-run.env && echo "" >> env/re-run.env
+
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 BUILDK="--buildkitd-config $PWD/../Includes/buildkitd.toml --driver docker-container --driver-opt \"network=host\" --driver-opt \"image=moby/buildkit:v0.25.1-rootless\" --name U-Boot-Builder"
-set -x
+
 if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
   export TARGET="$TARGETS"
