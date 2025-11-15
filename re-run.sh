@@ -26,6 +26,32 @@ if [ "$CR_C" = "yes" ]; then
   export CROSS="--platform linux/arm64"
   export cross="cross"
 fi
+if [ "$CLEAN" = "yes" ]; then
+  echo "CLEAN_BUILD: $CLEAN"
+  export remove="remove"
+else
+  echo "CLEAN_BUILD: $CLEAN"
+fi
+if [ "$EPOCH" != "" ]; then
+  echo "SOURCE_DATE_EPOCH: $EPOCH"
+  export source_date_epoch=$EPOCH
+  source_date="@$source_date_epoch"
+  echo "SOURCE_DATE: $source_date"
+  build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
+  echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
+fi
+
+stop() { # $1 = Name
+  if [ "$1" != "" ]; then
+    docker cp $1:/.env Results/env/$1.env
+    docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
+    if [[ "$cross" == ""  && "$DEV" == *no* ]]; then
+      docker buildx create $BUILDK --node u-boot-builder-$1 --leave
+      docker buildx rm --all-inactive --force
+    fi
+  fi
+}
+
 if [ "$DEV" = "yes" ]; then
   echo "DEV_BUILD: $DEV"
   CACHE="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
@@ -53,31 +79,6 @@ else
     return
   }
 fi
-if [ "$CLEAN" = "yes" ]; then
-  echo "CLEAN_BUILD: $CLEAN"
-  export remove="remove"
-else
-  echo "CLEAN_BUILD: $CLEAN"
-fi
-if [ "$EPOCH" != "" ]; then
-  echo "SOURCE_DATE_EPOCH: $EPOCH"
-  export source_date_epoch=$EPOCH
-  source_date="@$source_date_epoch"
-  echo "SOURCE_DATE: $source_date"
-  build_message_timestamp="$(date +'%b %d %Y - 00:00:00 +0000' -d $source_date)";
-  echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
-fi
-
-stop() { # $1 = Name
-  if [ "$1" != "" ]; then
-    docker cp $1:/.env Results/env/$1.env
-    docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
-    if [[ "$cross" == ""  && "$DEV" == *no* ]]; then
-      docker buildx create $BUILDK --node u-boot-builder-$1 --leave
-      docker buildx rm --all-inactive --force
-    fi
-  fi
-}
 
 init_runner() {
   if [[ "$cross" == "cross" || "$DEV" == *yes* ]]; then
