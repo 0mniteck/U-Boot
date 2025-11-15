@@ -10,7 +10,6 @@ apt_update() {
   apt update
   apt upgrade -y
   apt install -y bc dosfstools parted screen snapd systemd-cryptsetup uidmap
-  if [[ $(which fan) != "" ]]; then fan 250; fi
 }
 
 add_group() { #1 = $(whoami)
@@ -148,6 +147,7 @@ fi
 
 if [[ "$1" == *run.install* ]]; then
   # "$install" "$remove" "$(whoami)" "$cross" "$5"
+  if [[ $(which fan) != "" ]]; then fan 250; fi
   run_install $2 $3 $4 $5 $6
 fi
 
