@@ -1,5 +1,5 @@
 #!/usr/bin/pkexec /bin/bash
-env | sort >> Results/Env/install.env
+env | sort >> $PWD/Results/Env/install.env
 echo "" >> $_
 ## Available Commands:
 
