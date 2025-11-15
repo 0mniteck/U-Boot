@@ -70,7 +70,7 @@ fi
 
 stop() { # $1 = Name
   if [ "$1" != "" ]; then
-    docker cp $1:/.env Results/Env/$1.env
+    docker cp $1:/.env Results/env/$1.env
     docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
     if [[ "$cross" == ""  && "$DEV" == *no* ]]; then
       docker buildx create $BUILDK --node u-boot-builder-$1 --leave
