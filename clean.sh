@@ -11,11 +11,11 @@ env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
 }
 
 do_clean() {
-  env_elimnator "$PWD/git.sh reset" Results/git
+  env_elimnator "$PWD/git.sh reset" Results/logs/git
 }
 
 do_update() {
-  env_elimnator "$PWD/git.sh update" Results/git
+  env_elimnator "$PWD/git.sh update" Results/logs/git
 }
 
 if [[ "$1" == *git.cleanup* ]]; then
@@ -27,8 +27,6 @@ if [[ "$1" == *git.cleanup* ]]; then
   chmod -R +x Buildscripts/
   chmod -R +x Configs/
   mkdir -p .git/Cache
-  rm -f defaults.set
-  cp defaults defaults.set
   pushd Builds/
     for dev in $LIST
     do
@@ -47,17 +45,19 @@ if [[ "$1" == *git.cleanup* ]]; then
     done
   popd
   pushd Results/
-    rm -f *.info && rm -f release.* && rm -f *.log
+    rm -f *.info && rm -f release.* && && rm -f *.set rm -f logs/*.log && rm -f env/*.env && rm -f *.set
     find . ! -type d -delete # Will be removed
+    cp ../defaults defaults.set
     for con in $TARGETS
     do
       mkdir -p $con
       find $con/. ! -type d -delete
       touch $con/tmp
     done
-    mkdir -p Env
-    pushd Env
-      find . ! -type d -delete
+    pushd env
+      touch tmp
+    popd
+    pushd logs
       touch tmp
     popd
   popd
@@ -85,7 +85,10 @@ if [ "$1" = "tmp.cleanup" ]; then
     do
       rm -f $con/tmp
     done
-    pushd Env
+    pushd env
+      rm -f tmp
+    popd
+    pushd logs
       rm -f tmp
     popd
   popd
