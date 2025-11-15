@@ -148,10 +148,10 @@ fi
 
 if [[ "$1" == *run.install* ]]; then
   # "$install" "$remove" "$(whoami)" "$cross" "$5"
-  run_install "$2" "$3" "$4" "$5" "$6"
+  run_install $2 $3 $4 $5 $6
 fi
 
 if [[ "$1" == *run.uninstall* ]]; then
   # "$remove" "$unmount"
-  run_uninstall "$2" "$3"
+  run_uninstall $2 $3
 fi
