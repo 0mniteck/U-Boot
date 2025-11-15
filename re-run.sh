@@ -69,10 +69,6 @@ if [ "$EPOCH" != "" ]; then
   echo "BUILD_MESSAGE_TIMESTAMP: $build_message_timestamp"
 fi
 
-env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
-  sleep 5 && > $2.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c $1
-}
-
 stop() { # $1 = Name
   if [ "$1" != "" ]; then
     docker cp $1:/.env Results/Env/$1.env
