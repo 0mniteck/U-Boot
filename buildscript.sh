@@ -77,7 +77,7 @@ if [ "$CHECK" = "" ]; then
 fi
 # ── Clean Environment Variables ──────────────────────────────────────────────
 env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
-  env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c $1
+  env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c '$1'
 }
 # ── Update + Clean ───────────────────────────────────────────────────────────
 if [[ $(which pkexec) = "" ]]; then
