@@ -1,6 +1,5 @@
 #!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /bin/bash
-env | sort >> $PWD/Results/Env/install.env
-echo "" >> $_
+env | sort >> $PWD/Results/Env/install.env && echo "" >> $PWD/Results/Env/install.env
 ## Available Commands:
 
 # $PWD/install.sh apt.update
