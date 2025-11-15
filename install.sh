@@ -1,5 +1,5 @@
 #!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /bin/bash
-env | sort >> $PWD/Results/Env/install.env && echo "" >> $PWD/Results/Env/install.env
+env | sort >> $PWD/Results/env/install.env && echo "" >> $PWD/Results/env/install.env
 ## Available Commands:
 
 # $PWD/install.sh apt.update
@@ -105,13 +105,18 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
   mkdir -p /var/snap/docker
 }
 
-cleanup.snaps() { #1 = remove/install
+cleanup.snaps() { #1 = remove/install, #2 = whoami
+  if [[ "$2" == *root* ]]; then
+    dir=/$2
+  else
+    dir=/home/$2
+  fi
   if [[ "$1" == *remove* ]]; then
     snap remove syft --purge 2>/dev/null && wait
     snap remove grype --purge 2>/dev/null && wait
-    rm -f -r ~/Library
+    rm -f -r $dir/Library
   fi
-  rm -f -r ~/getter* && rm -f -r ~/grype-scratch* && rm -f -r ~/syft && rm -f -r ~/6 && rm -f -r ~/.cache/grype && rm -f -r ~/.cache/syft && rm -f -r /tmp/getter* && rm -f -r /tmp/grype-scratch*
+  rm -f -r $dir/getter* && rm -f -r $dir/grype-scratch* && rm -f -r $dir/syft && rm -f -r $dir/6 && rm -f -r $dir/.cache/grype && rm -f -r $dir/.cache/syft && rm -f -r /tmp/getter* && rm -f -r /tmp/grype-scratch*
   if [[ "$1" == *install* ]]; then
     snap install syft --classic 2>/dev/null && wait
     snap install grype --classic 2>/dev/null && wait
@@ -122,7 +127,7 @@ run_install() { #1 = install, #2 = remove, #3 = whoami, #4 = cross, #5 = device
   if [[ "$5" != "" ]]; then
     unmount="unmount"
   fi
-  cleanup.snaps "$1"
+  cleanup.snaps "$1" "$3"
   cleanup.docker "$2" "$unmount" "$purge"
   install.docker "$4" "$5" "$3"
 }
