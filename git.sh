@@ -1,6 +1,5 @@
 #!/bin/bash
-env | sort >> Results/Env/git.env
-echo "" >> $_
+env | sort >> Results/Env/git.env && echo "" >> Results/Env/git.env
 ## Available Commands:
 
 # $PWD/git.sh check
@@ -54,6 +53,7 @@ git status && git add -A && git status
 if [[ $(<~/.ssh/config) == *UBoot* ]]; then
   yubi_check
 fi
+
 pkexec --keep-cwd git commit -a -S -m "$1" && sleep 5 && git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD):Docker
 if [ "$2" != "" ]; then
   pkexec --keep-cwd git tag -a "$2" -s -m "Tagged Release $2" && sleep 5 && git push origin "refs/tags/$2"
