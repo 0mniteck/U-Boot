@@ -1,4 +1,4 @@
-#!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /bin/bash -c "/usr/bin/env HOME=$HOME /bin/bash -c \". $PWD/\$0\""
+#!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /bin/bash -c "/usr/bin/env HOME=\"$HOME\" /bin/bash -c \". $PWD/\$0\""
 env | sort >> Results/env/install.env && echo "" >> Results/env/install.env
 ## Available Commands:
 
