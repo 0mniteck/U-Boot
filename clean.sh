@@ -1,4 +1,5 @@
 #!/bin/bash
+source ./defaults
 env | sort >> Results/env/clean.env && echo "" >> Results/env/clean.env
 ## Available Commands:
 
@@ -81,5 +82,4 @@ if [ "$1" = "tmp.cleanup" ]; then
     rm -f logs/tmp
   popd
 fi
-
 exit 0
