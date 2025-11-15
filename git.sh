@@ -21,11 +21,6 @@ yubi_check() {
 git_reset() {
   git reset --hard
   git clean -xfd
-  if [[ $(<~/.ssh/config) == *UBoot* ]]; then
-    export GPG_TTY=$(tty)
-    eval `ssh-agent -s`
-    ssh-add ~/.ssh/id_ecdsa_s*[!.pub]
-  fi
 }
 
 git_update() {
