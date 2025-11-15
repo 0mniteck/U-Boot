@@ -127,7 +127,7 @@ else
 fi
 # ── Check Variables ──────────────────────────────────────────────────────────
 pushd Results
-  mv ../defaults.set defaults.set
+  mv $PWD/../defaults.set defaults.set
   ENV=$(sha512sum defaults.set)
   if [[ $ENV == *e795c85d93a484080d0605128f9274259b0ec169a06c9948de196f2dc20d420cdcce885882bcd7b7b4c2e02661a18b9103e65d0e5f1eaa720d521851c745e126* ]]; then
     ENVV="MATCHED DEFAULTS CONFIG SHA512SUM"
