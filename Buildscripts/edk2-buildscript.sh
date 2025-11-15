@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-env | sort >> /.env
-echo "" >> /.env
+env | sort >> /.env && echo "" >> /.env
 unzip -q $EDKP_VER.zip > /dev/null
 pushd /edk2-$EDK_VER
   sed -i "19,20d;22,24d" BaseTools/Source/C/VfrCompile/GNUmakefile
