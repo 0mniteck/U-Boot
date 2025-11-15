@@ -76,7 +76,7 @@ if [ "$CHECK" = "" ]; then
 fi
 # ── Clean Environment Variables ──────────────────────────────────────────────
 env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
-  sleep 5 && > $2.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c $1
+  env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c $1
 }
 # ── Update + Clean ───────────────────────────────────────────────────────────
 if [[ $(which pkexec) = "" ]]; then
@@ -88,46 +88,45 @@ else
   $PWD/install.sh apt.update
 fi
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
-  env_elimnator "$PWD/clean.sh git.cleanup.cache" Results/clean
+  env_elimnator "$PWD/clean.sh git.cleanup.cache" Results/logs/clean
 elif [ "$CLEAN" = "yes" ]; then
-  env_elimnator "$PWD/clean.sh git.cleanup" Results/clean
+  env_elimnator "$PWD/clean.sh git.cleanup" Results/logs/clean
 fi
-if [ "$ALT" = "" ]; then
-  ALT="no"
-fi
-if [ "$ALT" = "yes" ]; then
-  export BUILD_LIST="PT2-rk3566:pinetab2-rk3566_defconfig"
-  export LIST="PT2-rk3566"
-  export ARCHS="rk3568"
-  sed -i s/"$(grep "BUILD_LIST" defaults | awk -F'"' '{print $2}')"/"$BUILD_LIST"/ defaults.set
-  sed -i s/"$(grep "LIST" defaults | awk -F'"' '{print $2}')"/"$LIST"/ defaults.set
-  sed -i s/"$(grep "ARCHS" defaults | awk -F'"' '{print $2}')"/"$ARCHS"/ defaults.set
-else
-  export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-fi
-# ── Target Validation ────────────────────────────────────────────────────────
-TRGLIST="(crosstool-ng|openssl|edk2|arm-trusted|optee|u-boot|ubuntu|base|base_extra)"
-if [[ -z "$TARGET" || "$TARGET" == *all* ]]; then
-  export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-  TARGET="$TARGETS"
-elif [[ "$TARGET" =~ $TRGLIST ]]; then
-  for TRG in $TARGET; do
-    if [[ "$TRG" =~ $TRGLIST ]]; then
-      export TARGETS="$TARGET"
-      export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-      sed -i s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ defaults.set
-    else
-      echo "INVALID TARGET: $TRG"
-      exit 1
-    fi
-  done
-else
-  echo "INVALID TARGET LIST: $TARGET"
-  exit 1
-fi
-# ── Check Variables ──────────────────────────────────────────────────────────
 pushd Results
-  mv $PWD/../defaults.set defaults.set
+  if [ "$ALT" = "" ]; then
+    ALT="no"
+  fi
+  if [ "$ALT" = "yes" ]; then
+    export BUILD_LIST="PT2-rk3566:pinetab2-rk3566_defconfig"
+    export LIST="PT2-rk3566"
+    export ARCHS="rk3568"
+    sed -i s/"$(grep "BUILD_LIST" defaults | awk -F'"' '{print $2}')"/"$BUILD_LIST"/ defaults.set
+    sed -i s/"$(grep "LIST" defaults | awk -F'"' '{print $2}')"/"$LIST"/ defaults.set
+    sed -i s/"$(grep "ARCHS" defaults | awk -F'"' '{print $2}')"/"$ARCHS"/ defaults.set
+  else
+    export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+  fi
+  # ── Target Validation ────────────────────────────────────────────────────────
+  TRGLIST="(crosstool-ng|openssl|edk2|arm-trusted|optee|u-boot|ubuntu|base|base_extra)"
+  if [[ -z "$TARGET" || "$TARGET" == *all* ]]; then
+    export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+    TARGET="$TARGETS"
+  elif [[ "$TARGET" =~ $TRGLIST ]]; then
+    for TRG in $TARGET; do
+      if [[ "$TRG" =~ $TRGLIST ]]; then
+        export TARGETS="$TARGET"
+        export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+        sed -i s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ defaults.set
+      else
+        echo "INVALID TARGET: $TRG"
+        exit 1
+      fi
+    done
+  else
+    echo "INVALID TARGET LIST: $TARGET"
+    exit 1
+  fi
+# ── Check Variables ──────────────────────────────────────────────────────────
   ENV=$(sha512sum defaults.set)
   if [[ $ENV == *e795c85d93a484080d0605128f9274259b0ec169a06c9948de196f2dc20d420cdcce885882bcd7b7b4c2e02661a18b9103e65d0e5f1eaa720d521851c745e126* ]]; then
     ENVV="MATCHED DEFAULTS CONFIG SHA512SUM"
@@ -151,15 +150,15 @@ pushd Results
   echo "export CR_C=$CROSS" >> choices.set && echo "export MOUNT=$MOUNT" >> choices.set && echo "export CHECK=$CHECK" >> choices.set
   sha512sum choices.set >> release.sha512sum && openssl dgst -SHA3-256 choices.set >> release.sha3sum
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
-  env_elimnator $PWD/../re-run.sh builder
-  cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
+  env_elimnator $PWD/../re-run.sh logs/builder
+  cat logs/builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
 # ── Clean + Git ──────────────────────────────────────────────────────────────
 if [ "$CLEAN" = "yes" ]; then
-  env_elimnator "$PWD/clean.sh tmp.cleanup" Results/clean && ls -la Builds/*
+  env_elimnator "$PWD/clean.sh tmp.cleanup" Results/logs/clean && ls -la Builds/*
   read -p "$status: --> Continue"
   if [ "$DEV" != "yes" ]; then
-    env_elimnator "$PWD/git.sh '$status' '$TAG'" Results/git
+    env_elimnator "$PWD/git.sh '$status' '$TAG'" Results/logs/git
   fi
 fi
