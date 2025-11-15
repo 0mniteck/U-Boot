@@ -46,6 +46,7 @@ fi
 if [ "$EPOCH" = "" ]; then
   EPOCH="today"
 fi
+## ─ Source Date Epoch ────────────────────────────────────────────────────────
 if [ "$EPOCH" = "today" ]; then
   timestamp=$(date -d $(date +%D) +%s);
   if [ "${timestamp}" != "" ]; then
