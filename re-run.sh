@@ -6,7 +6,7 @@ mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > buil
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
-BUILDK='--buildkitd-config "Includes/buildkitd.toml" --driver-opt "network=host,image=moby/buildkit:v0.25.1-rootless" --name U-Boot-Builder'
+BUILDK="--buildkitd-config $PWD/Includes/buildkitd.toml --driver-opt 'network=host,image=moby/buildkit:v0.25.1-rootless' --name U-Boot-Builder"
 
 if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
@@ -123,7 +123,7 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
 }
 
 pushd ..
-  ./install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$mount"
+  ./install.sh run.install \"$install\" \"$remove\" \"$(whoami)\" \"$cross\" \"$mount\"
   init_runner
   
   load base
@@ -333,7 +333,7 @@ pushd ..
   if [[ "$TARGET" == *$NAME* ]]; then
     scan_using_grype ubuntu "/ --select-catalogers debian"
   fi
-  ./install.sh run.uninstall "$remove" "$unmount"
+  ./install.sh run.uninstall \"$remove\" \"$unmount\"
   
   load u-boot
   if [[ "$TARGET" == *$NAME* ]]; then
