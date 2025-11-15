@@ -1,4 +1,4 @@
-#!/usr/bin/pkexec /bin/bash
+#!/usr/bin/env -S /usr/bin/pkexec PWD=$PWD /bin/bash
 env | sort >> $PWD/Results/Env/install.env
 echo "" >> $_
 ## Available Commands:
