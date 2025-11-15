@@ -28,7 +28,7 @@ if [[ "$1" == *git.cleanup* ]]; then
   chmod -R +x Configs/
   mkdir -p .git/Cache
   rm -f defaults.set
-  cp defaults $_
+  cp defaults defaults.set
   pushd Builds/
     for dev in $LIST
     do
