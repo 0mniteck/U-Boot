@@ -7,7 +7,7 @@ echo "Starting Build: $(date -u '+on %D at %R UTC')"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 BUILDK="--buildkitd-config $PWD/../Includes/buildkitd.toml --driver-opt \"network=host,image=moby/buildkit:v0.25.1-rootless\" --name U-Boot-Builder"
-
+set -x
 if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
   export TARGET="$TARGETS"
