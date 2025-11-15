@@ -1,6 +1,5 @@
 #!/bin/bash
-env | sort >> Results/Env/clean.env
-echo "" >> $_
+env | sort >> Results/Env/clean.env && echo "" >> Results/Env/clean.env
 ## Available Commands:
 
 # $PWD/clean.sh git.cleanup
