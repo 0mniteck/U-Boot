@@ -129,17 +129,17 @@ run_install() { #1 = install, #2 = remove, #3 = whoami, #4 = cross, #5 = device
   if [[ "$5" != "" ]]; then
     unmount="unmount"
   fi
-  cleanup.snaps "$1" "$3"
-  cleanup.docker "$2" "$unmount" "$purge"
-  install.docker "$4" "$5" "$3"
+  cleanup.snaps $1 $3
+  cleanup.docker $2 "$unmount" "$purge"
+  install.docker $4 $5 $3
 }
 
 run_uninstall() { #1 = remove , #2 = unmount
   if [[ "$2" != "" ]]; then
     unmount="unmount"
   fi
-  cleanup.docker "$1" "$unmount" "$purge"
-  cleanup.snaps "$1"
+  cleanup.docker $1 "$unmount" "$purge"
+  cleanup.snaps $1
 }
 
 if [[ "$1" == *apt.update* ]]; then
