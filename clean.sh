@@ -41,7 +41,7 @@ if [[ "$1" == *git.cleanup* ]]; then
     done
   popd
   pushd Results/
-    rm -f *.info && rm -f release.* && && rm -f *.set rm -f logs/*.log && rm -f env/*.env && rm -f *.set
+    rm -f *.info && rm -f release.* && && rm -f *.set && rm -f logs/*.log && rm -f env/*.env
     find . ! -type d -delete # Will be removed
     cp ../defaults defaults.set
     for con in $TARGETS
@@ -50,12 +50,8 @@ if [[ "$1" == *git.cleanup* ]]; then
       find $con/. ! -type d -delete
       touch $con/tmp
     done
-    pushd env
-      touch tmp
-    popd
-    pushd logs
-      touch tmp
-    popd
+    touch env/tmp
+    touch logs/tmp
   popd
 fi
 
@@ -76,17 +72,14 @@ if [ "$1" = "tmp.cleanup" ]; then
   popd
   pushd Results/
     rm -f /tmp/release.last.* && rm -f release.last.*
-    rm -f sys.* && rm -f status.* && rm -f *.log
+    rm -f sys.* && rm -f status.*
     for con in $TARGETS
     do
       rm -f $con/tmp
     done
-    pushd env
-      rm -f tmp
-    popd
-    pushd logs
-      rm -f tmp
-    popd
+    rm -f env/tmp
+    rm -f logs/tmp
   popd
 fi
+
 exit 0
