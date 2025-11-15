@@ -123,7 +123,7 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
 }
 
 pushd ..
-  $PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$mount"
+  ./install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$mount"
   init_runner
   
   load base
@@ -333,7 +333,7 @@ pushd ..
   if [[ "$TARGET" == *$NAME* ]]; then
     scan_using_grype ubuntu "/ --select-catalogers debian"
   fi
-  $PWD/install.sh run.uninstall "$remove" "$unmount"
+  ./install.sh run.uninstall "$remove" "$unmount"
   
   load u-boot
   if [[ "$TARGET" == *$NAME* ]]; then
