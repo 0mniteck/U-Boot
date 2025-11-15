@@ -86,7 +86,7 @@ if [[ $(which pkexec) = "" ]]; then
 elif [[ $(which bc) != "" && $(which dosfstools) != "" && $(which parted) != "" && $(which screen) != "" && $(which snapd) != "" && $(which systemd-cryptsetup) != "" && $(which uidmap) != "" && "$CLEAN" = "no" ]]; then
   wait
 else
-  $PWD/install.sh apt.update
+  ./install.sh apt.update
 fi
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
   env_elimnator "$PWD/clean.sh git.cleanup.cache" Results/logs/clean
