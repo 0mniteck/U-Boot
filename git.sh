@@ -1,5 +1,5 @@
 #!/bin/bash
-env | sort >> Results/Env/git.env && echo "" >> Results/Env/git.env
+env | sort >> Results/env/git.env && echo "" >> Results/env/git.env
 ## Available Commands:
 
 # $PWD/git.sh check
