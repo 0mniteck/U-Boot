@@ -86,7 +86,7 @@ init_runner() {
       docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install arm64
     fi
   else
-    docker buildx create $BUILDK --node u-boot-builder --use
+    docker buildx create $BUILDK --node u-boot-builder-0 --use
   fi
 }
 
