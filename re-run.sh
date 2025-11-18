@@ -70,7 +70,7 @@ else
   load() { # $1 Name
     if [[ "$TARGET" == *$1* ]]; then
       if [ "$cross" = "" ]; then
-        docker buildx create $BUILDK --node u-boot-builder-$1 --bootstrap --use
+        docker buildx create $BUILDK --node u-boot-builder-$1 --append --bootstrap --use
       fi
       stop $NAME
       export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
