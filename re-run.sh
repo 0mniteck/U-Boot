@@ -58,7 +58,7 @@ if [ "$DEV" = "yes" ]; then
   CACHE="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
   load() { # $1 = Name
     if [[ "$TARGET" == *$1* ]]; then
-      stop $NAME  
+      stop $NAME
       export LOAD="--load $CROSS $CACHE --target $1 --tag $1"
     fi
     export NAME=$1
@@ -85,6 +85,8 @@ init_runner() {
     if [[ "$cross" = "cross" ]]; then
       docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install arm64
     fi
+  else
+    docker buildx create $BUILDK --node u-boot-builder --use
   fi
 }
 
