@@ -37,7 +37,7 @@ ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 FROM base_extra AS optee
 ARG SOURCE_DATE_EPOCH OPT_VER OPT_SUM OPT_SUM2 TPM_SUM ROT_SUM ENTRYPOINT
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH OPT_VER=$OPT_VER ENTRYPOINT=$ENTRYPOINT
-COPY --link Builds/rk3399/include /SSL/
+COPY --link Builds/rk3399/include/ /SSL/
 COPY --link Builds/rk3399/aarch64-* /CROSS/
 COPY --link Builds/rk3399/BL32_AP_MM.fd Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/OP-TEE/optee_os/archive/refs/tags/$OPT_VER.zip /OPTEE.zip
@@ -63,8 +63,7 @@ ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 FROM base AS u-boot
 ARG SOURCE_DATE_EPOCH UB_VER UB_SUM ENTRYPOINT
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH SOURCE_DATE="@$SOURCE_DATE_EPOCH" FORCE_SOURCE_DATE=1 UB_VER=$UB_VER ENTRYPOINT=$ENTRYPOINT
-COPY --link Builds Includes Configs /
-COPY --link Buildscripts/$ENTRYPOINT-buildscript.sh /
+COPY --link Builds/ Includes/ Configs/ Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/u-boot/u-boot/archive/refs/tags/v$UB_VER.zip /
 RUN apt install -y libgnutls28-dev lzop
 RUN echo "$UB_SUM  v$UB_VER.zip" | sha512sum --status -c - && echo "U-Boot Checksum Matched!" || exit 1; sleep 5
