@@ -7,7 +7,8 @@ mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > buil
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
-BUILDK="--buildkitd-config $PWD/../Includes/buildkitd.toml --driver docker-container --driver-opt \"network=host\" --driver-opt \"image=moby/buildkit:v0.25.1-rootless\" --name U-Boot-Builder"
+BUILDT="--driver docker-container --driver-opt \"network=host\""
+BUILDK="--buildkitd-config $PWD/../Includes/buildkitd.toml $BUILDT --driver-opt \"image=moby/buildkit:v0.25.1-rootless\" --name U-Boot-Builder"
 
 if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
@@ -47,8 +48,7 @@ stop() { # $1 = Name
     docker cp $1:/.env Results/env/$1.env
     docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
     if [[ "$cross" == ""  && "$DEV" == *no* ]]; then
-      docker buildx create $BUILDK --node u-boot-builder-$1 --leave
-      docker buildx rm --all-inactive --force
+      docker buildx rm U-Boot-Builder-$1
     fi
   fi
 }
@@ -70,7 +70,7 @@ else
   load() { # $1 Name
     if [[ "$TARGET" == *$1* ]]; then
       if [ "$cross" = "" ]; then
-        docker buildx create $BUILDK --node u-boot-builder-$1 --append --bootstrap --use
+        docker buildx create $BUILDK-$1 --node u-boot-builder-$1 --bootstrap --use
       fi
       stop $NAME
       export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
@@ -81,12 +81,10 @@ fi
 
 init_runner() {
   if [[ "$cross" == "cross" || "$DEV" == *yes* ]]; then
-    docker buildx create $CROSS $BUILDK --node u-boot-builder-0 --bootstrap --use
+    docker buildx create $CROSS $BUILDT --name U-Boot-Builder --node u-boot-builder-0 --bootstrap --use
     if [[ "$cross" = "cross" ]]; then
       docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install arm64
     fi
-  else
-    docker buildx create $BUILDK --node u-boot-builder-0 --use
   fi
 }
 
