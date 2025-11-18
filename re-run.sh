@@ -219,7 +219,7 @@ pushd ..
     
     docker cp $NAME:/SSL/include/. Builds/rk3399/include/
     sha512sum Builds/rk3399/include/* && sha512sum Builds/rk3399/include/* >> Results/release.sha512sum
-    openssl dgst -SHA3-256 Builds/rk3399/include/*&& openssl dgst -SHA3-256 Builds/rk3399/include/* >> Results/release.sha3sum
+    openssl dgst -SHA3-256 Builds/rk3399/include/* && openssl dgst -SHA3-256 Builds/rk3399/include/* >> Results/release.sha3sum
   fi
   
   load optee
