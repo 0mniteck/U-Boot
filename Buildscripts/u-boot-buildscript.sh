@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 env | sort >> /.env && echo "" >> /.env
+ls -la
 for dev in $BUILD_LIST
   do
   for loc in $(echo $dev | cut -d':' -f1): $(echo $dev | cut -d':' -f1)-SB:sb- $(echo $dev | cut -d':' -f1)-TPM-SB:tpm-sb- $(echo $dev | cut -d':' -f1)-MU-SB:mutable-sb-
