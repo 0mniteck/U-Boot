@@ -4,10 +4,10 @@ unzip -q CROSS.zip -d / > /dev/null
 mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
 printf '\n\n\n\n\ny\n' | adduser --disabled-password --no-create-home cross && echo "USER CROSS ADDED"
 chown -R cross:cross /CROSS
-chmod -R 755 $_
+chmod -R 755 /CROSS
 mkdir -p /home/cross/src
 chown -R cross:cross /home/cross
-chmod -R 755 $_
+chmod -R 755 /home/cross
 pushd /CROSS
 su cross -c "
   echo \$(whoami)
