@@ -6,7 +6,7 @@ env | sort >> Results/env/install.env && echo "" >> Results/env/install.env
 # $PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$5"
 # $PWD/install.sh run.uninstall "$remove" "$unmount"
 
-apt_update() {
+apt_update() {￹￹￹
   apt update
   apt upgrade -y
   apt install -y bc dosfstools parted screen snapd systemd-cryptsetup uidmap
