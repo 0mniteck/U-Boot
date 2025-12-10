@@ -81,9 +81,9 @@ env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
 }
 # ── Update + Clean ───────────────────────────────────────────────────────────
 if [[ $(which pkexec) = "" ]]; then
-  sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup uidmap
+  sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec rootlesskit screen slirp4netns snapd systemd-cryptsetup uidmap
   sudo -K
-elif [[ $(which bc) != "" && $(which dosfstools) != "" && $(which parted) != "" && $(which screen) != "" && $(which snapd) != "" && $(which systemd-cryptsetup) != "" && $(which uidmap) != "" && "$CLEAN" = "no" ]]; then
+elif [[ $(which bc) != "" && $(which dosfstools) != "" && $(which parted) != "" && $(which rootlesskit) != "" && $(which screen) != "" && $(which slirp4netns) != "" && $(which snapd) != "" && $(which systemd-cryptsetup) != "" && $(which uidmap) != "" && "$CLEAN" = "no" ]]; then
   wait
 else
   ./install.sh apt.update
