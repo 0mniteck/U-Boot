@@ -9,6 +9,7 @@ ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 BUILDT="--driver docker-container --driver-opt \"network=host\""
 BUILDK="--buildkitd-config $PWD/../Includes/buildkitd.toml $BUILDT --driver-opt \"image=moby/buildkit:v0.25.1-rootless\" --name U-Boot-Builder"
+alias docker=/snap/docker/current/bin/docker
 
 if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
@@ -81,9 +82,8 @@ fi
 
 init_runner() {
   export DOCKER_HOST=unix:///run/user/1000/docker.sock
-  alias docker=/snap/docker/current/bin/docker
-  docker info | grep rootless >> $HOME/log
-  cat $HOME/log
+  cp $HOME/tmp/log Results/logs/rootless.log
+  docker info | grep rootless >> Results/logs/rootless.log
   if [[ "$cross" == "cross" || "$DEV" == *yes* ]]; then
     docker buildx create $CROSS $BUILDT --name U-Boot-Builder --node u-boot-builder-0 --bootstrap --use
     if [[ "$cross" = "cross" ]]; then
