@@ -2,6 +2,10 @@
 source $PWD/defaults.set 2>/dev/null && rm -f defaults.set
 source $PWD/choices.set 2>/dev/null && rm -f choices.set
 env | sort >> env/re-run.env && echo "" >> env/re-run.env
+export DOCKER_HOST=unix:///run/user/1000/docker.sock
+alias docker=/snap/docker/current/bin/docker
+docker info | grep rootless >> $HOME/log
+cat $HOME/log
 
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
