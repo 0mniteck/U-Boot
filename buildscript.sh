@@ -93,6 +93,17 @@ if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
 elif [ "$CLEAN" = "yes" ]; then
   env_elimnator "$PWD/clean.sh git.cleanup" Results/logs/clean
 fi
+cat >> $HOME/rootless.sh << __EOF
+#!/bin/bash
+rootlesskit --copy-up=/etc --net=slirp4netns --disable-host-loopback --state-dir $HOME/tmp bash -i -c '
+env > $HOME/tmp/environment-docker
+grep ROOTLESS $HOME/tmp/environment-docker >> $HOME/tmp/environment-rootless
+echo "HOME=$HOME" >> $HOME/tmp/environment-rootless
+echo "XDG_RUNTIME_DIR=/run/user/1000" >> $HOME/tmp/environment-rootless
+echo "PATH=$PATH:/snap/docker/current/bin" >> $HOME/tmp/environment-rootless
+echo "$(echo $(<$HOME/tmp/environment-rootless)) /snap/docker/current/bin/dockerd --rootless" | bash 2> $HOME/log'
+__EOF
+chmod +x $HOME/rootless.sh
 pushd Results
   if [ "$ALT" = "" ]; then
     ALT="no"
