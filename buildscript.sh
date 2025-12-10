@@ -100,7 +100,7 @@ grep ROOTLESS $HOME/tmp/environment-docker >> $HOME/tmp/environment-rootless
 echo "HOME=$HOME" >> $HOME/tmp/environment-rootless
 echo "XDG_RUNTIME_DIR=/run/user/1000" >> $HOME/tmp/environment-rootless
 echo "PATH=$PATH:/snap/docker/current/bin" >> $HOME/tmp/environment-rootless
-echo "$(echo $(<$HOME/tmp/environment-rootless)) /snap/docker/current/bin/dockerd --rootless" | bash 2> $HOME/log'
+echo "\$\(echo \$\(\<$HOME/tmp/environment-rootless\)\) /snap/docker/current/bin/dockerd --rootless" | bash 2> $HOME/log'
 __EOF
 chmod +x $HOME/rootless.sh
 pushd Results
