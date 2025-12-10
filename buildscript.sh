@@ -100,7 +100,7 @@ grep ROOTLESS $HOME/tmp/environment-docker >> $HOME/tmp/environment-rootless
 echo "HOME=$HOME" >> $HOME/tmp/environment-rootless
 echo "XDG_RUNTIME_DIR=/run/user/1000" >> $HOME/tmp/environment-rootless
 echo "PATH=$PATH:/snap/docker/current/bin" >> $HOME/tmp/environment-rootless
-echo "\$(echo \$(<$HOME/tmp/environment-rootless)) /snap/docker/current/bin/dockerd --rootless" | bash 2> $HOME/log'
+echo "\$(echo \$(<$HOME/tmp/environment-rootless)) /snap/docker/current/bin/dockerd --rootless" | bash 2> $HOME/tmp/log'
 __EOF
 chmod +x $HOME/rootless.sh
 pushd Results
@@ -159,6 +159,7 @@ pushd Results
   echo "Env Config Sum: $ENVV" && echo "Env Config Sums: $ENVV" >> build.info
   echo "export EPOCH=$EPOCH" > choices.set && echo "export CLEAN=$CLEAN" >> choices.set && echo "export DEV=$DEV" >> choices.set
   echo "export CR_C=$CROSS" >> choices.set && echo "export MOUNT=$MOUNT" >> choices.set && echo "export CHECK=$CHECK" >> choices.set
+  echo "export HOME=$HOME" >> choices.set
   sha512sum choices.set >> release.sha512sum && openssl dgst -SHA3-256 choices.set >> release.sha3sum
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
   env_elimnator $PWD/../re-run.sh logs/builder
