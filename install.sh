@@ -9,7 +9,7 @@ env | sort >> Results/env/install.env && echo "" >> Results/env/install.env
 apt_update() {
   apt update
   apt upgrade -y
-  apt install -y bc dosfstools parted screen snapd systemd-cryptsetup uidmap
+  apt install -y bc dosfstools parted rootlesskit screen slirp4netns snapd systemd-cryptsetup uidmap
 }
 
 add_group() { #1 = $(whoami)
@@ -40,6 +40,17 @@ purge_snapd() {
   ufw --force enable
 }
 
+check.root() { #1 = whoami
+  if [[ "$HOME" == "" ]]; then
+    if [[ "$1" == *root* ]]; then
+      echo "do not run as root!"
+      exit 1
+    else
+      export HOME=/home/$1
+    fi
+  fi
+}
+
 do_snapd_check() {
   if [[ $(snap list | grep docker | grep disabled) == *disabled* ]]; then
     snap list
@@ -60,6 +71,7 @@ crypt_unmount() {
 }
 
 install.docker() { #1 = cross, #2 = device, #3 = whoami
+  check.root "$3"
   if [[ "$2" != "" ]]; then
     crypt_mount $2
   fi
@@ -67,10 +79,22 @@ install.docker() { #1 = cross, #2 = device, #3 = whoami
     snap install docker --revision=3377
   elif [[ "$1" != *cross* ]]; then
     snap install docker --revision=3380
-    systemctl stop snap.docker.nvidia-container-toolkit
-    systemctl disable snap.docker.nvidia-container-toolkit
+    # systemctl stop snap.docker.nvidia-container-toolkit
+    # systemctl disable snap.docker.nvidia-container-toolkit
+    snap stop docker
+    sed -i "s':/root:':/home/root:'" /etc/passwd
+    mkdir -p /home/root
+    sed -i "s|\[Service\]|\[Service\]\\
+User=$(echo $3)|" /etc/systemd/system/snap.docker.dockerd.service
+    sed -i "s|EnvironmentFile.*|EnvironmentFile=-$(echo $HOME)/tmp/environment-rootless|" /etc/systemd/system/snap.docker.dockerd.service
+    sed -i "s|ExecStart.*|ExecStart=/bin/bash -c \'$HOME/rootless.sh\'|" /etc/systemd/system/snap.docker.dockerd.service
+    sed -i "s|\[Service\]|\[Service\]\\
+User=$(echo $3)|" /etc/systemd/system/snap.docker.nvidia-container-toolkit.service
+    systemctl daemon-reload
+    snap start docker
+    systemctl status snap.docker.dockerd
   fi
-  add_group $3
+  # add_group $3
 }
 
 cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
@@ -99,19 +123,15 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
     do_snapd_check
     snap remove docker 2>/dev/null && wait
   fi
+  sed -i "s':/home/root:':/root:'" /etc/passwd
+  rm -r -f /home/root
   networkctl delete docker0 2>/dev/null && wait
   networkctl delete docker1 2>/dev/null && wait
   mkdir -p /var/snap/docker
 }
 
 cleanup.snaps() { #1 = remove/install, #2 = whoami
-  if [[ "$HOME" == "" ]]; then
-    if [[ "$2" == *root* ]]; then
-      HOME=/root
-    else
-      HOME=/home/$2
-    fi
-  fi
+  check.root "$2"
   if [[ "$1" == *remove* ]]; then
     snap remove syft --purge 2>/dev/null && wait
     snap remove grype --purge 2>/dev/null && wait
