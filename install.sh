@@ -92,7 +92,6 @@ User=$(echo $3)|" /etc/systemd/system/snap.docker.dockerd.service
 User=$(echo $3)|" /etc/systemd/system/snap.docker.nvidia-container-toolkit.service
     systemctl daemon-reload
     snap start docker
-    systemctl status snap.docker.dockerd
   fi
   # add_group $3
 }
