@@ -71,7 +71,7 @@ crypt_unmount() {
 }
 
 install.docker() { #1 = cross, #2 = device, #3 = whoami
-  check.root "$3"
+  check.root $3
   if [[ "$2" != "" ]]; then
     crypt_mount $2
   fi
@@ -130,7 +130,7 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
 }
 
 cleanup.snaps() { #1 = remove/install, #2 = whoami
-  check.root "$2"
+  check.root $2
   if [[ "$1" == *remove* ]]; then
     snap remove syft --purge 2>/dev/null && wait
     snap remove grype --purge 2>/dev/null && wait
