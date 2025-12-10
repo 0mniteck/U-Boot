@@ -94,7 +94,7 @@ fi
 > $HOME/rootless.sh
 cat >> $HOME/rootless.sh << __EOF
 #!/bin/bash
-rootlesskit --copy-up=/etc --net=slirp4netns --disable-host-loopback --state-dir $HOME/tmp bash -i -c '
+rootlesskit --copy-up=/etc --copy-up=/run --net=slirp4netns --disable-host-loopback --state-dir $HOME/tmp bash -i -c '
 env > $HOME/tmp/environment-docker
 grep ROOTLESS $HOME/tmp/environment-docker >> $HOME/tmp/environment-rootless
 echo "HOME=$HOME" >> $HOME/tmp/environment-rootless
