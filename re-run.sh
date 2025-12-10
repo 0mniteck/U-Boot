@@ -127,7 +127,7 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
 }
 
 pushd ..
-  ./install.sh run.install \"$install\" \"$remove\" \"$(whoami)\" \"$cross\" $mount
+  ./install.sh run.install \"$install\" \"$remove\" $(whoami) \"$cross\" $mount
   init_runner
   
   load base
