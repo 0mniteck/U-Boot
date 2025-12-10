@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # ── Configuration for defaults ─ Source File ─────────────────────────────────
 source defaults
 # ── User Config Inputs ───────────────────────────────────────────────────────
@@ -13,7 +12,6 @@ declare -A options=(
   [w]=CROSS  # Cross Compile (yes/No)
   [z]=TARGET # Target Selection ("target1,target2,all")
 )
-
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
   case $opt in
     \?)
@@ -93,6 +91,7 @@ if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
 elif [ "$CLEAN" = "yes" ]; then
   env_elimnator "$PWD/clean.sh git.cleanup" Results/logs/clean
 fi
+> $HOME/rootless.sh
 cat >> $HOME/rootless.sh << __EOF
 #!/bin/bash
 rootlesskit --copy-up=/etc --net=slirp4netns --disable-host-loopback --state-dir $HOME/tmp bash -i -c '
