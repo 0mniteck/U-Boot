@@ -90,6 +90,8 @@ User=$(echo $3)|" /etc/systemd/system/snap.docker.dockerd.service
 User=$(echo $3)|" /etc/systemd/system/snap.docker.nvidia-container-toolkit.service
     systemctl daemon-reload
     snap start docker
+    mkdir -p /usr/libexec/docker/cli-plugins
+    ln -s /snap/docker/current/usr/libexec/docker/cli-plugins/docker-buildx /usr/libexec/docker/cli-plugins/docker-buildx
   fi
   # add_group $3
 }
@@ -122,6 +124,7 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
   fi
   sed -i "s':/home/root:':/root:'" /etc/passwd
   rm -r -f /home/root
+  rm -r -f /usr/libexec/docker/
   networkctl delete docker0 2>/dev/null && wait
   networkctl delete docker1 2>/dev/null && wait
   mkdir -p /var/snap/docker
