@@ -79,9 +79,6 @@ install.docker() { #1 = cross, #2 = device, #3 = whoami
     snap install docker --revision=3377
   elif [[ "$1" != *cross* ]]; then
     snap install docker --revision=3380
-    # systemctl stop snap.docker.nvidia-container-toolkit
-    # systemctl disable snap.docker.nvidia-container-toolkit
-    sleep 5
     snap stop docker
     sed -i "s':/root:':/home/root:'" /etc/passwd
     mkdir -p /home/root
