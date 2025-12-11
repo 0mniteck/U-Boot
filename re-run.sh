@@ -81,6 +81,7 @@ fi
 
 init_runner() {
   export DOCKER_HOST=unix:///run/user/1000/docker.sock
+  sleep 5
   cp $HOME/tmp/log Results/logs/rootless.log
   /snap/docker/current/bin/docker info | grep rootless >> Results/logs/rootless.log
   if [[ "$cross" == "cross" || "$DEV" == *yes* ]]; then
