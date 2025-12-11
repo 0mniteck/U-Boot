@@ -12,13 +12,6 @@ apt_update() {
   apt install -y bc dosfstools parted rootlesskit screen slirp4netns snapd systemd-cryptsetup uidmap
 }
 
-add_group() { #1 = $(whoami)
-  if [[ $(<"/etc/group") != *docker* ]]; then
-    groupadd docker 2>/dev/null && wait
-    usermod -aG docker $1
-  fi
-}
-
 do_check() {
   while [[ $(lsusb) != *Yubikey* ]]; do printf "\rPlease insert yubikey...\033[K"; done;
   if [[ $(ls -la /dev/hidraw0) = *root* ]]; then
@@ -29,6 +22,11 @@ do_check() {
 purge_snapd() {
   rm -f -r /var/snap/docker/*
   rm -f -r /var/lib/snapd/cache/*
+  rm -r -f /home/root/
+  rm -r -f $HOME/snap/
+  rm -r -f /root/snap/
+  rm -r -f $HOME/.local/share/docker/
+  rm -r -f /usr/libexec/docker/
   crypt_unmount
   networkctl delete docker0 2>/dev/null && wait
   networkctl delete docker1 2>/dev/null && wait
@@ -93,14 +91,19 @@ User=$(echo $3)|" /etc/systemd/system/snap.docker.nvidia-container-toolkit.servi
     mkdir -p /usr/libexec/docker/cli-plugins
     ln -s /snap/docker/current/usr/libexec/docker/cli-plugins/docker-buildx /usr/libexec/docker/cli-plugins/docker-buildx
   fi
-  # add_group $3
 }
 
-cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
+cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge, #4 = whoami
+  check.root $4
   if [[ "$1" == *remove* ]]; then
     snap disable docker 2>/dev/null && wait
     rm -f -r /var/snap/docker/*
     rm -f -r /var/lib/snapd/cache/*
+    rm -r -f /home/root/
+    rm -r -f $HOME/snap/docker/
+    rm -r -f /root/snap/docker/
+    rm -r -f $HOME/.local/share/docker/
+    rm -r -f /usr/libexec/docker/
     sleep 5
   fi
   if [[ "$2" == "unmount" ]]; then
@@ -123,8 +126,6 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge
     snap remove docker 2>/dev/null && wait
   fi
   sed -i "s':/home/root:':/root:'" /etc/passwd
-  rm -r -f /home/root
-  rm -r -f /usr/libexec/docker/
   networkctl delete docker0 2>/dev/null && wait
   networkctl delete docker1 2>/dev/null && wait
   mkdir -p /var/snap/docker
@@ -149,16 +150,16 @@ run_install() { #1 = install, #2 = remove, #3 = whoami, #4 = cross, #5 = device
     unmount="unmount"
   fi
   cleanup.snaps $1 $3
-  cleanup.docker $2 "$unmount" "$purge"
+  cleanup.docker $2 "$unmount" "$purge" $3
   install.docker $4 $5 $3
 }
 
-run_uninstall() { #1 = remove , #2 = unmount
+run_uninstall() { #1 = remove , #2 = unmount, #3 = whoami
   if [[ "$2" != "" ]]; then
     unmount="unmount"
   fi
-  cleanup.docker $1 "$unmount" "$purge"
-  cleanup.snaps $1
+  cleanup.docker $1 "$unmount" "$purge" $3
+  cleanup.snaps $1 $3
 }
 
 if [[ "$1" == *apt.update* ]]; then
@@ -166,12 +167,12 @@ if [[ "$1" == *apt.update* ]]; then
 fi
 
 if [[ "$1" == *run.install* ]]; then
-  # "$install" "$remove" "$(whoami)" "$cross" "$5"
+  # "$install" "$remove" $(whoami) "$cross" "$5"
   if [[ $(which fan) != "" ]]; then fan 250; fi
   run_install $2 $3 $4 $5 $6
 fi
 
 if [[ "$1" == *run.uninstall* ]]; then
-  # "$remove" "$unmount"
-  run_uninstall $2 $3
+  # "$remove" "$unmount" $(whoami)
+  run_uninstall $2 $3 $4
 fi
