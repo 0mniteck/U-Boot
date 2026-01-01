@@ -22,11 +22,11 @@ do_check() {
 purge_snapd() {
   rm -f -r /var/snap/docker/*
   rm -f -r /var/lib/snapd/cache/*
-  rm -r -f /home/root/
   rm -r -f $HOME/snap/
   rm -r -f /root/snap/
   rm -r -f $HOME/.local/share/docker/
   rm -r -f /usr/libexec/docker/
+  sed -i "s':/home/root:':/root:'" /etc/passwd
   crypt_unmount
   networkctl delete docker0 2>/dev/null && wait
   networkctl delete docker1 2>/dev/null && wait
@@ -97,13 +97,13 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge, #4 = whoami
   check.root $4
   if [[ "$1" == *remove* ]]; then
     snap disable docker 2>/dev/null && wait
-    rm -f -r /var/snap/docker/*
-    rm -f -r /var/lib/snapd/cache/*
-    rm -r -f /home/root/
-    rm -r -f $HOME/snap/docker/
-    rm -r -f /root/snap/docker/
-    rm -r -f $HOME/.local/share/docker/
-    rm -r -f /usr/libexec/docker/
+      rm -r -f /root/snap/
+      rm -f -r /var/snap/docker/*
+      rm -f -r /var/lib/snapd/cache/*
+      rm -r -f $HOME/snap/
+      rm -r -f $HOME/.docker/
+      rm -r -f $HOME/.local/share/docker/
+      rm -r -f /usr/libexec/docker/
     sleep 5
   fi
   if [[ "$2" == "unmount" ]]; then
