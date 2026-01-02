@@ -63,7 +63,8 @@ Press any key to continue. Press CTRL+C to exit..."
 crypt_mount() { #1 = device
   do_check
   systemd-cryptsetup attach Luks-Signal /dev/$1 && wait && sleep 1
-  mount /dev/mapper/Luks-Signal /var/snap/docker && wait
+  mkdir -p $HOME/.local/share/docker
+  mount /dev/mapper/Luks-Signal $HOME/.local/share/docker && wait
 }
 crypt_unmount() {
   umount -f /dev/mapper/Luks-Signal 2>/dev/null && wait && sleep 1
