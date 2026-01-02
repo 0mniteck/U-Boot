@@ -1,6 +1,5 @@
 #!/bin/bash
 source ./defaults
-env | sort >> Results/env/clean.env && echo "" >> Results/env/clean.env
 ## Available Commands:
 
 # $PWD/clean.sh git.cleanup
@@ -18,6 +17,7 @@ do_update() {
 if [[ "$1" == *git.cleanup* ]]; then
   do_clean
   do_update
+  env | sort >> Results/env/clean.env && echo "" >> Results/env/clean.env
   if [[ "$1" == *git.cleanup.cache* ]]; then
     rm -r -f .git/Cache
   fi
