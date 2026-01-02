@@ -8,7 +8,7 @@ echo "Starting Build: $(date -u '+on %D at %R UTC')"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 BUILDT="--driver docker-container --driver-opt \"network=host\""
-BUILDK="--buildkitd-config $PWD/../Includes/buildkitd.toml $BUILDT --name U-Boot-Builder"
+BUILDK="--buildkitd-flags '--oci-worker-rootless=true' $BUILDT --name U-Boot-Builder"
 
 if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
