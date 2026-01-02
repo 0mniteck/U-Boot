@@ -89,7 +89,7 @@ fi
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
   env_elimnator "$PWD/clean.sh git.cleanup.cache" /tmp/clean
 elif [ "$CLEAN" = "yes" ]; then
-  env_elimnator "$PWD/clean.sh git.cleanup" Results/logs/clean
+  env_elimnator "$PWD/clean.sh git.cleanup" /tmp/clean
 fi
 > $HOME/rootless.sh
 cat >> $HOME/rootless.sh << __EOF
