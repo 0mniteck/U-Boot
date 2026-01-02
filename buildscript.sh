@@ -87,7 +87,7 @@ else
   ./install.sh apt.update
 fi
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
-  env_elimnator "$PWD/clean.sh git.cleanup.cache" Results/logs/clean
+  env_elimnator "$PWD/clean.sh git.cleanup.cache" /tmp/clean
 elif [ "$CLEAN" = "yes" ]; then
   env_elimnator "$PWD/clean.sh git.cleanup" Results/logs/clean
 fi
@@ -104,6 +104,7 @@ echo "\$(echo \$(<$HOME/tmp/environment-rootless)) /snap/docker/current/bin/dock
 __EOF
 chmod +x $HOME/rootless.sh
 pushd Results
+  mv /tmp/clean.log logs/clean.log
   if [ "$ALT" = "" ]; then
     ALT="no"
   fi
