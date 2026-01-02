@@ -81,7 +81,7 @@ fi
 
 init_runner() {
   export DOCKER_HOST=unix:///run/user/1000/docker.sock
-  sleep 10
+  sleep 15
   cp $HOME/tmp/log Results/logs/rootless.log
   cp $HOME/tmp/environment-docker Results/env/rootless.env
   /snap/docker/current/bin/docker info | grep rootless >> Results/logs/rootless.log
