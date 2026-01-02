@@ -1,5 +1,8 @@
 ## Build Instructions/Usage:
 
+Requirements:
+ - Ubuntu 25.10
+
 ### Build:
 
 ```
