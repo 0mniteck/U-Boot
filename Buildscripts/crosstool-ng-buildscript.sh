@@ -20,6 +20,5 @@ CT_CC_GCC_EXTRA_CONFIG_ARRAY='--enable-standard-branch-protection'
 CT_CC_GCC_CORE_EXTRA_CONFIG_ARRAY='--enable-standard-branch-protection'
 __EOF
   ./ct-ng build.$(nproc)
-  ls -la /home/cross/x-tools/aarch64-unknown-linux-gnu/
   ls -la /home/cross/x-tools/aarch64-unknown-linux-gnu/bin"
 popd
