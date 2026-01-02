@@ -25,13 +25,14 @@ purge_snapd() {
   rm -f -r /var/lib/snapd/cache/*
   rm -r -f $HOME/snap/
   rm -r -f $HOME/.docker/
-  rm -r -f $HOME/.local/share/docker/
+  rm -r -f $HOME/.local/share/docker/*
   rm -r -f /usr/libexec/docker/
   sed -i "s':/home/root:':/root:'" /etc/passwd
   crypt_unmount
   networkctl delete docker0 2>/dev/null && wait
   networkctl delete docker1 2>/dev/null && wait
   apt remove --purge snapd -y
+  rm -r -f $HOME/.local/share/docker
   rm -f -r /var/snap/docker
   apt install snapd -y
   snap install ufw
@@ -87,7 +88,7 @@ User=$(echo $3)|" /etc/systemd/system/snap.docker.dockerd.service
     sed -i "s|ExecStart.*|ExecStart=/bin/bash -c \'$HOME/rootless.sh\'|" /etc/systemd/system/snap.docker.dockerd.service
     sed -i "s|\[Service\]|\[Service\]\\
 User=$(echo $3)|" /etc/systemd/system/snap.docker.nvidia-container-toolkit.service
-    systemctl daemon-reload
+    systemctl daemon-reload && wait
     snap start docker
     mkdir -p /usr/libexec/docker/cli-plugins
     ln -s /snap/docker/current/usr/libexec/docker/cli-plugins/docker-buildx /usr/libexec/docker/cli-plugins/docker-buildx
@@ -103,7 +104,7 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge, #4 = whoami
       rm -f -r /var/lib/snapd/cache/*
       rm -r -f $HOME/snap/
       rm -r -f $HOME/.docker/
-      rm -r -f $HOME/.local/share/docker/
+      rm -r -f $HOME/.local/share/docker/*
       rm -r -f /usr/libexec/docker/
     sleep 5
   fi
@@ -117,6 +118,7 @@ cleanup.docker() { #1 = remove, #2 = unmount, #3 = purge, #4 = whoami
     snap remove docker --purge 2>/dev/null && wait
     snap remove docker --purge 2>/dev/null && wait
     snap remove core24 --purge 2>/dev/null && wait
+    rm -r -f $HOME/.local/share/docker
     rm -f -r /var/snap/docker
     if [[ "$3" == *purge* ]]; then
       purge_snapd
