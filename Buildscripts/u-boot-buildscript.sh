@@ -12,7 +12,8 @@ for dev in $BUILD_LIST
     pushd /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER
       chmod +x /Configs/*
       make clean
-      cp /Includes/logo.bmp tools/logos/denx.bmp && cp /Includes/logo.bmp drivers/video/u_boot_logo.bmp && echo "Deployed Logo"
+      cp /Includes/logo.bmp tools/logos/denx.bmp && cp /Includes/logo.bmp drivers/video/u_boot_logo.bmp
+      sha512sum --status -c /Includes/logo.bmp.sum && echo "Deployed logo.bmp" || exit 1
       if [ "$DEV_BUILD" = "yes" ]; then
         ../.././Configs/dev-config.sh
       else
