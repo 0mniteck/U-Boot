@@ -1,5 +1,4 @@
 #!/bin/bash
-env | sort >> Results/env/git.env && echo "" >> Results/env/git.env
 ## Available Commands:
 
 # $PWD/git.sh check
@@ -21,6 +20,7 @@ yubi_check() {
 git_reset() {
   git reset --hard
   git clean -xfd
+  env | sort >> Results/env/git.env && echo "" >> Results/env/git.env
 }
 
 git_update() {
@@ -31,6 +31,7 @@ git_update() {
     read -p "Origin set to SSH; Continue git pull..."
   fi
   git pull $(git remote -v | awk '{ print $2 }' | tail -n 1) $(git rev-parse --abbrev-ref HEAD)
+  env | sort >> Results/env/git.env && echo "" >> Results/env/git.env
 }
 
 if [[ "$1" == *check* ]]; then
