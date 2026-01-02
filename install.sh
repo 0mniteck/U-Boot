@@ -20,10 +20,11 @@ do_check() {
 }
 
 purge_snapd() {
+  rm -r -f /root/snap/
   rm -f -r /var/snap/docker/*
   rm -f -r /var/lib/snapd/cache/*
   rm -r -f $HOME/snap/
-  rm -r -f /root/snap/
+  rm -r -f $HOME/.docker/
   rm -r -f $HOME/.local/share/docker/
   rm -r -f /usr/libexec/docker/
   sed -i "s':/home/root:':/root:'" /etc/passwd
