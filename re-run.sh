@@ -222,12 +222,9 @@ pushd ..
       -e SSL_VER=$SSL_VER \
       $NAME
     
-    /snap/docker/current/bin/docker cp $NAME:/SSL/include/. Builds/rk3399/include/
-    for inc in crypto internal openssl
-    do
-      sha512sum Builds/rk3399/include/$inc/* && sha512sum Builds/rk3399/include/$inc/* >> Results/release.sha512sum
-      openssl dgst -SHA3-256 Builds/rk3399/include/$inc/* && openssl dgst -SHA3-256 Builds/rk3399/include/$inc/* >> Results/release.sha3sum
-    done
+    /snap/docker/current/bin/docker cp $NAME:/SSL/include/openssl/. Builds/rk3399/openssl/
+    sha512sum Builds/rk3399/openssl/* && sha512sum Builds/rk3399/openssl/* >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/rk3399/openssl/* && openssl dgst -SHA3-256 Builds/rk3399/openssl/* >> Results/release.sha3sum
   fi
   
   load optee
