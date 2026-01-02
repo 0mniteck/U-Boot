@@ -1,5 +1,4 @@
 #!/usr/bin/env -S /usr/bin/pkexec --keep-cwd /bin/bash -c "/usr/bin/env HOME=$HOME /bin/bash -c \". $PWD/\$0\" \$0 \$1 \$2 \$3 \$4 \$5 \$6 \$7"
-env | sort >> Results/env/install.env && echo "" >> Results/env/install.env
 ## Available Commands:
 
 # $PWD/install.sh apt.update
@@ -171,6 +170,7 @@ if [[ "$1" == *apt.update* ]]; then
 fi
 
 if [[ "$1" == *run.install* ]]; then
+  env | sort >> Results/env/install.env && echo "" >> Results/env/install.env
   # "$install" "$remove" $(whoami) "$cross" "$5"
   if [[ $(which fan) != "" ]]; then fan 250; fi
   run_install $2 $3 $4 $5 $6
