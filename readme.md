@@ -5,6 +5,8 @@
   * [ ] Test TPM2_FTPM_TEE
     * [x] Build StandaloneMM
       * [x] Migrate from old branch
+    * [x] Build crosstools-ng
+      * [x] -BTI to enable branch protection
     * [x] Build ms-tpm-20-ref
       * [x] Openssl use source include current upstream
         * [x] Set OPENSSL_API_COMPAT 10100

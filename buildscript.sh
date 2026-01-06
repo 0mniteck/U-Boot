@@ -3,16 +3,15 @@
 source defaults
 # ── User Config Inputs ───────────────────────────────────────────────────────
 declare -A options=(
-  [a]=ALT # Alternate List (yes/No)
-  [c]=CLEAN # Clean Directories (Yes/no)
-  [d]=DEV # Developer Build [Skip some steps] (yes/No)
-  [e]=EPOCH # SOURCE_DATE_EPOCH [^ for reproducibility] (source_date_epoch/"today"/"^")
-  [m]=MOUNT # Mount External [U2F Backed Luks] ("mmcblk1p1")
-  [t]=TAG # Tag Release refs/tags/("tagname")
-  [w]=CROSS # Cross Compile (yes/No)
+  [a]=ALT    # Alternate List (yes/No)
+  [c]=CLEAN  # Clean Directories (Yes/no)
+  [d]=DEV    # Developer Build [Skip some steps] (yes/No)
+  [e]=EPOCH  # SOURCE_DATE_EPOCH [^ for reproducibility] (source_date_epoch/"today"/"^")
+  [m]=MOUNT  # Mount External [U2F Backed Luks] ("mmcblk1p1")
+  [t]=TAG    # Tag Release refs/tags/("tagname")
+  [w]=CROSS  # Cross Compile (yes/No)
   [z]=TARGET # Target Selection ("target1,target2,all")
 )
-
 while getopts ":a:c:d:e:m:t:w:z:" opt; do
   case $opt in
     \?)
@@ -45,6 +44,7 @@ fi
 if [ "$EPOCH" = "" ]; then
   EPOCH="today"
 fi
+## ─ Source Date Epoch ────────────────────────────────────────────────────────
 if [ "$EPOCH" = "today" ]; then
   timestamp=$(date -d $(date +%D) +%s);
   if [ "${timestamp}" != "" ]; then
@@ -73,61 +73,77 @@ fi
 if [ "$CHECK" = "" ]; then
   CHECK="no"
 fi
+# ── Clean Environment Variables ──────────────────────────────────────────────
+env_elimnator() { # 1 = $PWD/file.sh, # 2 = logname
+  env -i - env TERM=screen - screen -h 10000 -L -Logfile $2.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c "$1"
+}
 # ── Update + Clean ───────────────────────────────────────────────────────────
 if [[ $(which pkexec) = "" ]]; then
-  sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec screen snapd systemd-cryptsetup
+  sudo apt update && sudo apt upgrade -y && sudo apt install -y bc dosfstools parted pkexec rootlesskit screen slirp4netns snapd systemd-cryptsetup uidmap
   sudo -K
-elif [[ $(which bc) != "" && $(which dosfstools) != "" && $(which parted) != "" && $(which screen) != "" && $(which snapd) != "" && $(which systemd-cryptsetup) != "" && "$CLEAN" = "no" ]]; then
+elif [[ $(which bc) != "" && $(which dosfstools) != "" && $(which parted) != "" && $(which rootlesskit) != "" && $(which screen) != "" && $(which slirp4netns) != "" && $(which snapd) != "" && $(which systemd-cryptsetup) != "" && $(which uidmap) != "" && "$CLEAN" = "no" ]]; then
   wait
 else
-  $PWD/install.sh apt.update
+  ./install.sh apt.update
 fi
 if [[ "$CLEAN" = "yes" && "$DEV" != "yes" ]]; then
-  ./clean.sh git.cleanup.cache
+  env_elimnator "$PWD/clean.sh git.cleanup.cache" /tmp/clean
 elif [ "$CLEAN" = "yes" ]; then
-  ./clean.sh git.cleanup
+  env_elimnator "$PWD/clean.sh git.cleanup" /tmp/clean
 fi
-if [ "$ALT" = "" ]; then
-  ALT="no"
-fi
-if [ "$ALT" = "yes" ]; then
-  export BUILD_LIST="PT2-rk3566:pinetab2-rk3566_defconfig"
-  export LIST="PT2-rk3566"
-  export ARCHS="rk3568"
-  sed -i s/"$(grep "BUILD_LIST" defaults | awk -F'"' '{print $2}')"/"$BUILD_LIST"/ defaults.set
-  sed -i s/"$(grep "LIST" defaults | awk -F'"' '{print $2}')"/"$LIST"/ defaults.set
-  sed -i s/"$(grep "ARCHS" defaults | awk -F'"' '{print $2}')"/"$ARCHS"/ defaults.set
-else
-  export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-fi
-# ── Target Validation ────────────────────────────────────────────────────────
-TRGLIST="(edk2|arm-trusted|optee|u-boot|ubuntu|base|base_extra)"
-if [[ -z "$TARGET" || "$TARGET" == *all* ]]; then
-  export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-  TARGET="$TARGETS"
-elif [[ "$TARGET" =~ $TRGLIST ]]; then
-  for TRG in $TARGET; do
-    if [[ "$TRG" =~ $TRGLIST ]]; then
-      export TARGETS="$TARGET"
-      export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
-      sed -i s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ defaults.set
-    else
-      echo "INVALID TARGET: $TRG"
-      exit 1
-    fi
-  done
-else
-  echo "INVALID TARGET LIST: $TARGET"
-  exit 1
-fi
-# ── Check Variables ──────────────────────────────────────────────────────────
+> $HOME/rootless.sh
+cat >> $HOME/rootless.sh << __EOF
+#!/bin/bash
+rootlesskit --copy-up=/etc --copy-up=/run --net=slirp4netns --disable-host-loopback --state-dir $HOME/tmp bash -i -c '
+env > $HOME/tmp/environment-docker
+grep ROOTLESS $HOME/tmp/environment-docker >> $HOME/tmp/environment-rootless
+echo "HOME=$HOME" >> $HOME/tmp/environment-rootless
+echo "XDG_RUNTIME_DIR=/run/user/1000" >> $HOME/tmp/environment-rootless
+echo "PATH=$PATH:/snap/docker/current/bin" >> $HOME/tmp/environment-rootless
+echo "\$(echo \$(<$HOME/tmp/environment-rootless)) /snap/docker/current/bin/dockerd --rootless" | bash 2> $HOME/tmp/log'
+__EOF
+chmod +x $HOME/rootless.sh
 pushd Results
-  mv ../defaults.set defaults.set
+  mv /tmp/clean.log logs/clean.log
+  if [ "$ALT" = "" ]; then
+    ALT="no"
+  fi
+  if [ "$ALT" = "yes" ]; then
+    export BUILD_LIST="PT2-rk3566:pinetab2-rk3566_defconfig"
+    export LIST="PT2-rk3566"
+    export ARCHS="rk3568"
+    sed -i s/"$(grep "BUILD_LIST" defaults | awk -F'"' '{print $2}')"/"$BUILD_LIST"/ defaults.set
+    sed -i s/"$(grep "LIST" defaults | awk -F'"' '{print $2}')"/"$LIST"/ defaults.set
+    sed -i s/"$(grep "ARCHS" defaults | awk -F'"' '{print $2}')"/"$ARCHS"/ defaults.set
+  else
+    export ARCHS="$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+  fi
+  # ── Target Validation ────────────────────────────────────────────────────────
+  TRGLIST="(crosstool-ng|openssl|edk2|arm-trusted|optee|u-boot|ubuntu|base|base_extra)"
+  if [[ -z "$TARGET" || "$TARGET" == *all* ]]; then
+    export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+    TARGET="$TARGETS"
+  elif [[ "$TARGET" =~ $TRGLIST ]]; then
+    for TRG in $TARGET; do
+      if [[ "$TRG" =~ $TRGLIST ]]; then
+        export TARGETS="$TARGET"
+        export TARGETS="$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+        sed -i s/"$(grep "TARGETS" defaults | awk -F'"' '{print $2}')"/"$TARGETS"/ defaults.set
+      else
+        echo "INVALID TARGET: $TRG"
+        exit 1
+      fi
+    done
+  else
+    echo "INVALID TARGET LIST: $TARGET"
+    exit 1
+  fi
+# ── Check Variables ──────────────────────────────────────────────────────────
   ENV=$(sha512sum defaults.set)
-  if [[ $ENV == *068e37dc74100e179e6a2ff76e6c194aed9974b742aa7481db5000e40246a24273bb98e3a11b7c8538294128411dfeed2223ed5c7e8ddafc883bf637ec8e5914* ]]; then
+  if [[ $ENV == *e795c85d93a484080d0605128f9274259b0ec169a06c9948de196f2dc20d420cdcce885882bcd7b7b4c2e02661a18b9103e65d0e5f1eaa720d521851c745e126* ]]; then
     ENVV="MATCHED DEFAULTS CONFIG SHA512SUM"
   else
-    echo "DEFAULTS MISSMATCH"
+    ENVV="DEFAULTS MISSMATCH"
   fi
 # ── Build Info ───────────────────────────────────────────────────────────────
   > release.sha512sum && > release.sha3sum && > build.info
@@ -144,17 +160,18 @@ pushd Results
   echo "Env Config Sum: $ENVV" && echo "Env Config Sums: $ENVV" >> build.info
   echo "export EPOCH=$EPOCH" > choices.set && echo "export CLEAN=$CLEAN" >> choices.set && echo "export DEV=$DEV" >> choices.set
   echo "export CR_C=$CROSS" >> choices.set && echo "export MOUNT=$MOUNT" >> choices.set && echo "export CHECK=$CHECK" >> choices.set
+  echo "export HOME=$HOME" >> choices.set
   sha512sum choices.set >> release.sha512sum && openssl dgst -SHA3-256 choices.set >> release.sha3sum
 # ── Run re-run.sh to start build ─────────────────────────────────────────────
-  sleep 5 && > builder.log && env -i - env TERM=screen - screen -h 10000 -L -Logfile builder.log env -u TERM -u TERMCAP -u STY - PATH=/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin bash --noprofile --norc -c ../re-run.sh
-  cat builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
+  env_elimnator $PWD/../re-run.sh logs/builder
+  cat logs/builder.log | grep -n "Checksum Matched! " && mv builder.log ../../builder.log && [[ -f status.info ]] && status=$(<status.info) || echo "" && echo "Build Failed"
   echo "" && cat release.sha512sum && echo "" && cat release.sha3sum && echo "" && sed -i 's/Builds/..\/Builds/g' release.sha512sum
 popd
 # ── Clean + Git ──────────────────────────────────────────────────────────────
 if [ "$CLEAN" = "yes" ]; then
-  ./clean.sh tmp.cleanup && ls -la Builds/*
+  env_elimnator "$PWD/clean.sh tmp.cleanup" Results/logs/clean && ls -la Builds/*
   read -p "$status: --> Continue"
   if [ "$DEV" != "yes" ]; then
-    ./git.sh "$status" "$TAG"
+    env_elimnator "$PWD/git.sh '$status' '$TAG'" Results/logs/git
   fi
 fi

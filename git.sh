@@ -1,10 +1,9 @@
 #!/bin/bash
-
 ## Available Commands:
 
-# ./git.sh check
-# ./git.sh reset
-# ./git.sh update
+# $PWD/git.sh check
+# $PWD/git.sh reset
+# $PWD/git.sh update
 
 # Host UBoot ## Add to ~/.ssh/config for SSH support, recommend ecdsa-sk or ed25519_sk.
 #    Hostname github.com
@@ -21,11 +20,7 @@ yubi_check() {
 git_reset() {
   git reset --hard
   git clean -xfd
-  if [[ $(<~/.ssh/config) == *UBoot* ]]; then
-    export GPG_TTY=$(tty)
-    eval `ssh-agent -s`
-    ssh-add ~/.ssh/id_ecdsa_s*[!.pub]
-  fi
+  env | sort >> Results/env/git.env && echo "" >> Results/env/git.env
 }
 
 git_update() {
@@ -36,6 +31,7 @@ git_update() {
     read -p "Origin set to SSH; Continue git pull..."
   fi
   git pull $(git remote -v | awk '{ print $2 }' | tail -n 1) $(git rev-parse --abbrev-ref HEAD)
+  env | sort >> Results/env/git.env && echo "" >> Results/env/git.env
 }
 
 if [[ "$1" == *check* ]]; then

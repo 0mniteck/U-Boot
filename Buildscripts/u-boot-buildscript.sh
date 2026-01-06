@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-trap '[[ $pid ]] && kill $pid; exit' EXIT
+env | sort >> /.env && echo "" >> /.env
+ls -la
 for dev in $BUILD_LIST
   do
   for loc in $(echo $dev | cut -d':' -f1): $(echo $dev | cut -d':' -f1)-SB:sb- $(echo $dev | cut -d':' -f1)-TPM-SB:tpm-sb- $(echo $dev | cut -d':' -f1)-MU-SB:mutable-sb-
@@ -11,7 +12,16 @@ for dev in $BUILD_LIST
     pushd /$(echo $loc | cut -d':' -f1)/u-boot-$UB_VER
       chmod +x /Configs/*
       make clean
-      cp /Includes/logo.bmp tools/logos/denx.bmp && cp /Includes/logo.bmp drivers/video/u_boot_logo.bmp && echo "Deployed Logo"
+      pushd tools/logos
+        cp /Includes/logo.bmp logo.bmp
+        sha512sum --status -c /Includes/logo.bmp.sum && wait || exit 1
+        mv logo.bmp denx.bmp
+      popd
+      pushd drivers/video
+        cp /Includes/logo.bmp logo.bmp
+        sha512sum --status -c /Includes/logo.bmp.sum && echo "Deployed logo.bmp" || exit 1
+        mv logo.bmp u_boot_logo.bmp
+      popd
       if [ "$DEV_BUILD" = "yes" ]; then
         ../.././Configs/dev-config.sh
       else

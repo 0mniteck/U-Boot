@@ -1,11 +1,14 @@
 #!/bin/bash
-source ./defaults.set 2>/dev/null && rm -f defaults.set
-source ./choices.set 2>/dev/null && rm -f choices.set
-env | sort
+source $PWD/defaults.set 2>/dev/null && rm -f defaults.set
+source $PWD/choices.set 2>/dev/null && rm -f choices.set
+env | sort >> env/re-run.env && echo "" >> env/re-run.env
+
 mv build.info tmp && echo "Starting Build: $(date -u '+on %D at %R UTC')" > build.info && cat tmp >> build.info && rm -f tmp
 echo "Starting Build: $(date -u '+on %D at %R UTC')"
 ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+BUILDT="--driver docker-container --driver-opt \"network=host\""
+BUILDK="--buildkitd-flags \"--oci-worker-rootless=true\" $BUILDT --name U-Boot-Builder"
 
 if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
@@ -25,24 +28,6 @@ if [ "$CR_C" = "yes" ]; then
   export CROSS="--platform linux/arm64"
   export cross="cross"
 fi
-if [ "$DEV" = "yes" ]; then
-  echo "DEV_BUILD: $DEV"
-  CACHE="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
-  load() { # $1 = Name
-    export LOAD="--load $CROSS $CACHE --target $1 --tag $1"
-    export NAME=$1
-    return
-  }
-else
-  export BUILDX_METADATA_PROVENANCE=max
-  export install="install"
-  export signing=1
-  load() { # $1 Name
-    export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
-    export NAME=$1
-    return
-  }
-fi
 if [ "$CLEAN" = "yes" ]; then
   echo "CLEAN_BUILD: $CLEAN"
   export remove="remove"
@@ -59,14 +44,60 @@ if [ "$EPOCH" != "" ]; then
 fi
 
 stop() { # $1 = Name
-  docker stop $1 > /dev/null && echo "$1 stopped" && docker rm --volumes $1 > /dev/null && echo "$1 removed"
+  if [[ "$TARGET" == *$1* ]]; then
+    /snap/docker/current/bin/docker cp $1:/.env Results/env/$1.env
+    /snap/docker/current/bin/docker stop $1 > /dev/null && echo "$1 stopped" && /snap/docker/current/bin/docker rm --volumes $1 > /dev/null && echo "$1 removed"
+    if [[ "$cross" == ""  && "$DEV" == *no* ]]; then
+      /snap/docker/current/bin/docker buildx rm U-Boot-Builder-$1
+    fi
+  fi
+}
+
+if [ "$DEV" = "yes" ]; then
+  echo "DEV_BUILD: $DEV"
+  CACHE="--cache-to type=local,dest=.git/Cache,mode=max --cache-from type=local,src=.git/Cache"
+  load() { # $1 = Name
+    if [[ "$TARGET" == *$1* ]]; then
+      stop $NAME
+      export LOAD="--load $CROSS $CACHE --target $1 --tag $1"
+    fi
+    export NAME=$1
+  }
+else
+  export BUILDX_METADATA_PROVENANCE=max
+  export install="install"
+  export signing=1
+  load() { # $1 Name
+    if [[ "$TARGET" == *$1* ]]; then
+      if [ "$cross" = "" ]; then
+        /snap/docker/current/bin/docker buildx create $BUILDK-$1 --node u-boot-builder-$1 --bootstrap --use
+      fi
+      stop $NAME
+      export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
+    fi
+    export NAME=$1
+  }
+fi
+
+init_runner() {
+  export DOCKER_HOST=unix:///run/user/1000/docker.sock
+  sleep 15
+  cp $HOME/tmp/log Results/logs/rootless.log
+  cp $HOME/tmp/environment-docker Results/env/rootless.env
+  /snap/docker/current/bin/docker info | grep rootless >> Results/logs/rootless.log
+  if [[ "$cross" == "cross" || "$DEV" == *yes* ]]; then
+    /snap/docker/current/bin/docker buildx create $CROSS $BUILDT --name U-Boot-Builder --node u-boot-builder-0 --bootstrap --use
+    if [[ "$cross" = "cross" ]]; then
+      /snap/docker/current/bin/docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install arm64
+    fi
+  fi
 }
 
 scan_using_grype() { # $1 = Name, $2 = Type:[Name]
   if [ "$DEV" != "yes" ]; then
     pushd Results/$1
-      TMPDIR="/var/snap/docker/tmp" SYFT_CACHE_DIR="/var/snap/docker/tmp" syft scan $2 -o spdx-json=$1.spdx.json
-      script -q -c "TMPDIR='/var/snap/docker/tmp' GRYPE_DB_CACHE_DIR='/var/snap/docker/tmp' grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp.tmp > $1.grype.tmp
+      TMPDIR="$HOME/.local/share/docker/tmp" SYFT_CACHE_DIR="$HOME/.local/share/docker/tmp" syft scan $2 -o spdx-json=$1.spdx.json
+      script -q -c "TMPDIR='$HOME/.local/share/docker/tmp' GRYPE_DB_CACHE_DIR='$HOME/.local/share/docker/tmp' grype $GRCONF sbom:$1.spdx.json -o json > $1.grype.json" $1.grype.tmp.tmp > $1.grype.tmp
       marker() { # $1 = Name, $2 = Order, $3 = Marker/ID
         grep "$3" $1.grype.tmp | tail -n 1 > $1.grype.status.$2
         tr -d '\000-\037\177' < $1.grype.status.$2 | sed '/^$/d' > $1.grype.status.$2.tmp
@@ -92,37 +123,59 @@ scan_using_grype() { # $1 = Name, $2 = Type:[Name]
       cat $1.grype.status
     popd
   else
-    return
+    wait
   fi
 }
 
 pushd ..
-  $PWD/install.sh run.install "$install" "$remove" "$(whoami)" "$cross" "$mount"
-  docker buildx create --name U-Boot-Builder $CROSS --driver-opt "network=host" --bootstrap --use
-  if [ "$cross" = "cross" ]; then
-    docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install all
-  fi
+  ./install.sh run.install \"$install\" \"$remove\" $(whoami) \"$cross\" $mount
+  init_runner
   
   load base
   if [[ "$TARGET" == *$NAME* ]]; then
-    docker buildx build $LOAD \
+    /snap/docker/current/bin/docker buildx build $LOAD \
       --build-arg HUB=$HUB \
       --build-arg BASE=$BASE \
+      --build-arg ENTRYPOINT=u-boot \
+      -f Dockerfile .
+  fi
+  load base_extra
+  if [[ "$TARGET" == *$NAME* ]]; then
+    /snap/docker/current/bin/docker buildx build $LOAD \
+      --build-arg HUB=$HUB \
+      --build-arg BASE_EXTRA=$BASE_EXTRA \
+      --build-arg ENTRYPOINT=u-boot \
       -f Dockerfile .
   fi
   
-  load base_extra
+  load crosstool-ng
   if [[ "$TARGET" == *$NAME* ]]; then
-    docker buildx build $LOAD \
+    /snap/docker/current/bin/docker buildx build $LOAD \
+      --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+      --build-arg CROSS_VER=$CROSS_VER \
+      --build-arg CROSS_SUM=$CROSS_SUM \
       --build-arg HUB=$HUB \
-      --build-arg BASE=$BASE \
       --build-arg BASE_EXTRA=$BASE_EXTRA \
+      --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
+    
+    scan_using_grype $NAME docker:$NAME
+    
+    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
+      --name $NAME $CROSS \
+      --network=name=host,\"driver-opt=network=host\" \
+      -e SOURCE_DATE_EPOCH=$source_date_epoch \
+      -e CROSS_VER=$CROSS_VER \
+      $NAME
+    
+    /snap/docker/current/bin/docker cp $NAME:/home/cross/x-tools/aarch64-unknown-linux-gnu/bin/. Builds/rk3399/
+    sha512sum Builds/rk3399/aarch64-* && sha512sum Builds/rk3399/aarch64-* >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/rk3399/aarch64-* && openssl dgst -SHA3-256 Builds/rk3399/aarch64-* >> Results/release.sha3sum
   fi
   
   load edk2
   if [[ "$TARGET" == *$NAME* ]]; then
-    docker buildx build $LOAD \
+    /snap/docker/current/bin/docker buildx build $LOAD \
       --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
       --build-arg EDKP_VER=$EDKP_VER \
       --build-arg EDKP_SUM=$EDKP_SUM \
@@ -131,10 +184,10 @@ pushd ..
       --build-arg BASE=$BASE \
       --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
-  
+    
     scan_using_grype $NAME docker:$NAME
-  
-    docker run -it --cpus=$(nproc) \
+    
+    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e EDKP_VER=$EDKP_VER \
@@ -144,40 +197,56 @@ pushd ..
       -e ACTIVE_PLATFORM="Platform/StandaloneMm/PlatformStandaloneMmPkg/PlatformStandaloneMmRpmb.dsc" \
       -e GCC5_AARCH64_PREFIX="aarch64-linux-gnu-" \
       $NAME
-  
-    docker cp $NAME:/Build/MmStandaloneRpmb/RELEASE_GCC5/FV/BL32_AP_MM.fd Builds/rk3399/BL32_AP_MM.fd
+    
+    /snap/docker/current/bin/docker cp $NAME:/Build/MmStandaloneRpmb/RELEASE_GCC5/FV/BL32_AP_MM.fd Builds/rk3399/BL32_AP_MM.fd
     sha512sum Builds/rk3399/BL32_AP_MM.fd && sha512sum Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd && openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha3sum
-    stop $NAME
+  fi
+  
+  load openssl
+  if [[ "$TARGET" == *$NAME* ]]; then
+    /snap/docker/current/bin/docker buildx build $LOAD \
+      --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
+      --build-arg SSL_VER=$SSL_VER \
+      --build-arg SSL_SUM=$SSL_SUM \
+      --build-arg HUB=$HUB \
+      --build-arg BASE=$BASE \
+      --build-arg ENTRYPOINT=$NAME \
+      -f Dockerfile .
+    
+    scan_using_grype $NAME docker:$NAME
+    
+    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
+      --name $NAME $CROSS \
+      -e SOURCE_DATE_EPOCH=$source_date_epoch \
+      -e SSL_VER=$SSL_VER \
+      $NAME
+    
+    /snap/docker/current/bin/docker cp $NAME:/SSL/include/openssl/. Builds/rk3399/openssl/
+    sha512sum Builds/rk3399/openssl/* && sha512sum Builds/rk3399/openssl/* >> Results/release.sha512sum
+    openssl dgst -SHA3-256 Builds/rk3399/openssl/* && openssl dgst -SHA3-256 Builds/rk3399/openssl/* >> Results/release.sha3sum
   fi
   
   load optee
   if [[ "$TARGET" == *$NAME* ]]; then
-    docker buildx build $LOAD \
+    /snap/docker/current/bin/docker buildx build $LOAD \
       --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
       --build-arg OPT_VER=$OPT_VER \
       --build-arg OPT_SUM=$OPT_SUM \
       --build-arg OPT_SUM2=$OPT_SUM2 \
       --build-arg TPM_SUM=$TPM_SUM \
-      --build-arg SSL_VER=$SSL_VER \
-      --build-arg SSL_SUM=$SSL_SUM \
-      --build-arg CROSS_VER=$CROSS_VER \
-      --build-arg CROSS_SUM=$CROSS_SUM \
       --build-arg ROT_SUM=$ROT_SUM \
       --build-arg HUB=$HUB \
-      --build-arg BASE=$BASE \
       --build-arg BASE_EXTRA=$BASE_EXTRA \
       --build-arg ENTRYPOINT=$NAME \
       -f Dockerfile .
     
     scan_using_grype $NAME docker:$NAME
     
-    docker run -it --cpus=$(nproc) \
+    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e OPT_VER=$OPT_VER \
-      -e SSL_VER=$SSL_VER \
-      -e CROSS_VER=$CROSS_VER \
       -e ARCHS="$ARCHS" \
       $NAME
     
@@ -186,17 +255,16 @@ pushd ..
       for tpm in ":-tpm" "/NOTPM:"
       do
         tpm=$(echo $tpm | cut -d':' -f2)
-        docker cp $NAME:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
+        /snap/docker/current/bin/docker cp $NAME:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
         sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
         openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
       done
     done
-    stop $NAME
   fi
   
   load arm-trusted
   if [[ "$TARGET" == *$NAME* ]]; then
-    docker buildx build $LOAD \
+    /snap/docker/current/bin/docker buildx build $LOAD \
       --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
       --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
       --build-arg ATF_VER=$ATF_VER \
@@ -210,7 +278,7 @@ pushd ..
     
     scan_using_grype $NAME docker:$NAME
     
-    docker run -it --cpus=$(nproc) \
+    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
@@ -220,16 +288,15 @@ pushd ..
     
     for arch in $ARCHS
     do
-      docker cp $NAME:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
+      /snap/docker/current/bin/docker cp $NAME:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
       sha512sum Builds/$arch/bl31.elf && sha512sum Builds/$arch/bl31.elf >> Results/release.sha512sum
       openssl dgst -SHA3-256 Builds/$arch/bl31.elf && openssl dgst -SHA3-256 Builds/$arch/bl31.elf >> Results/release.sha3sum
     done
-    stop $NAME
   fi
   
   load u-boot
   if [[ "$TARGET" == *$NAME* ]]; then
-    docker buildx build $LOAD \
+    /snap/docker/current/bin/docker buildx build $LOAD \
       --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
       --build-arg UB_VER=$UB_VER \
       --build-arg UB_SUM=$UB_SUM \
@@ -240,7 +307,7 @@ pushd ..
     
     scan_using_grype $NAME docker:$NAME
     
-    docker run -it --cpus=$(nproc) \
+    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e SOURCE_DATE=$source_date \
@@ -253,29 +320,27 @@ pushd ..
     do
       for loc in $VARIANTS
       do
-        docker cp $NAME:/$dev$loc/ Builds
+        /snap/docker/current/bin/docker cp $NAME:/$dev$loc/. Builds/
         sha512sum Builds/$dev$loc/u-boot-rockchip.bin && sha512sum Builds/$dev$loc/u-boot-rockchip.bin >> Results/release.sha512sum
         openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip.bin >> Results/release.sha3sum
         sha512sum Builds/$dev$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$dev$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
         openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
       done
-      docker cp $NAME:/$dev/ Builds
+      /snap/docker/current/bin/docker cp $NAME:/$dev/. Builds/
       sha512sum Builds/$dev/u-boot-rockchip.bin && sha512sum Builds/$dev/u-boot-rockchip.bin >> Results/release.sha512sum
       openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip.bin >> Results/release.sha3sum
       sha512sum Builds/$dev/u-boot-rockchip-spi.bin && sha512sum Builds/$dev/u-boot-rockchip-spi.bin >> Results/release.sha512sum
       openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip-spi.bin >> Results/release.sha3sum
     done
-    docker cp $NAME:/sys.info Results/sys.info
-    stop $NAME
+    /snap/docker/current/bin/docker cp $NAME:/sys.info Results/sys.info
   fi
   
   load ubuntu
   if [[ "$TARGET" == *$NAME* ]]; then
     scan_using_grype ubuntu "/ --select-catalogers debian"
   fi
-
-  $PWD/install.sh run.uninstall "$remove" "$unmount"
-
+  ./install.sh run.uninstall \"$remove\" \"$unmount\"
+  
   load u-boot
   if [[ "$TARGET" == *$NAME* ]]; then
     if [ "$DEV" != "yes" ]; then
@@ -304,6 +369,7 @@ pushd ..
       rm -f /tmp/sdcard.img
     fi
   fi
+  stop $NAME
 popd
 echo "0mniteck's Current GPG Key ID: 287EE837E6ED2DD3" >> build.info
 echo "Base Build System: $(uname -o) $(uname -r) $(uname -m) $(lsb_release -ds) $(lsb_release -cs) $(uname -v)" >> build.info && cat sys.info >> build.info

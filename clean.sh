@@ -1,29 +1,29 @@
 #!/bin/bash
-
+source ./defaults
 ## Available Commands:
 
-# ./clean.sh git.cleanup
-# ./clean.sh git.cleanup.(cache)
-# ./clean.sh tmp.cleanup
+# $PWD/clean.sh git.cleanup
+# $PWD/clean.sh git.cleanup.(cache)
+# $PWD/clean.sh tmp.cleanup
 
 do_clean() {
-  ./git.sh reset
+  $PWD/git.sh reset
 }
+
 do_update() {
-  ./git.sh update
+  $PWD/git.sh update
 }
 
 if [[ "$1" == *git.cleanup* ]]; then
   do_clean
   do_update
+  env | sort >> Results/env/clean.env && echo "" >> Results/env/clean.env
   if [[ "$1" == *git.cleanup.cache* ]]; then
     rm -r -f .git/Cache
   fi
   chmod -R +x Buildscripts/
   chmod -R +x Configs/
   mkdir -p .git/Cache
-  rm -f defaults.set
-  cp defaults $_
   pushd Builds/
     for dev in $LIST
     do
@@ -42,14 +42,17 @@ if [[ "$1" == *git.cleanup* ]]; then
     done
   popd
   pushd Results/
-    rm -f *.info && rm -f release.* && rm -f builder.*
+    rm -f *.info && rm -f release.* && rm -f *.set && rm -f logs/*.log && rm -f env/*.env
     find . ! -type d -delete # Will be removed
+    cp ../defaults defaults.set
     for con in $TARGETS
-      do
-        mkdir -p $con
-        find $con/. ! -type d -delete
-        touch $con/tmp
-      done
+    do
+      mkdir -p $con
+      find $con/. ! -type d -delete
+      touch $con/tmp
+    done
+    touch env/tmp
+    touch logs/tmp
   popd
 fi
 
@@ -70,11 +73,13 @@ if [ "$1" = "tmp.cleanup" ]; then
   popd
   pushd Results/
     rm -f /tmp/release.last.* && rm -f release.last.*
-    rm -f sys.* && rm -f status.* && rm -f builder.*
+    rm -f sys.* && rm -f status.*
     for con in $TARGETS
     do
       rm -f $con/tmp
     done
+    rm -f env/tmp
+    rm -f logs/tmp
   popd
 fi
 exit 0

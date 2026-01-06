@@ -1,42 +1,12 @@
 #!/usr/bin/env bash
-trap '[[ $pid ]] && kill $pid; exit' EXIT
-unzip -q SSL.zip -d / > /dev/null
-unzip -q CROSS.zip -d / > /dev/null
-mv /crosstool-ng-crosstool-ng-$CROSS_VER /CROSS
-who_you_were=$(whoami)
-echo $who_you_were
-printf '\n\n\n\n\ny\n' | adduser --disabled-password --no-create-home cross
-chown -R cross:cross CROSS/*
-pushd /CROSS
-su cross
-  ./bootstrap && ./configure --enable-local && make
-  ./ct-ng aarch64-unknown-linux-gnu
-  cat >> .config << __EOF
-  CT_CC_GCC_EXTRA_CONFIG_ARRAY="--enable-standard-branch-protection"
-  CT_CC_GCC_CORE_EXTRA_CONFIG_ARRAY="--enable-standard-branch-protection"
-__EOF
-  ./ct-ng build.$(nproc)
-  ls -la x-tools/
-  ls -la x-tools/aarch64-unknown-linux-gnu/bin
-popd
-su who_you_were
-mv /openssl-openssl-$SSL_VER /SSL
-rm -f -r /usr/include/openssl
-pushd /SSL
-  sed -i "1,15d" build.info
-  sed -i "s'MAJOR=.'MAJOR=1'" VERSION.dat
-  sed -i "s'MINOR=.'MINOR=1'" VERSION.dat
-  sed -i "s'PATCH=.'PATCH=0'" VERSION.dat
-  ./Configure --api=1.1.0 linux-aarch64
-  make
-  cp include/crypto/sm4.h include/openssl/sm4.h
-popd
-mv /SSL/include /usr/include/openssl
+env | sort >> /.env && echo "" >> /.env
+rm -f -r /usr/include/openssl/*
+mv /SSL/* /usr/include/openssl/
 # sed -i "s'#define __ONCE_ALIGNMENT'#define __ONCE_ALIGNMENT __attribute__((aligned(8)))'" /usr/include/aarch64-linux-gnu/bits/pthreadtypes-arch.h
 for plat in $ARCHS
 do
-  unzip -q $OPT_VER.zip -d /$plat > /dev/null
-  unzip -q ftpm_$OPT_VER.zip -d /$plat > /dev/null
+  unzip -q OPTEE.zip -d /$plat > /dev/null
+  unzip -q ftpm_OPTEE.zip -d /$plat > /dev/null
   unzip -q TPM.zip -d /$plat > /dev/null
   mv /$plat/ms-tpm-20-ref-1.83r1 /$plat/TPM
   pushd /$plat/optee_os-$OPT_VER
@@ -44,7 +14,7 @@ do
     sed -i '39d' mk/compile.mk
     sed -i "s'length \\\\'length'" mk/compile.mk
     # sed -i "35ilibgcc\$(sm)	:= \$(shell \$(CC\$(sm)) \$(CFLAGS\$(arch-bits-\$(sm))) -rtlib=compiler-rt -print-libgcc-file-name 2> /dev/null)" mk/clang.mk
-    make -j $(nproc) PLATFORM=rockchip-$plat CFG_OPTEE_CONFIG=mk/config.mk CFG_CORE_BTI=y CFG_TA_BTI=y CFG_USER_TA_TARGETS=ta_arm64 CFG_ARM64_ta_arm64=y AARCH64_CROSS_COMPILE=/CROSS/x-tools/aarch64-unknown-linux-gnu/bin/aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200 CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y CFG_EARLY_TA=y ta_dev_kit
+    make -j $(nproc) PLATFORM=rockchip-$plat CFG_OPTEE_CONFIG=mk/config.mk CFG_ARM64_core=y CFG_CORE_BTI=y CFG_TA_BTI=y CFG_USER_TA_TARGETS=ta_arm64 CFG_ARM64_ta_arm64=y AARCH64_CROSS_COMPILE=/CROSS/aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200 CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y CFG_EARLY_TA=y ta_dev_kit
     sed -i "178d" out/arm-plat-rockchip/export-ta_arm64/include/util.h
     sed -i "27d" out/arm-plat-rockchip/export-ta_arm64/include/limits.h
     cat ta/link.mk
@@ -382,12 +352,11 @@ srcs_ext-y += support/TableMarshalData.c
 srcs_ext-y += support/TpmFail.c
 srcs_ext-y += support/TpmSizeChecks.c" >> sub.mk
     cat sub.mk
-    ls -la /$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64
-    make -j $(nproc) PLATFORM=rockchip-$plat CFG_OPTEE_CONFIG=mk/config.mk CFG_CORE_BTI=y CFG_TA_BTI=y CFG_USER_TA_TARGETS=ta_arm64 CFG_ARM64_ta_arm64=y AARCH64_CROSS_COMPILE=/CROSS/x-tools/aarch64-unknown-linux-gnu/bin/aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200 CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM
+    make -j $(nproc) PLATFORM=rockchip-$plat CFG_OPTEE_CONFIG=mk/config.mk CFG_ARM64_core=y CFG_CORE_BTI=y CFG_TA_BTI=y CFG_USER_TA_TARGETS=ta_arm64 CFG_ARM64_ta_arm64=y AARCH64_CROSS_COMPILE=/CROSS/aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200 CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y TA_DEV_KIT_DIR=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/export-ta_arm64 CFG_MS_TPM_20_REF=/$plat/TPM
     read -p "Waiting for user..."
   popd
   pushd /$plat/optee_os-$OPT_VER
-    make -j $(nproc) PLATFORM=rockchip-$plat CFG_OPTEE_CONFIG=mk/config.mk CFG_CORE_BTI=y CFG_TA_BTI=y CFG_USER_TA_TARGETS=ta_arm64 CFG_ARM64_ta_arm64=y AARCH64_CROSS_COMPILE=/CROSS/x-tools/aarch64-unknown-linux-gnu/bin/aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200 CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y CFG_STMM_PATH=/BL32_AP_MM.fd CFG_RPMB_FS=y EARLY_TA_PATHS=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/ta/remoteproc/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf
+    make -j $(nproc) PLATFORM=rockchip-$plat CFG_OPTEE_CONFIG=mk/config.mk CFG_ARM64_core=y CFG_CORE_BTI=y CFG_TA_BTI=y CFG_USER_TA_TARGETS=ta_arm64 CFG_ARM64_ta_arm64=y AARCH64_CROSS_COMPILE=/CROSS/aarch64-linux-gnu- CFG_EARLY_CONSOLE_BAUDRATE=115200 CFG_TA_MEASURED_BOOT=y CFG_TA_EVENT_LOG_SIZE=1024 CFG_TA_LIBGCC=y CFG_STMM_PATH=/BL32_AP_MM.fd CFG_RPMB_FS=y EARLY_TA_PATHS=/$plat/optee_os-$OPT_VER/out/arm-plat-rockchip/ta/remoteproc/bc50d971-d4c9-42c4-82cb-343fb7f37896.stripped.elf
   popd
 done
 mkdir /NOTPM

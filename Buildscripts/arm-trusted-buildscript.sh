@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-trap '[[ $pid ]] && kill $pid; exit' EXIT
+env | sort >> /.env && echo "" >> /.env
 for plat in $ARCHS
 do
   unzip -q $ATF_VER.zip -d /$plat > /dev/null
