@@ -4,7 +4,6 @@ ARG HUB BASE ENTRYPOINT
 ONBUILD RUN echo "U-Boot-Builder for $ENTRYPOINT starting: Using base image $HUB $BASE"; sleep 5
 FROM $HUB-extra:$BASE_EXTRA AS base_extra
 ARG HUB BASE_EXTRA ENTRYPOINT
-RUN apt install -y clang cmake gcc g++ libclang-rt-dev libstdc++6 lld patch python3-pycryptodome python3-pycodestyle 
 ONBUILD RUN echo "U-Boot-Builder for $ENTRYPOINT starting: Using base image $HUB-extra $BASE_EXTRA"; sleep 5
 
 FROM base_extra AS crosstool-ng
@@ -12,7 +11,6 @@ ARG SOURCE_DATE_EPOCH CROSS_VER CROSS_SUM ENTRYPOINT
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH CROSS_VER=$CROSS_VER ENTRYPOINT=$ENTRYPOINT
 COPY --link Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/crosstool-ng/crosstool-ng/archive/refs/tags/crosstool-ng-$CROSS_VER.zip /CROSS.zip
-RUN apt install -y adduser bzip2 codespell gdb-multiarch gettext gperf help2man libtool-bin gawk texinfo meson
 RUN echo "$CROSS_SUM  CROSS.zip" | sha512sum --status -c - && echo "Crosstool-ng Checksum Matched!" || exit 1; sleep 5
 ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 
@@ -22,7 +20,6 @@ ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH EDK_VER=$EDK_VER EDKP_VER=$EDKP_VER ENT
 COPY --link Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/tianocore/edk2-platforms/archive/$EDKP_VER.zip /$EDKP_VER.zip
 ADD --link --keep-git-dir=true https://github.com/tianocore/edk2.git?tag=$EDK_VER&checksum=d46aa46 /edk2-$EDK_VER
-RUN apt install -y nasm
 RUN echo "$EDKP_SUM  $EDKP_VER.zip" | sha512sum --status -c - && echo "EDK2 Platform Checksum Matched!" || exit 1; sleep 5
 ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
 
@@ -65,6 +62,5 @@ ARG SOURCE_DATE_EPOCH UB_VER UB_SUM ENTRYPOINT
 ENV SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH SOURCE_DATE="@$SOURCE_DATE_EPOCH" FORCE_SOURCE_DATE=1 UB_VER=$UB_VER ENTRYPOINT=$ENTRYPOINT
 COPY --link Builds/ Includes/ Configs/ Buildscripts/$ENTRYPOINT-buildscript.sh /
 ADD --link https://github.com/u-boot/u-boot/archive/refs/tags/v$UB_VER.zip /
-RUN apt install -y libgnutls28-dev lzop
 RUN echo "$UB_SUM  v$UB_VER.zip" | sha512sum --status -c - && echo "U-Boot Checksum Matched!" || exit 1; sleep 5
 ENTRYPOINT ["sh","-c","/$ENTRYPOINT-buildscript.sh"]
