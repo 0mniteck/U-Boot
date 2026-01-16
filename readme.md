@@ -49,6 +49,8 @@
   * [x] Convert to docker build
     * [x] Integrate threat intelligence using syft/grype
     * [x] Build variants in one branch
+      * [x] Rootless Docker
+        * [x] docker cgroup and systemd unit mods using current snap
     * [x] Add local docker build-cache in .git/Cache for dev rebuilds
     * [x] Target selection
     * [x] Make reproducible debian docker images
