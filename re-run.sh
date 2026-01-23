@@ -9,6 +9,7 @@ ARCHS=$(echo $ARCHS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
 BUILDT="--driver docker-container --driver-opt \"network=host\""
 BUILDK="--buildkitd-flags \"--oci-worker-rootless=true\" $BUILDT --name U-Boot-Builder"
+docker='/snap/docker/current/bin/docker'
 
 if [ "$TARGETS" != "" ]; then
   echo "TARGET: $TARGETS"
@@ -45,10 +46,10 @@ fi
 
 stop() { # $1 = Name
   if [[ "$TARGET" == *$1* ]]; then
-    /snap/docker/current/bin/docker cp $1:/.env Results/env/$1.env
-    /snap/docker/current/bin/docker stop $1 > /dev/null && echo "$1 stopped" && /snap/docker/current/bin/docker rm --volumes $1 > /dev/null && echo "$1 removed"
+    $docker cp $1:/.env Results/env/$1.env
+    $docker stop $1 > /dev/null && echo "$1 stopped" && $docker rm --volumes $1 > /dev/null && echo "$1 removed"
     if [[ "$cross" == ""  && "$DEV" == *no* ]]; then
-      /snap/docker/current/bin/docker buildx rm U-Boot-Builder-$1
+      $docker buildx rm U-Boot-Builder-$1
     fi
   fi
 }
@@ -65,12 +66,13 @@ if [ "$DEV" = "yes" ]; then
   }
 else
   export BUILDX_METADATA_PROVENANCE=max
+  export BUILDX_METADATA_WARNINGS=1
   export install="install"
   export signing=1
   load() { # $1 Name
     if [[ "$TARGET" == *$1* ]]; then
       if [ "$cross" = "" ]; then
-        /snap/docker/current/bin/docker buildx create $BUILDK-$1 --node u-boot-builder-$1 --bootstrap --use
+        $docker buildx create $BUILDK-$1 --node u-boot-builder-$1 --bootstrap --use
       fi
       stop $NAME
       export LOAD="--load $CROSS --target $1 --tag $1 --metadata-file Results/$1/$1.meta.json"
@@ -84,11 +86,11 @@ init_runner() {
   sleep 15
   cp $HOME/tmp/log Results/logs/rootless.log
   cp $HOME/tmp/environment-docker Results/env/rootless.env
-  /snap/docker/current/bin/docker info | grep rootless >> Results/logs/rootless.log
+  $docker info | grep rootless >> Results/logs/rootless.log
   if [[ "$cross" == "cross" || "$DEV" == *yes* ]]; then
-    /snap/docker/current/bin/docker buildx create $CROSS $BUILDT --name U-Boot-Builder --node u-boot-builder-0 --bootstrap --use
+    $docker buildx create $CROSS $BUILDT --name U-Boot-Builder --node u-boot-builder-0 --bootstrap --use
     if [[ "$cross" = "cross" ]]; then
-      /snap/docker/current/bin/docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install arm64
+      $docker run --privileged --rm tonistiigi/binfmt:qemu-v10.0.4-56 --install arm64
     fi
   fi
 }
@@ -133,7 +135,7 @@ pushd ..
   
   load base
   if [[ "$TARGET" == *$NAME* ]]; then
-    /snap/docker/current/bin/docker buildx build $LOAD \
+    $docker buildx build $LOAD \
       --build-arg HUB=$HUB \
       --build-arg BASE=$BASE \
       --build-arg ENTRYPOINT=u-boot \
@@ -141,7 +143,7 @@ pushd ..
   fi
   load base_extra
   if [[ "$TARGET" == *$NAME* ]]; then
-    /snap/docker/current/bin/docker buildx build $LOAD \
+    $docker buildx build $LOAD \
       --build-arg HUB=$HUB \
       --build-arg BASE_EXTRA=$BASE_EXTRA \
       --build-arg ENTRYPOINT=u-boot \
@@ -150,7 +152,7 @@ pushd ..
   
   load crosstool-ng
   if [[ "$TARGET" == *$NAME* ]]; then
-    /snap/docker/current/bin/docker buildx build $LOAD \
+    $docker buildx build $LOAD \
       --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
       --build-arg CROSS_VER=$CROSS_VER \
       --build-arg CROSS_SUM=$CROSS_SUM \
@@ -161,21 +163,21 @@ pushd ..
     
     scan_using_grype $NAME docker:$NAME
     
-    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
+    $docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       --network=name=host,\"driver-opt=network=host\" \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e CROSS_VER=$CROSS_VER \
       $NAME
     
-    /snap/docker/current/bin/docker cp $NAME:/home/cross/x-tools/aarch64-unknown-linux-gnu/bin/. Builds/rk3399/
+    $docker cp $NAME:/home/cross/x-tools/aarch64-unknown-linux-gnu/bin/. Builds/rk3399/
     sha512sum Builds/rk3399/aarch64-* && sha512sum Builds/rk3399/aarch64-* >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/aarch64-* && openssl dgst -SHA3-256 Builds/rk3399/aarch64-* >> Results/release.sha3sum
   fi
   
   load edk2
   if [[ "$TARGET" == *$NAME* ]]; then
-    /snap/docker/current/bin/docker buildx build $LOAD \
+    $docker buildx build $LOAD \
       --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
       --build-arg EDKP_VER=$EDKP_VER \
       --build-arg EDKP_SUM=$EDKP_SUM \
@@ -187,7 +189,7 @@ pushd ..
     
     scan_using_grype $NAME docker:$NAME
     
-    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
+    $docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e EDKP_VER=$EDKP_VER \
@@ -198,14 +200,14 @@ pushd ..
       -e GCC5_AARCH64_PREFIX="aarch64-linux-gnu-" \
       $NAME
     
-    /snap/docker/current/bin/docker cp $NAME:/Build/MmStandaloneRpmb/RELEASE_GCC5/FV/BL32_AP_MM.fd Builds/rk3399/BL32_AP_MM.fd
+    $docker cp $NAME:/Build/MmStandaloneRpmb/RELEASE_GCC5/FV/BL32_AP_MM.fd Builds/rk3399/BL32_AP_MM.fd
     sha512sum Builds/rk3399/BL32_AP_MM.fd && sha512sum Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd && openssl dgst -SHA3-256 Builds/rk3399/BL32_AP_MM.fd >> Results/release.sha3sum
   fi
   
   load openssl
   if [[ "$TARGET" == *$NAME* ]]; then
-    /snap/docker/current/bin/docker buildx build $LOAD \
+    $docker buildx build $LOAD \
       --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
       --build-arg SSL_VER=$SSL_VER \
       --build-arg SSL_SUM=$SSL_SUM \
@@ -216,20 +218,20 @@ pushd ..
     
     scan_using_grype $NAME docker:$NAME
     
-    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
+    $docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e SSL_VER=$SSL_VER \
       $NAME
     
-    /snap/docker/current/bin/docker cp $NAME:/SSL/include/openssl/. Builds/rk3399/openssl/
+    $docker cp $NAME:/SSL/include/openssl/. Builds/rk3399/openssl/
     sha512sum Builds/rk3399/openssl/* && sha512sum Builds/rk3399/openssl/* >> Results/release.sha512sum
     openssl dgst -SHA3-256 Builds/rk3399/openssl/* && openssl dgst -SHA3-256 Builds/rk3399/openssl/* >> Results/release.sha3sum
   fi
   
   load optee
   if [[ "$TARGET" == *$NAME* ]]; then
-    /snap/docker/current/bin/docker buildx build $LOAD \
+    $docker buildx build $LOAD \
       --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
       --build-arg OPT_VER=$OPT_VER \
       --build-arg OPT_SUM=$OPT_SUM \
@@ -243,7 +245,7 @@ pushd ..
     
     scan_using_grype $NAME docker:$NAME
     
-    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
+    $docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e OPT_VER=$OPT_VER \
@@ -255,7 +257,7 @@ pushd ..
       for tpm in ":-tpm" "/NOTPM:"
       do
         tpm=$(echo $tpm | cut -d':' -f2)
-        /snap/docker/current/bin/docker cp $NAME:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
+        $docker cp $NAME:$(echo $tpm | cut -d':' -f1)/$arch/optee_os-$OPT_VER/out/arm-plat-rockchip/core/tee.bin Builds/$arch/tee$tpm.bin
         sha512sum Builds/$arch/tee$tpm.bin && sha512sum Builds/$arch/tee$tpm.bin >> Results/release.sha512sum
         openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin && openssl dgst -SHA3-256 Builds/$arch/tee$tpm.bin >> Results/release.sha3sum
       done
@@ -264,7 +266,7 @@ pushd ..
   
   load arm-trusted
   if [[ "$TARGET" == *$NAME* ]]; then
-    /snap/docker/current/bin/docker buildx build $LOAD \
+    $docker buildx build $LOAD \
       --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
       --build-arg BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
       --build-arg ATF_VER=$ATF_VER \
@@ -278,7 +280,7 @@ pushd ..
     
     scan_using_grype $NAME docker:$NAME
     
-    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
+    $docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e BUILD_MESSAGE_TIMESTAMP="$build_message_timestamp" \
@@ -288,7 +290,7 @@ pushd ..
     
     for arch in $ARCHS
     do
-      /snap/docker/current/bin/docker cp $NAME:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
+      $docker cp $NAME:/$arch/arm-trusted-firmware-$ATF_VER/build/$arch/release/bl31/bl31.elf Builds/$arch/
       sha512sum Builds/$arch/bl31.elf && sha512sum Builds/$arch/bl31.elf >> Results/release.sha512sum
       openssl dgst -SHA3-256 Builds/$arch/bl31.elf && openssl dgst -SHA3-256 Builds/$arch/bl31.elf >> Results/release.sha3sum
     done
@@ -296,7 +298,7 @@ pushd ..
   
   load u-boot
   if [[ "$TARGET" == *$NAME* ]]; then
-    /snap/docker/current/bin/docker buildx build $LOAD \
+    $docker buildx build $LOAD \
       --build-arg SOURCE_DATE_EPOCH=$source_date_epoch \
       --build-arg UB_VER=$UB_VER \
       --build-arg UB_SUM=$UB_SUM \
@@ -307,7 +309,7 @@ pushd ..
     
     scan_using_grype $NAME docker:$NAME
     
-    /snap/docker/current/bin/docker run -it --cpus=$(nproc) \
+    $docker run -it --cpus=$(nproc) \
       --name $NAME $CROSS \
       -e SOURCE_DATE_EPOCH=$source_date_epoch \
       -e SOURCE_DATE=$source_date \
@@ -320,19 +322,19 @@ pushd ..
     do
       for loc in $VARIANTS
       do
-        /snap/docker/current/bin/docker cp $NAME:/$dev$loc/. Builds/
+        $docker cp $NAME:/$dev$loc/. Builds/
         sha512sum Builds/$dev$loc/u-boot-rockchip.bin && sha512sum Builds/$dev$loc/u-boot-rockchip.bin >> Results/release.sha512sum
         openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip.bin >> Results/release.sha3sum
         sha512sum Builds/$dev$loc/u-boot-rockchip-spi.bin && sha512sum Builds/$dev$loc/u-boot-rockchip-spi.bin >> Results/release.sha512sum
         openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$dev$loc/u-boot-rockchip-spi.bin >> Results/release.sha3sum
       done
-      /snap/docker/current/bin/docker cp $NAME:/$dev/. Builds/
+      $docker cp $NAME:/$dev/. Builds/
       sha512sum Builds/$dev/u-boot-rockchip.bin && sha512sum Builds/$dev/u-boot-rockchip.bin >> Results/release.sha512sum
       openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip.bin && openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip.bin >> Results/release.sha3sum
       sha512sum Builds/$dev/u-boot-rockchip-spi.bin && sha512sum Builds/$dev/u-boot-rockchip-spi.bin >> Results/release.sha512sum
       openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip-spi.bin && openssl dgst -SHA3-256 Builds/$dev/u-boot-rockchip-spi.bin >> Results/release.sha3sum
     done
-    /snap/docker/current/bin/docker cp $NAME:/sys.info Results/sys.info
+    $docker cp $NAME:/sys.info Results/sys.info
   fi
   
   load ubuntu
