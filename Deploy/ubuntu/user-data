@@ -34,13 +34,13 @@ apt:
       source: |
         Types: deb
         URIs: https://us.ports.ubuntu.com/ubuntu-ports
-        Suites: plucky plucky-updates plucky-backports
+        Suites: questing questing-updates questing-backports
         Components: main universe
         Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
         Types: deb
         URIs: https://us.ports.ubuntu.com/ubuntu-ports
-        Suites: plucky-security
+        Suites: questing-security
         Components: main universe
         Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
     cloudflare.sources:
@@ -187,13 +187,13 @@ autoinstall:
         source: |
           Types: deb
           URIs: https://us.ports.ubuntu.com/ubuntu-ports
-          Suites: plucky plucky-updates plucky-backports
+          Suites: questing questing-updates questing-backports
           Components: main universe
           Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
           Types: deb
           URIs: https://us.ports.ubuntu.com/ubuntu-ports
-          Suites: plucky-security
+          Suites: questing-security
           Components: main universe
           Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
       cloudflare.sources:
@@ -391,3 +391,4 @@ autoinstall:
     snap:
       commands:
         00: snap remove --purge firefox cups
+
