@@ -2,6 +2,7 @@
 
 ### Project Goals:
 * [ ] Enable vTPM Support
+  * [ ] Test with pinned commit from demo's
   * [ ] Test TPM2_FTPM_TEE
     * [x] Build StandaloneMM
       * [x] Migrate from old branch
