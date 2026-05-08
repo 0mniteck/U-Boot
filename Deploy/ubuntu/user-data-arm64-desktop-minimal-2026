@@ -1,0 +1,393 @@
+#cloud-config
+users: [default]
+apt:
+  preserve_sources_list: false
+  primary:
+    - arches:
+        - arm64
+        - default
+      uri: https://us.ports.ubuntu.com/ubuntu-ports
+      search:
+        - https://us.ports.ubuntu.com/ubuntu-ports
+      search_dns: false
+  security:
+    - arches:
+        - arm64
+        - default
+      uri: https://us.ports.ubuntu.com/ubuntu-ports
+      search:
+        - https://us.ports.ubuntu.com/ubuntu-ports
+      search_dns: false
+  sources_list: |
+    Types: deb
+    URIs: $PRIMARY
+    Suites: $RELEASE $RELEASE-updates $RELEASE-backports
+    Components: main universe
+    |
+    Types: deb
+    URIs: $SECURITY
+    Suites: $RELEASE-security
+    Components: main universe
+  sources:
+    ubuntu.sources:
+      append: false
+      source: |
+        Types: deb
+        URIs: https://us.ports.ubuntu.com/ubuntu-ports
+        Suites: questing questing-updates questing-backports
+        Components: main universe
+        Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+        Types: deb
+        URIs: https://us.ports.ubuntu.com/ubuntu-ports
+        Suites: questing-security
+        Components: main universe
+        Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+    cloudflare.sources:
+      append: false
+      source: |
+        Types: deb
+        URIs: https://pkg.cloudflareclient.com/
+        Suites: noble
+        Components: main
+      key: |
+        -----BEGIN PGP PUBLIC KEY BLOCK-----
+        
+        mQINBGGr2jUBEADHaae1uIKW4JI/E32IR9EJSswkOuZl1J+XXH32U2u3DGtzGuei
+        dNXyeQ7AWHp5bM2wO7jGRqH/IwiDVHzp6gmJ8r/SFrE+iljNA71LVXY7FjaOGmKC
+        pZnzl3mlY9zsRgmM+oEbTedg2k1jfeHWiYJfTk4efDUGNqF4D62GBFLpOheeXtNU
+        DHuZjcRBFKO3wjt3wPpuUx+/NoHrxWK2HZxL6cHUHxmqOHlemGAvZug0pkeAWaAb
+        YYmlwsi9/KbnZ22poCfubCebeLIIC4GrQd5ZdJn3efa1ps41gHG/s0RpoQvC128x
+        ZQDfdjskuXA0IlDUwzGK2qeY2PEbHpPAH02cm2JrO0NkVBO/4tJ3QkrBRdkOoS1C
+        PZRFkzaamA7kZb03wHHLqMZ4lpw+Aa4w0jihndQUvxi9HQVmzjYW1HeQXHmVPdNc
+        MT6Y/XxFUFfz65zpZy6s5e8250yIaiNtTuvpcXebmkx0uM4naQFjSJTTlrNeXM/L
+        67JppgInRXwlaevNBTm24HhJy0zef1Gpnt6xJDtCX2qNg0GhbuJXbFhgSF1Ct7eY
+        tZsfx6UbEXdkwEtcrIAXIqrVjenqcvh8w47I06rqKEoiMliQxh/WrIjTDCsIq/LB
+        ki820eS6GsJ5N2JmZ2CQ7Kt+y/Gx9uMDmUcCnHY10vX+Va66/GKMX+vbKQARAQAB
+        tDZDbG91ZGZsYXJlIFBhY2thZ2UgUmVwb3NpdG9yeSA8c3VwcG9ydEBjbG91ZGZs
+        YXJlLmNvbT6JAlgEEwEIAEIWIQTAaKK1dxd1GTy+Hy9uLdIXT6HDugUCYavaNQIb
+        AwUJB4TOAAULCQgHAgMiAgEGFQoJCAsCBBYCAwECHgcCF4AACgkQbi3SF0+hw7oC
+        IA/+IZBUh2rWq62WHQ55IGbruVL8MPBOgYb9nikxMjxlqxBjy+A61aS+KgdgdhTk
+        dal06iRLUIGNJ8P9W2eSPmxX6R3R5s+r7bwn8eb5pY8voW93FE6LX2klLGdafckL
+        7USOqQzgcrtKqVSHNokzx4mKxreJzvB5Xef+dj3jNe8Xoxzp3QjUk17Zbq1jg1cS
+        umDTXJVJqtkbhgUl9xyfMst8ShiBMV0UCUUrXDaMw9eoQ1cmk6D/VzgrTOk8qLjg
+        nvA4Zop8un5tQXWiKmWu/oaK+hKZCQKgZuJWmA6PVpee1m6uGXoxItCA9dIRKj4X
+        NsyVp7r95hZ2R1uiu2vmbHaWLibMTOcDD3ZQ4Fxuh7Aozpq1AemCy2L7uv6j79TP
+        x5JuUkKT+DUp2ZPlBML5E0xWShuEEPF2InIFqpePmkB2HHQ2jMY0067szv3bjVar
+        qF6FQM+1x9XYf/NpxQbb/DIhR2JQzcR4dftPERPp3ZfmKVzX6x/pkXgYXS4AqUeb
+        +QE7dSlOf2KxVdBJSBSktGyA1jlOGDKD7DKP1tF+HNcRZd/avC6iFBK/sNYpUZBD
+        iY0cWM0XC7CORUVPMLcvLBtojgI6BbXqva7UsltkwZ1tPbTF53JsgdfzMbkkQ2zi
+        yYtPawgLR07KlstXanuMbJwuLg0j/1dLWPV1ddC/oUHjog4=
+        =J+JK
+        -----END PGP PUBLIC KEY BLOCK-----
+package_update: true
+package_upgrade: true
+bootcmd:
+  - sed -i s,http://ports.ubuntu.com/ubuntu-ports,https://us.ports.ubuntu.com/ubuntu-ports,g /etc/cloud/cloud.cfg
+  - sed -i s,http://ports.ubuntu.com/ubuntu-ports,https://us.ports.ubuntu.com/ubuntu-ports,g /etc/apt/sources.list.d/ubuntu.sources
+  - sed -i s,'main universe restricted multiverse','main universe',g /etc/apt/sources.list.d/ubuntu.sources
+  - |
+    cat > /etc/apt/sources.list.d/cloudflare.sources << 'EOF'
+    Types: deb
+    URIs: https://pkg.cloudflareclient.com/
+    Suites: noble
+    Components: main
+    Signed-By: |
+      -----BEGIN PGP PUBLIC KEY BLOCK-----
+      
+      mQINBGGr2jUBEADHaae1uIKW4JI/E32IR9EJSswkOuZl1J+XXH32U2u3DGtzGuei
+      dNXyeQ7AWHp5bM2wO7jGRqH/IwiDVHzp6gmJ8r/SFrE+iljNA71LVXY7FjaOGmKC
+      pZnzl3mlY9zsRgmM+oEbTedg2k1jfeHWiYJfTk4efDUGNqF4D62GBFLpOheeXtNU
+      DHuZjcRBFKO3wjt3wPpuUx+/NoHrxWK2HZxL6cHUHxmqOHlemGAvZug0pkeAWaAb
+      YYmlwsi9/KbnZ22poCfubCebeLIIC4GrQd5ZdJn3efa1ps41gHG/s0RpoQvC128x
+      ZQDfdjskuXA0IlDUwzGK2qeY2PEbHpPAH02cm2JrO0NkVBO/4tJ3QkrBRdkOoS1C
+      PZRFkzaamA7kZb03wHHLqMZ4lpw+Aa4w0jihndQUvxi9HQVmzjYW1HeQXHmVPdNc
+      MT6Y/XxFUFfz65zpZy6s5e8250yIaiNtTuvpcXebmkx0uM4naQFjSJTTlrNeXM/L
+      67JppgInRXwlaevNBTm24HhJy0zef1Gpnt6xJDtCX2qNg0GhbuJXbFhgSF1Ct7eY
+      tZsfx6UbEXdkwEtcrIAXIqrVjenqcvh8w47I06rqKEoiMliQxh/WrIjTDCsIq/LB
+      ki820eS6GsJ5N2JmZ2CQ7Kt+y/Gx9uMDmUcCnHY10vX+Va66/GKMX+vbKQARAQAB
+      tDZDbG91ZGZsYXJlIFBhY2thZ2UgUmVwb3NpdG9yeSA8c3VwcG9ydEBjbG91ZGZs
+      YXJlLmNvbT6JAlgEEwEIAEIWIQTAaKK1dxd1GTy+Hy9uLdIXT6HDugUCYavaNQIb
+      AwUJB4TOAAULCQgHAgMiAgEGFQoJCAsCBBYCAwECHgcCF4AACgkQbi3SF0+hw7oC
+      IA/+IZBUh2rWq62WHQ55IGbruVL8MPBOgYb9nikxMjxlqxBjy+A61aS+KgdgdhTk
+      dal06iRLUIGNJ8P9W2eSPmxX6R3R5s+r7bwn8eb5pY8voW93FE6LX2klLGdafckL
+      7USOqQzgcrtKqVSHNokzx4mKxreJzvB5Xef+dj3jNe8Xoxzp3QjUk17Zbq1jg1cS
+      umDTXJVJqtkbhgUl9xyfMst8ShiBMV0UCUUrXDaMw9eoQ1cmk6D/VzgrTOk8qLjg
+      nvA4Zop8un5tQXWiKmWu/oaK+hKZCQKgZuJWmA6PVpee1m6uGXoxItCA9dIRKj4X
+      NsyVp7r95hZ2R1uiu2vmbHaWLibMTOcDD3ZQ4Fxuh7Aozpq1AemCy2L7uv6j79TP
+      x5JuUkKT+DUp2ZPlBML5E0xWShuEEPF2InIFqpePmkB2HHQ2jMY0067szv3bjVar
+      qF6FQM+1x9XYf/NpxQbb/DIhR2JQzcR4dftPERPp3ZfmKVzX6x/pkXgYXS4AqUeb
+      +QE7dSlOf2KxVdBJSBSktGyA1jlOGDKD7DKP1tF+HNcRZd/avC6iFBK/sNYpUZBD
+      iY0cWM0XC7CORUVPMLcvLBtojgI6BbXqva7UsltkwZ1tPbTF53JsgdfzMbkkQ2zi
+      yYtPawgLR07KlstXanuMbJwuLg0j/1dLWPV1ddC/oUHjog4=
+      =J+JK
+      -----END PGP PUBLIC KEY BLOCK-----
+    EOF
+runcmd:
+  - ufw enable
+  - apt update
+  - apt install gnupg2 cloudflare-warp -y
+  - systemctl start warp-svc
+  - warp-cli --accept-tos registration new
+  - warp-cli --accept-tos mode warp+doh
+  - warp-cli --accept-tos dns families malware
+  - warp-cli --accept-tos connect
+  - apt remove --purge ufw -y
+  - snap install ufw
+  - ufw enable
+autoinstall:
+  version: 1
+  network:
+    version: 2
+    ethernets:
+      end0:
+        dhcp6: true
+        dhcp4: true
+  interactive-sections:
+    - storage
+    - identity
+  early-commands:
+    - echo early_done > /tmp/early
+  locale: "en_US.UTF-8"
+  refresh-installer:
+    update: false
+  keyboard:
+    layout: us
+    variant: ""
+    toggle: null
+  source:
+    search_drivers: false
+    id: ubuntu-desktop-minimal
+  proxy: null
+  apt:
+    preserve_sources_list: false
+    disable_components: [restricted, multiverse]
+    mirror-selection:
+      primary:
+        - arches: &id001
+          - arm64
+          - default
+          uri: "https://us.ports.ubuntu.com/ubuntu-ports"
+      sources_list: |
+        Types: deb
+        URIs: $PRIMARY
+        Suites: $RELEASE $RELEASE-updates $RELEASE-backports
+        Components: main universe
+        |
+        Types: deb
+        URIs: $SECURITY
+        Suites: $RELEASE-security
+        Components: main universe
+    security:
+        - arches: *id001
+          uri: "https://us.ports.ubuntu.com/ubuntu-ports"
+    sources:
+      ubuntu.sources:
+        append: false
+        source: |
+          Types: deb
+          URIs: https://us.ports.ubuntu.com/ubuntu-ports
+          Suites: questing questing-updates questing-backports
+          Components: main universe
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+          Types: deb
+          URIs: https://us.ports.ubuntu.com/ubuntu-ports
+          Suites: questing-security
+          Components: main universe
+          Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+      cloudflare.sources:
+        append: false
+        source: |
+          Types: deb
+          URIs: https://pkg.cloudflareclient.com/
+          Suites: noble
+          Components: main
+          Signed-By: |
+            -----BEGIN PGP PUBLIC KEY BLOCK-----
+            
+            mQINBGGr2jUBEADHaae1uIKW4JI/E32IR9EJSswkOuZl1J+XXH32U2u3DGtzGuei
+            dNXyeQ7AWHp5bM2wO7jGRqH/IwiDVHzp6gmJ8r/SFrE+iljNA71LVXY7FjaOGmKC
+            pZnzl3mlY9zsRgmM+oEbTedg2k1jfeHWiYJfTk4efDUGNqF4D62GBFLpOheeXtNU
+            DHuZjcRBFKO3wjt3wPpuUx+/NoHrxWK2HZxL6cHUHxmqOHlemGAvZug0pkeAWaAb
+            YYmlwsi9/KbnZ22poCfubCebeLIIC4GrQd5ZdJn3efa1ps41gHG/s0RpoQvC128x
+            ZQDfdjskuXA0IlDUwzGK2qeY2PEbHpPAH02cm2JrO0NkVBO/4tJ3QkrBRdkOoS1C
+            PZRFkzaamA7kZb03wHHLqMZ4lpw+Aa4w0jihndQUvxi9HQVmzjYW1HeQXHmVPdNc
+            MT6Y/XxFUFfz65zpZy6s5e8250yIaiNtTuvpcXebmkx0uM4naQFjSJTTlrNeXM/L
+            67JppgInRXwlaevNBTm24HhJy0zef1Gpnt6xJDtCX2qNg0GhbuJXbFhgSF1Ct7eY
+            tZsfx6UbEXdkwEtcrIAXIqrVjenqcvh8w47I06rqKEoiMliQxh/WrIjTDCsIq/LB
+            ki820eS6GsJ5N2JmZ2CQ7Kt+y/Gx9uMDmUcCnHY10vX+Va66/GKMX+vbKQARAQAB
+            tDZDbG91ZGZsYXJlIFBhY2thZ2UgUmVwb3NpdG9yeSA8c3VwcG9ydEBjbG91ZGZs
+            YXJlLmNvbT6JAlgEEwEIAEIWIQTAaKK1dxd1GTy+Hy9uLdIXT6HDugUCYavaNQIb
+            AwUJB4TOAAULCQgHAgMiAgEGFQoJCAsCBBYCAwECHgcCF4AACgkQbi3SF0+hw7oC
+            IA/+IZBUh2rWq62WHQ55IGbruVL8MPBOgYb9nikxMjxlqxBjy+A61aS+KgdgdhTk
+            dal06iRLUIGNJ8P9W2eSPmxX6R3R5s+r7bwn8eb5pY8voW93FE6LX2klLGdafckL
+            7USOqQzgcrtKqVSHNokzx4mKxreJzvB5Xef+dj3jNe8Xoxzp3QjUk17Zbq1jg1cS
+            umDTXJVJqtkbhgUl9xyfMst8ShiBMV0UCUUrXDaMw9eoQ1cmk6D/VzgrTOk8qLjg
+            nvA4Zop8un5tQXWiKmWu/oaK+hKZCQKgZuJWmA6PVpee1m6uGXoxItCA9dIRKj4X
+            NsyVp7r95hZ2R1uiu2vmbHaWLibMTOcDD3ZQ4Fxuh7Aozpq1AemCy2L7uv6j79TP
+            x5JuUkKT+DUp2ZPlBML5E0xWShuEEPF2InIFqpePmkB2HHQ2jMY0067szv3bjVar
+            qF6FQM+1x9XYf/NpxQbb/DIhR2JQzcR4dftPERPp3ZfmKVzX6x/pkXgYXS4AqUeb
+            +QE7dSlOf2KxVdBJSBSktGyA1jlOGDKD7DKP1tF+HNcRZd/avC6iFBK/sNYpUZBD
+            iY0cWM0XC7CORUVPMLcvLBtojgI6BbXqva7UsltkwZ1tPbTF53JsgdfzMbkkQ2zi
+            yYtPawgLR07KlstXanuMbJwuLg0j/1dLWPV1ddC/oUHjog4=
+            =J+JK
+            -----END PGP PUBLIC KEY BLOCK-----
+        key: |
+          -----BEGIN PGP PUBLIC KEY BLOCK-----
+          
+          mQINBGGr2jUBEADHaae1uIKW4JI/E32IR9EJSswkOuZl1J+XXH32U2u3DGtzGuei
+          dNXyeQ7AWHp5bM2wO7jGRqH/IwiDVHzp6gmJ8r/SFrE+iljNA71LVXY7FjaOGmKC
+          pZnzl3mlY9zsRgmM+oEbTedg2k1jfeHWiYJfTk4efDUGNqF4D62GBFLpOheeXtNU
+          DHuZjcRBFKO3wjt3wPpuUx+/NoHrxWK2HZxL6cHUHxmqOHlemGAvZug0pkeAWaAb
+          YYmlwsi9/KbnZ22poCfubCebeLIIC4GrQd5ZdJn3efa1ps41gHG/s0RpoQvC128x
+          ZQDfdjskuXA0IlDUwzGK2qeY2PEbHpPAH02cm2JrO0NkVBO/4tJ3QkrBRdkOoS1C
+          PZRFkzaamA7kZb03wHHLqMZ4lpw+Aa4w0jihndQUvxi9HQVmzjYW1HeQXHmVPdNc
+          MT6Y/XxFUFfz65zpZy6s5e8250yIaiNtTuvpcXebmkx0uM4naQFjSJTTlrNeXM/L
+          67JppgInRXwlaevNBTm24HhJy0zef1Gpnt6xJDtCX2qNg0GhbuJXbFhgSF1Ct7eY
+          tZsfx6UbEXdkwEtcrIAXIqrVjenqcvh8w47I06rqKEoiMliQxh/WrIjTDCsIq/LB
+          ki820eS6GsJ5N2JmZ2CQ7Kt+y/Gx9uMDmUcCnHY10vX+Va66/GKMX+vbKQARAQAB
+          tDZDbG91ZGZsYXJlIFBhY2thZ2UgUmVwb3NpdG9yeSA8c3VwcG9ydEBjbG91ZGZs
+          YXJlLmNvbT6JAlgEEwEIAEIWIQTAaKK1dxd1GTy+Hy9uLdIXT6HDugUCYavaNQIb
+          AwUJB4TOAAULCQgHAgMiAgEGFQoJCAsCBBYCAwECHgcCF4AACgkQbi3SF0+hw7oC
+          IA/+IZBUh2rWq62WHQ55IGbruVL8MPBOgYb9nikxMjxlqxBjy+A61aS+KgdgdhTk
+          dal06iRLUIGNJ8P9W2eSPmxX6R3R5s+r7bwn8eb5pY8voW93FE6LX2klLGdafckL
+          7USOqQzgcrtKqVSHNokzx4mKxreJzvB5Xef+dj3jNe8Xoxzp3QjUk17Zbq1jg1cS
+          umDTXJVJqtkbhgUl9xyfMst8ShiBMV0UCUUrXDaMw9eoQ1cmk6D/VzgrTOk8qLjg
+          nvA4Zop8un5tQXWiKmWu/oaK+hKZCQKgZuJWmA6PVpee1m6uGXoxItCA9dIRKj4X
+          NsyVp7r95hZ2R1uiu2vmbHaWLibMTOcDD3ZQ4Fxuh7Aozpq1AemCy2L7uv6j79TP
+          x5JuUkKT+DUp2ZPlBML5E0xWShuEEPF2InIFqpePmkB2HHQ2jMY0067szv3bjVar
+          qF6FQM+1x9XYf/NpxQbb/DIhR2JQzcR4dftPERPp3ZfmKVzX6x/pkXgYXS4AqUeb
+          +QE7dSlOf2KxVdBJSBSktGyA1jlOGDKD7DKP1tF+HNcRZd/avC6iFBK/sNYpUZBD
+          iY0cWM0XC7CORUVPMLcvLBtojgI6BbXqva7UsltkwZ1tPbTF53JsgdfzMbkkQ2zi
+          yYtPawgLR07KlstXanuMbJwuLg0j/1dLWPV1ddC/oUHjog4=
+          =J+JK
+          -----END PGP PUBLIC KEY BLOCK-----
+    fallback: abort
+    geoip: true
+  storage:
+    layout:
+      name: lvm
+      sizing-policy: all
+      encrypted: yes
+      match:
+        - path: /dev/mmcblk0
+  ubuntu-pro:
+  active-directory:
+    admin-name: ""
+    domain-name: ""
+  ssh:
+    install-server: false
+    authorized-keys: []
+    allow-pw: false
+  codecs:
+    install: false
+  drivers:
+    install: false
+  oem:
+    install: false
+  debconf-selections: |
+    ufw ufw/enable boolean true
+  packages:
+    - gnupg2
+    - cloudflare-warp
+    - libpam-u2f
+    - fido2-tools
+  kernel:
+     flavor: generic
+  timezone: "America/Los_Angeles"
+  updates: security
+  late-commands:
+    - curtin in-target -- apt remove --purge flash-kernel -y
+    - curtin in-target -- apt autoremove -y
+    - curtin in-target -- apt-mark hold shim shim-signed
+    - wget -q -O /tmp/bootaa64.efi https://github.com/0mniteck/U-Boot/raw/refs/heads/Docker/Deploy/ubuntu/bootaa64.efi
+    - wget -q -O /tmp/shimaa64.efi https://github.com/0mniteck/U-Boot/raw/refs/heads/Docker/Deploy/ubuntu/shimaa64.efi
+    - cp /tmp/bootaa64.efi /target/boot/efi/EFI/BOOT/BOOTAA64.EFI
+    - echo "3c7b02add63da9f1d76096dfd6aacc13d2ab5fec7a0ac820a752512aab7d80374a0ea463611473bf9e15c8bb3cc35e85a6d93433d6709a88995f2e17bf476fca  /target/boot/efi/EFI/BOOT/BOOTAA64.EFI" | sha512sum --status -c - && echo "bootaa64.efi Checksum Matched!" || exit 1
+    - cp /tmp/shimaa64.efi /target/boot/efi/EFI/ubuntu/shimaa64.efi
+    - echo "cd332972c26369600cf9ce7b3373977c4674794e8b80eaf36fe53d08fc9abc746bb1739cbb6e31d55aacf0a13705302d7b7d73d251c86754d9416c4d1673ef35  /target/boot/efi/EFI/ubuntu/shimaa64.efi" | sha512sum --status -c - && echo "shimaa64.efi Checksum Matched!" || exit 1
+    - sed -i s,http://ports.ubuntu.com/ubuntu-ports,https://us.ports.ubuntu.com/ubuntu-ports,g /target/etc/apt/sources.list.d/ubuntu.sources
+    - sed -i s,'main universe','main',g /target/etc/apt/sources.list.d/ubuntu.sources
+    - sed -i '1,11d' /target/etc/apt/sources.list.d/ubuntu.sources
+    - rm -f /target/etc/apt/sources.list.d/ubuntu.sources.*
+    - curtin in-target -- apt update
+    - |
+      cat > /target/usr/bin/fan << 'EOF'
+      #!/bin/bash
+      T=$1
+      if [ "$1" = "" ]; then
+      T=125
+      fi
+      for i in {1..15}; do
+          echo "$T" | tee /sys/class/hwmon/hwmon3/pwm1
+          sleep 5
+          current_speed=$(cat /sys/class/hwmon/hwmon3/pwm1)
+          if [ "$current_speed" -eq "$T" ]; then
+              echo "Fan speed set to $T"
+              break
+          fi
+      done
+      journalctl --vacuum-time=2d
+      EOF
+    - chmod +x /target/usr/bin/fan
+    - echo "@reboot root fan > /var/log/fan.log" >> /target/etc/crontab
+    - |
+      cat > /target/usr/bin/update << 'EOF'
+      #!/bin/bash
+      apt update
+      apt upgrade $1 -y
+      apt autoremove -y
+      dpkg -l | grep '^rc' | awk '{print $2}' | xargs apt purge -y
+      apt autoclean
+      apt clean
+      echo ''
+      snap refresh
+      echo ''
+      ufw status
+      df -h
+      echo ''
+      free -h
+      sleep 5 && clear
+      exit 0
+      EOF
+    - chmod +x /target/usr/bin/update
+    - |
+      cat >> /target/root/.bashrc << 'EOF'
+      
+      update
+
+      GPG_TTY=$(tty)
+      export GPG_TTY
+      
+      # eval `ssh-agent -s`
+      # ssh-add $HOME/.ssh/id_ecdsa_s*[!.pub]
+      
+      clear
+      EOF
+  error-commands:
+    - tar -czf /target/installer-logs.tar.gz /var/log/installer/
+    - journalctl -b > /target/installer-journal.error.log
+  reporting:
+    builtin:
+      type: none
+  user-data:
+    package_update: false
+    package_upgrade: false
+    runcmd:
+      - cloud-init-per once ufw-enable ufw enable
+      - cloud-init-per once warp-start systemctl start warp-svc
+      - cloud-init-per once warp-reg warp-cli --accept-tos registration new
+      - cloud-init-per once warp-mode warp-cli --accept-tos mode warp+doh
+      - cloud-init-per once warp-filter warp-cli --accept-tos dns families malware
+      - cloud-init-per once warp-activate warp-cli --accept-tos connect
+      - cloud-init-per once rmv-ufw apt remove --purge ufw -y
+      - cloud-init-per once inst-ufw snap install ufw
+      - cloud-init-per once ufw-enable ufw enable
+      - cloud-init-per once update update
+      - cloud-init-per once inst-chr snap install chromium
+      - cloud-init-per once mkyubi mkdir /etc/Yubico
+      - echo run_done > /tmp/run
+    snap:
+      commands:
+        00: snap remove --purge firefox cups
